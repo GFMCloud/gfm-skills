@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Pricing</title>
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; background: #0b0b1a; color: #e5e5f0; text-align: center; }
+  .hero { padding: 80px 20px; background: linear-gradient(135deg, #7c3aed, #2563eb); }
+  .hero h1 { font-size: 56px; background: linear-gradient(90deg, #f0abfc, #93c5fd); -webkit-background-clip: text; color: transparent; }
+  .hero p { font-size: 20px; color: #c4b5fd; }
+  .cards { display: flex; gap: 24px; justify-content: center; padding: 60px 20px; }
+  .card { width: 300px; padding: 32px; border-radius: 28px; background: rgba(255,255,255,0.06); backdrop-filter: blur(12px); box-shadow: 0 0 40px rgba(124,58,237,0.5); border: 1px solid rgba(255,255,255,0.15); }
+  .card .price { font-size: 44px; }
+  .card button { background: #7c3aed; color: #a78bfa; border: 0; padding: 14px 28px; border-radius: 999px; font-size: 16px; }
+  .quotes { padding: 40px 20px; color: #6b6b80; font-size: 13px; }
+</style>
+</head>
+<body>
+<!-- Demo material for the design eval: a pricing page with known problems. -->
+<section class="hero">
+  <h1>Unlock the power of seamless note-taking</h1>
+  <p>Elevate your workflow with AI-powered notes that just work.</p>
+</section>
+<section class="cards">
+  <div class="card"><div>🚀</div><h2>Starter</h2><p class="price">$0</p><p>Up to 50 notes</p><button>Get started</button></div>
+  <div class="card"><div>⚡</div><h2>Pro</h2><p class="price">$8</p><p>Unlimited notes, sync</p><button>Get started</button></div>
+  <div class="card"><div>💎</div><h2>Team</h2><p class="price">$20</p><p>Shared notebooks, admin</p><button>Get started</button></div>
+</section>
+<section class="quotes">
+  <p>"This changed my life!" - Sarah K., CEO</p>
+  <p>Trusted by 10,000+ teams worldwide</p>
+</section>
+</body>
+</html>

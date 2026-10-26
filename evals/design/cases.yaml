@@ -1,0 +1,38 @@
+cases:
+  - id: new-landing-branded
+    prompt: Design the front page of our website from brief.md. Make it a single HTML file, index.html.
+    setup:
+      - files/coop-landing/brief.md
+      - files/coop-landing/.agents/brand/tokens.json
+    expect:
+      - 'The reply starts with "Brand: project" and primary=#9a3412'
+      - States a one-sentence visual direction that fits the users (neighbours on phones, first-timers)
+      - index.html uses the brand variables, makes one main action obvious (come to a workshop or book a lesson), and passes scripts/check_page.py, including no sideways scroll at 390px
+      - Uses only facts from brief.md; invents no photos, reviews, numbers or testimonials, and marks missing material with NEEDS YOUR INPUT or leaves it out
+      - Avoids the generated-design tells (no purple gradient, no emoji icons, not everything centred)
+    grader: human
+
+  - id: redesign-signup
+    prompt: Our sign-up page (index.html and style.css) looks dated and is broken on phones. Redesign it.
+    setup:
+      - files/signup-redesign/index.html
+      - files/signup-redesign/style.css
+    expect:
+      - 'The reply starts with "Brand: default"'
+      - Audits before changing, naming at least the 960px width that scrolls sideways on phones, the missing labels, the removed focus outline and the low-contrast grey text
+      - Keeps every field name and id, the form action and method, and validateForm(); the two buttons are no longer equal weight
+      - The redesigned page passes scripts/check_page.py with --shots (no sideways scroll at 390px, every field labelled, lang and viewport set)
+      - Reports the error message "Error!" as unhelpful and either rewrites the words or flags it, without changing what the validation checks
+    grader: human
+
+  - id: critique-pricing
+    prompt: What's wrong with this pricing page (pricing.html)? Don't change anything yet.
+    setup:
+      - files/pricing-critique/pricing.html
+    expect:
+      - 'The reply starts with a "Brand:" line'
+      - Separates broken problems (no viewport meta, unreadable button text #a78bfa on #7c3aed, faint grey quotes, cards side by side with no wrap on phones) from taste
+      - Names the generated-design tells it uses (purple-to-blue gradient, gradient text, emoji icons, glass cards with glow, three identical cards, "Unlock the power" copy)
+      - Flags the testimonial and "10,000+ teams" as needing a real source, and the three equal "Get started" buttons as no main action
+      - Changes no files
+    grader: human

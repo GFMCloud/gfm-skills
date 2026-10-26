@@ -37,8 +37,9 @@ skill, because copying a newer version over it would replace it.
 | `retro` (draft) | Runs a short retrospective after a piece of work and says where each lesson should go | Reads the session record and `git log`. Proposes edits to your instructions; changes nothing without your OK |
 | `de-ai` (draft) | Edits text that reads machine-written into plain text, keeping every fact | Edits only the text you give it |
 | `decks` (draft) | Plans a slide deck, builds it as one HTML file in your brand (prints to PDF), or reviews slides you already have | Copies a template into a new HTML file and runs two small Python scripts (brand lookup, validator). No outside requests |
+| `design` (draft) | Designs a new page, screen or form in your brand, redesigns one that looks dated or breaks on phones, or critiques one | Writes or edits the page files in your project and runs two small Python scripts (brand lookup, page check). The page check can take screenshots with a local headless browser. No outside requests |
 
-Skills marked `draft` in their `SKILL.md` work but are still being tested. All seven skills above have
+Skills marked `draft` in their `SKILL.md` work but are still being tested. All the skills above have
 passed their Claude Code trials but **still need a Codex pass** before they can be marked stable
 (see `evals/<skill>/TRIALS.md`).
 
@@ -59,6 +60,13 @@ Put a `tokens.json` there, for example `{ "primary": "#0f766e" }`, and optionall
 
 See `AGENTS.md` and `docs/house-rules.md`. Before a change: `uv run tools/check_skills.py` and
 `uv run tests/run_fixtures.py`.
+
+## Credits
+
+The `design` skill is written fresh in this library's own words. Its approach was inspired by
+[taste-skill](https://github.com/Leonxlnx/taste-skill) by Leonxlnx,
+[emil-design-eng](https://github.com/emilkowalski/skills) by Emil Kowalski, and Anthropic's
+[frontend-design](https://github.com/anthropics/skills) skill. No text from them is included.
 
 ## Licence
 

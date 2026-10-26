@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sign up - Allotment Society</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Demo material for the design eval: an old sign-up form with known problems. -->
+<div id="wrap">
+  <h1 class="big">JOIN THE ALLOTMENT SOCIETY!!!</h1>
+  <p class="sub">Fill in the form below to join the waiting list for a plot. We will contact you when a plot becomes available. Membership is 25 per year, payable when you get a plot.</p>
+  <form id="signup" action="/join" method="post" onsubmit="return validateForm()">
+    <input type="text" name="full_name" id="full_name" placeholder="Full name">
+    <input type="text" name="email" id="email" placeholder="Email">
+    <input type="text" name="phone" id="phone" placeholder="Phone (optional)">
+    <select name="plot_size" id="plot_size">
+      <option value="">Plot size</option>
+      <option value="half">Half plot</option>
+      <option value="full">Full plot</option>
+    </select>
+    <textarea name="notes" id="notes" placeholder="Anything we should know?"></textarea>
+    <input type="checkbox" name="newsletter" id="newsletter"> <span class="tiny">Send me the monthly newsletter</span>
+    <div class="buttons">
+      <button type="submit" class="btn">Join waiting list</button>
+      <button type="reset" class="btn">Clear form</button>
+    </div>
+    <p id="error" class="err"></p>
+  </form>
+  <p class="foot">Questions? Email the secretary at secretary@allotments.example</p>
+</div>
+<script>
+function validateForm() {
+  var name = document.getElementById('full_name').value.trim();
+  var email = document.getElementById('email').value.trim();
+  if (!name || email.indexOf('@') < 1) {
+    document.getElementById('error').textContent = 'Error!';
+    return false;
+  }
+  return true;
+}
+</script>
+</body>
+</html>

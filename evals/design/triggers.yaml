@@ -1,0 +1,8 @@
+should:
+  - Design a landing page for my bakery's new website
+  - This settings page looks dated, can you redesign it so it works on phones too?
+  - Make our sign-up form look better and easier to use
+should_not:
+  - Make a slide deck for the product launch
+  - Draw a diagram of how our deploy pipeline works
+  - Review the design doc for the database migration

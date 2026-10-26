@@ -1,0 +1,11 @@
+body { font-family: Arial; background: #e8e8e8; text-align: center; }
+#wrap { width: 960px; margin: 40px auto; background: white; padding: 30px; box-shadow: 0 0 20px #999; border-radius: 20px; }
+.big { font-size: 38px; color: #6b8e23; }
+.sub { font-size: 13px; color: #aaa; }
+input, select, textarea { display: block; width: 400px; margin: 10px auto; padding: 4px; font-size: 12px; border: 1px solid #ddd; outline: none; }
+textarea { font-size: 11px; height: 30px; }
+.tiny { font-size: 10px; color: #bbb; }
+.buttons { margin-top: 20px; }
+.btn { background: #6b8e23; color: #c5e1a5; font-size: 15px; padding: 3px 30px; border: none; border-radius: 20px; margin: 0 10px; }
+.err { color: red; font-size: 17px; }
+.foot { font-size: 9px; color: #ccc; margin-top: 40px; }
