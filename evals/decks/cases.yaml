@@ -1,0 +1,38 @@
+cases:
+  - id: plan-from-notes
+    prompt: Plan a 10-minute deck for my team proposing we move daily standups to async updates. My notes are in notes.md.
+    setup:
+      - files/plan-notes/notes.md
+    expect:
+      - Gives a slide-by-slide plan with the five fields (headline, job, evidence with source, visual, note)
+      - Every headline is a claim, not a label
+      - Uses about 6 to 12 slides for 10 minutes and ends with the ask (a four-week trial)
+      - Invents no numbers; where evidence is missing (for example what the summer trial showed) it writes a NEEDS YOUR INPUT marker and lists the markers at the end
+      - Does not build a slide file unless asked, or offers to
+    grader: human
+
+  - id: build-branded
+    prompt: Build the slides for outline.md, using the numbers in data.csv.
+    setup:
+      - files/branded/outline.md
+      - files/branded/data.csv
+      - files/branded/.agents/brand/tokens.json
+    expect:
+      - 'The reply starts with "Brand: project" and primary=#7c3aed'
+      - The deck was copied from the template and scripts/validate.py passes
+      - The chart slide uses only data.csv values, has one hero, starts bars at zero and carries a source line naming data.csv
+      - Does not claim when free delivery started (data.csv doesn't say); flags it or marks it as input needed
+      - The basket and delivery-cost claim matches the data (basket up about 17%, cost per order up about 9%, Jan to Apr)
+    grader: human
+
+  - id: review-busy-deck
+    prompt: Does this deck read? (deck.html)
+    setup:
+      - files/busy-deck/deck.html
+    expect:
+      - Leads with the problem that repeats (label headlines such as "Q3 Results" and "Highlights" instead of claims)
+      - Slide 2 - nine bullets in a decorative shadowed gradient box, justified text, too many sizes; names concrete cuts
+      - Slide 3 - replaces the rainbow pie with a sorted bar chart with one hero region
+      - Slide 4 is doing two jobs (pricing and hiring) and should be two slides
+      - Changes no files, and does not invent problems for the title slide beyond the label headline and centring
+    grader: human

@@ -93,6 +93,22 @@ def cross_refs(raw):
     return problems, warnings, stats
 
 
+# Some agent sandboxes (on macOS among others) stop Chromium's helper processes from starting.
+# Running it as one process avoids that, so try the normal launch first and then that.
+SAFE_ARGS = ["--single-process", "--no-zygote"]
+
+
+def launch(pw):
+    try:
+        return pw.chromium.launch()
+    except Exception as first:
+        if "Executable doesn't exist" in str(first):
+            raise RuntimeError("playwright's Chromium is missing or doesn't match this playwright version; "
+                               "install it with: python3 -m playwright install chromium "
+                               "(use the same Python that runs this script)") from None
+        return pw.chromium.launch(args=SAFE_ARGS)
+
+
 def shots(path):
     p = pathlib.Path(path)
     pngs = [p.with_name(p.stem + "-light.png"), p.with_name(p.stem + "-dark-flow.png")]
@@ -105,7 +121,7 @@ def shots(path):
         return ["--shots asked for but playwright is not installed; no screenshots were taken"]
     try:
         with sync_playwright() as pw:
-            b = pw.chromium.launch()
+            b = launch(pw)
             page = b.new_page(viewport={"width": 1560, "height": 900})
             page.goto(p.resolve().as_uri())
             page.wait_for_timeout(500)
@@ -118,7 +134,7 @@ def shots(path):
             page.screenshot(path=str(pngs[1]))
             b.close()
     except Exception as e:
-        return [f"--shots asked for but the capture failed: {type(e).__name__}: {e}"]
+        return [f"--shots asked for but the capture failed: {type(e).__name__}: {str(e).splitlines()[0] if str(e) else ''}"]
     missing = [str(x) for x in pngs if not x.is_file() or x.stat().st_size == 0]
     if missing:
         return [f"screenshots not written: {missing}"]

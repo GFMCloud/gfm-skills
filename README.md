@@ -36,8 +36,9 @@ skill, because copying a newer version over it would replace it.
 | `intake` (draft) | Reviews a repo, tool, skill pack or article someone shared and gives a verdict on adopting it | Reads the files, may make a shallow `git clone` into a scratch folder. Never runs the source's scripts or installs anything |
 | `retro` (draft) | Runs a short retrospective after a piece of work and says where each lesson should go | Reads the session record and `git log`. Proposes edits to your instructions; changes nothing without your OK |
 | `de-ai` (draft) | Edits text that reads machine-written into plain text, keeping every fact | Edits only the text you give it |
+| `decks` (draft) | Plans a slide deck, builds it as one HTML file in your brand (prints to PDF), or reviews slides you already have | Copies a template into a new HTML file and runs two small Python scripts (brand lookup, validator). No outside requests |
 
-Skills marked `draft` in their `SKILL.md` work but are still being tested. All six skills above have
+Skills marked `draft` in their `SKILL.md` work but are still being tested. All seven skills above have
 passed their Claude Code trials but **still need a Codex pass** before they can be marked stable
 (see `evals/<skill>/TRIALS.md`).
 

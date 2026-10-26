@@ -1,0 +1,8 @@
+should:
+  - Turn these notes into a slide deck for Friday's team meeting
+  - Plan out a deck for the board update next week
+  - Does this presentation read well, or is it too busy?
+should_not:
+  - Make an architecture diagram of how our services talk to each other
+  - Make a bar chart of monthly sales from this CSV
+  - Write a one-page memo about the product launch
