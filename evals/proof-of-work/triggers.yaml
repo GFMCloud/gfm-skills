@@ -1,0 +1,8 @@
+should:
+  - I think the migration script works now. Can you confirm it's done before I tell the team?
+  - Check this status update before I send it to my manager
+  - The deploy pipeline is green, so we're live, right? Verify it.
+should_not:
+  - Review this pull request for bugs
+  - Write a status update about what I did this week
+  - Explain how our deploy pipeline works

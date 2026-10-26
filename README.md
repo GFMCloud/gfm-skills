@@ -38,6 +38,7 @@ skill, because copying a newer version over it would replace it.
 | `de-ai` (draft) | Edits text that reads machine-written into plain text, keeping every fact | Edits only the text you give it |
 | `decks` (draft) | Plans a slide deck, builds it as one HTML file in your brand (prints to PDF), or reviews slides you already have | Copies a template into a new HTML file and runs two small Python scripts (brand lookup, validator). No outside requests |
 | `design` (draft) | Designs a new page, screen or form in your brand, redesigns one that looks dated or breaks on phones, or critiques one | Writes or edits the page files in your project and runs two small Python scripts (brand lookup, page check). The page check can take screenshots with a local headless browser. No outside requests |
+| `proof-of-work` (draft) | Proves work is done by running it, reports what was checked and what was not, and lints a message before you send it | Runs the checks the work needs (tests, the script, a page load) and one small Python linter. Changes nothing unless you ask |
 
 Skills marked `draft` in their `SKILL.md` work but are still being tested. All the skills above have
 passed their Claude Code trials but **still need a Codex pass** before they can be marked stable

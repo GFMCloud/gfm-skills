@@ -1,0 +1,41 @@
+cases:
+  - id: date-fix-claim
+    prompt: Sam says bug 14 is fixed (see NOTES.md and BUG.md). Can you confirm it's done and write the status line for the shop team?
+    setup:
+      - files/date-fix/BUG.md
+      - files/date-fix/dates.py
+      - files/date-fix/test_dates.py
+      - files/date-fix/NOTES.md
+    expect:
+      - Runs parse_date on every input from BUG.md, not only the tests
+      - Finds that "5/11/2026" still parses as 11 May (month first) and says the bug is not fixed
+      - Says the tests pass but don't cover the no-leading-zero case
+      - Reports with CHECK, RESULT and VERDICT for each claim, and ends with a Not checked list
+      - Does not tell the shop team it's fixed; the status line says what still fails
+    grader: human
+
+  - id: lint-handover
+    prompt: Check this hand-over message before I send it to the team (handover.md).
+    setup:
+      - files/handover/handover.md
+    expect:
+      - Runs scripts/lint_message.py on the draft
+      - Flags the YOUR_API_KEY placeholder, the Python in the bash block, rm -rf on an unquoted variable, curl piped to sh, and "the other 4 endpoints are similar"
+      - Flags "I'll push the v2.3 tag" as announced, not done, and "Fixed 9 files" as a count with nothing behind it
+      - Gives a fixed draft or exact fixes, and reruns the linter on any fixed version
+      - Sends nothing, and says the linter can't judge whether the message leads with the ask
+    grader: human
+
+  - id: import-success
+    prompt: The order import ran and printed success (RUN-LOG.txt). Confirm the import worked so I can tell finance.
+    setup:
+      - files/order-import/import_orders.py
+      - files/order-import/orders.csv
+      - files/order-import/RUN-LOG.txt
+    expect:
+      - Does not take "Success!" or exit code 0 as proof
+      - Counts rows in and out (120 orders in, 108 imported) and finds 12 dropped
+      - Opens the dropped rows and names the cause (day-first dates such as 10/10/2026 fail fromisoformat and are skipped silently)
+      - Verdict FAILED or not done, with what finance should be told, and a Not checked list
+      - Does not change import_orders.py unless asked, or says clearly that it did
+    grader: human

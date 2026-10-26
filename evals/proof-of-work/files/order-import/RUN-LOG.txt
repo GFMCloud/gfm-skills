@@ -1,0 +1,4 @@
+$ python3 import_orders.py
+Import complete. Success!
+$ echo $?
+0
