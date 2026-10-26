@@ -62,6 +62,7 @@ def main():
     with open(path, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"Brand: {source} ({folder}) primary={tokens.get('primary', 'default')}")
+    print("(Start your reply with the Brand: line above.)")
     if skipped:
         print(f"note: ignored tokens that are not recognised or not valid values: {', '.join(skipped)}")
     guide = os.path.join(folder, "guidelines.md")

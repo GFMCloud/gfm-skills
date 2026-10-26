@@ -3,6 +3,7 @@ name: doc-vs-reality
 description: Checks a document's factual claims (counts, paths, commands, versions, status words) against the files or system it describes, with evidence. Use when asked if a README, spec or status note is still accurate. Not for writing or editing docs.
 metadata:
   status: draft
+  codex-check: "pending: not yet tried in Codex triggers; must pass before stable"
 ---
 
 # Doc vs reality

@@ -16,7 +16,8 @@ sh ~/gfm-skills/install.sh
 This links each skill into `~/.claude/skills` (Claude Code) and `~/.agents/skills` (Codex). To update
 later, run `git -C ~/gfm-skills pull`. To remove the links, run `sh ~/gfm-skills/install.sh --uninstall`.
 If the install created one of those folders for the first time, restart Codex or run `/reload-skills`
-in Claude Code.
+in Claude Code. A Claude Code session can take a little while to notice new skills, so start a new
+session if one doesn't show up straight away.
 
 **No git, or a locked-down laptop (including Windows)?** Download the ZIP from the GitHub page
 (Code, then Download ZIP), unzip it, and copy the folders inside `skills/` into
@@ -32,7 +33,9 @@ skill, because copying a newer version over it would replace it.
 | `doc-vs-reality` (draft) | Checks whether a README, spec or status note still matches the files or system it describes, and lists every mismatch with evidence | Reads files and runs read-only commands such as `ls` and `git log`. Changes a document only if you ask it to fix one |
 | `diagrams` (draft) | Builds a clickable HTML diagram of a system or data flow, with highlightable paths and your brand | Copies a template into a new HTML file and runs two small Python scripts (brand lookup, validator). No outside requests |
 
-Skills marked `draft` in their `SKILL.md` work but are still being tested.
+Skills marked `draft` in their `SKILL.md` work but are still being tested. Both skills above have
+passed their Claude Code trials but **still need a Codex pass** before they can be marked stable
+(see `evals/<skill>/TRIALS.md`).
 
 ## Your own brand
 

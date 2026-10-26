@@ -127,10 +127,11 @@ def shots(path):
 
 
 def main():
-    if len(sys.argv) < 2 or sys.argv[1].startswith("-"):
+    paths = [a for a in sys.argv[1:] if not a.startswith("-")]
+    if len(paths) != 1:
         print(__doc__)
         sys.exit(2)
-    path = sys.argv[1]
+    path = paths[0]
     raw = pathlib.Path(path).read_text(encoding="utf-8")
     print(path)
     problems = structural(raw)
