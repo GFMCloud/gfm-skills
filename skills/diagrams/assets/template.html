@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagram title</title>
+<script>
+  (function () {
+    let saved = null;
+    try { saved = localStorage.getItem('diagram-theme'); } catch (e) { /* storage blocked */ }
+    const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', dark);
+  })();
+</script>
+<style>
+  :root {
+    /* Neutral, accessible default palette - light mode.
+       These are placeholder values, not a real brand. Swap in the project's
+       own design tokens or brand kit if one exists (a tokens file, a CSS
+       variables file, a style guide). If none exists, this default is safe
+       to keep - just tell the user you're using a default, not their brand. */
+    --bg: #F7F9FC; --surface: #FFFFFF; --surface2: #EDF1F7;
+    --ink: #17212B; --body: #2A3645; --muted: #6B7A8D;
+    --line: #D4DCE6; --line-soft: #E6EBF2;
+    --accent: #2563EB; --accent-soft: rgba(37,99,235,0.10);    /* primary accent */
+    --gold: #B45309; --gold-soft: rgba(217,119,6,0.16);        /* hero / highlight */
+    --teal: #0E8074; --teal-soft: rgba(14,128,116,0.14);       /* entity accent */
+    --slate: #48709F;                                          /* secondary muted tone, available if needed */
+    --zone: rgba(23,33,43,0.03); --zone-line: #CBD5E2;
+    /* --diagram-font: the brand slot below can override it. */
+    --diagram-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sans: var(--diagram-font);
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  html.dark {
+    /* Neutral default palette - dark mode. Same placeholder rule applies. */
+    --bg: #14202E; --surface: #1B2B3D; --surface2: #223649;
+    --ink: #F4F8FD; --body: #C3D2E2; --muted: #8194A8;
+    --line: #33475C; --line-soft: #263A4D;
+    --accent: #5B8DEF; --accent-soft: rgba(91,141,239,0.16);
+    --gold: #E0A030; --gold-soft: rgba(224,160,48,0.18);
+    --teal: #3FB6A8; --teal-soft: rgba(63,182,168,0.16);
+    --slate: #7C9BC4;
+    --zone: rgba(255,255,255,0.025); --zone-line: #33475C;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--body); font-family: var(--sans);
+    -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; overflow: hidden;
+  }
+
+  /* ── top bar ─────────────────────────────── */
+  .bar {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 12px 22px; border-bottom: 1px solid var(--line-soft); flex: none;
+  }
+  .brand { display: flex; align-items: baseline; gap: 14px; }
+  .wordmark { font-family: var(--sans); font-weight: 700; font-size: 18px; letter-spacing: 0.01em; color: var(--ink); }
+  .wordmark .num { color: var(--gold); }
+  .titlewrap h1 { font-family: var(--sans); font-weight: 600; font-size: 16px; color: var(--ink); letter-spacing: -0.01em; }
+  .titlewrap .sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  .rule { width: 1px; height: 30px; background: var(--line); }
+  .spacer { flex: 1; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--sans); font-weight: 500; font-size: 11.5px; letter-spacing: 0.02em;
+    padding: 6px 13px; border: 1px solid var(--line); border-radius: 999px;
+    background: transparent; color: var(--muted); cursor: pointer; transition: all .15s ease;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--accent); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #themeToggle {
+    font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 6px 11px; border: 1px solid var(--line); border-radius: 6px;
+    background: transparent; color: var(--muted); cursor: pointer;
+  }
+  #themeToggle:hover { color: var(--ink); border-color: var(--accent); }
+
+  /* ── stage ───────────────────────────────── */
+  .stage { flex: 1; position: relative; min-height: 0; }
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* zones */
+  .zone rect { fill: var(--zone); stroke: var(--zone-line); stroke-width: 1; stroke-dasharray: 5 5; rx: 16; }
+  .zone .ztitle { font-family: var(--sans); font-weight: 600; font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--muted); }
+  .zone .zsub { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); opacity: 0.8; }
+
+  /* nodes */
+  .node { cursor: pointer; }
+  .node rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; rx: 10; transition: stroke .15s ease, filter .15s ease; }
+  .node:hover rect { stroke: var(--accent); }
+  .node.sel rect { stroke: var(--accent) !important; stroke-width: 2.5; }
+  .node .t  { font-family: var(--sans); font-size: 14.5px; font-weight: 600; fill: var(--ink); pointer-events: none; }
+  .node .m  { font-family: var(--mono); font-size: 11px; fill: var(--muted); pointer-events: none; }
+  .node .k  { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--gold); pointer-events: none; }
+  .node.hero rect { fill: var(--gold-soft); stroke: var(--gold); stroke-width: 2; }
+  .node.store rect { fill: var(--surface2); }
+  .node.entity rect { fill: var(--teal-soft); stroke: var(--teal); }
+  .node.ext rect { stroke-dasharray: 6 3; }
+
+  /* edges */
+  .edge { stroke: var(--muted); stroke-width: 1.6; fill: none; marker-end: url(#a-mut); transition: opacity .2s ease, stroke .2s ease; }
+  .edge.dash { stroke-dasharray: 5 4; }
+  .elbl { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); transition: opacity .2s ease; }
+
+  /* flow highlighting */
+  .stage.flowing .edge { opacity: 0.12; }
+  .stage.flowing .elbl { opacity: 0.12; }
+  .stage.flowing .node { opacity: 0.28; }
+  .stage.flowing .zone { opacity: 0.45; }
+  .stage.flowing .edge.lit {
+    opacity: 1; stroke: var(--accent); marker-end: url(#a-acc);
+    stroke-dasharray: 7 5; animation: march 0.9s linear infinite;
+  }
+  .stage.flowing .elbl.lit { opacity: 1; fill: var(--accent); }
+  .stage.flowing .node.lit { opacity: 1; }
+  .stage.flowing .node.lit rect { stroke: var(--accent); }
+  @keyframes march { to { stroke-dashoffset: -12; } }
+  @media (prefers-reduced-motion: reduce) { .stage.flowing .edge.lit { animation: none; } }
+
+  /* ── floating cards ──────────────────────── */
+  .card {
+    position: absolute; max-width: 380px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 15px 17px; box-shadow: 0 8px 28px rgba(10,37,70,0.12);
+  }
+  #detail { right: 18px; bottom: 18px; width: 350px; }
+  #detail h3 { font-family: var(--sans); font-weight: 600; font-size: 16px; color: var(--ink); margin-bottom: 3px; }
+  #detail .meta { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-bottom: 9px; }
+  #detail p { font-size: 13px; line-height: 1.58; }
+  #detail p code, #flowcap code { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+  #detail p b, #flowcap b { color: var(--ink); font-weight: 600; }
+  #flowcap { left: 18px; bottom: 18px; max-width: 480px; display: none; }
+  #flowcap.show { display: block; }
+  #flowcap .fname { font-family: var(--sans); font-weight: 600; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 7px; }
+  #flowcap ol { margin-left: 18px; }
+  #flowcap li { font-size: 13px; line-height: 1.58; margin-bottom: 2px; }
+  .src { position: absolute; top: 12px; right: 18px; font-family: var(--mono); font-size: 10px; color: var(--muted); opacity: 0.8; }
+  @media (max-width: 900px) {
+    body { overflow: auto; }
+    .stage { min-height: 0; }
+    .stage svg { position: relative; height: 72vh; }
+    #detail { position: static; width: auto; margin: 10px 18px; }
+    #flowcap { position: static; margin: 0 18px 18px; }
+  }
+</style>
+<style id="brand">
+  /* BRAND SLOT: filled by scripts/apply_brand.py. Do not edit by hand. */
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand">
+    <!-- Text wordmark by default. If the user provides a logo, embed it as a
+         data URI and replace this span; never invent a logo. -->
+    <span class="wordmark">Your org</span>
+    <div class="rule"></div>
+    <div class="titlewrap">
+      <h1>Diagram Title - the stack</h1>
+      <div class="sub">one-line subtitle</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="chips" id="chips">
+    <button class="chip on" data-flow="all">Everything</button>
+    <button class="chip" data-flow="flow-a">Flow A</button>
+    <button class="chip" data-flow="flow-b">Flow B</button>
+    <!-- one chip per FLOWS entry; data-flow matches the FLOWS key -->
+  </div>
+  <button id="themeToggle">Theme</button>
+</div>
+
+<div class="stage" id="stage">
+<svg viewBox="0 0 1560 980" preserveAspectRatio="xMidYMid meet" role="img" aria-label="System diagram">
+  <defs>
+    <marker id="a-mut" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill: var(--muted)"/>
+    </marker>
+    <marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill: var(--accent)"/>
+    </marker>
+  </defs>
+
+  <!-- ════════ SLOT 1: ZONES (columns, left-to-right in flow order) ════════ -->
+  <!-- one <g class="zone"> per grouping. ztitle = group name, zsub = one-line caption. -->
+  <g class="zone" id="z-one">
+    <rect x="40" y="120" width="300" height="700"/>
+    <text class="ztitle" x="60" y="150">Zone Name</text>
+    <text class="zsub" x="60" y="168">one-line caption</text>
+  </g>
+  <!-- add more zones: z-two, z-three, z-four ... -->
+
+  <!-- ════════ SLOT 3: EDGES (draw AFTER you know node positions) ════════ -->
+  <!-- one <path class="edge" id="e-..."> per connection. add .dash for dependency/credential reads. -->
+  <path class="edge" id="e-example" d="M340,200 C 380,200 400,200 440,200"/>
+
+  <!-- edge labels: one <text class="elbl" data-e="e-..."> per edge, data-e matches the edge id -->
+  <text class="elbl" data-e="e-example" x="380" y="190">label</text>
+
+  <!-- ════════ SLOT 2: NODES (one <g class="node" data-k="..."> per component) ════════ -->
+  <!-- class options: (default) | hero | store | entity | ext - see references/layout.md -->
+  <!-- data-k must be unique and must have a matching DETAIL entry in the script below. -->
+  <g class="node" data-k="example">
+    <rect x="65" y="180" width="200" height="85"/>
+    <text class="t" x="85" y="210">Component</text>
+    <text class="m" x="85" y="232">one-line descriptor</text>
+    <text class="m" x="85" y="250">another line</text>
+  </g>
+  <!-- add the rest of the nodes ... -->
+
+</svg>
+
+  <div class="src">source or version note</div>
+
+  <div class="card" id="flowcap">
+    <div class="fname" id="f-name"></div>
+    <ol id="f-steps"></ol>
+  </div>
+
+  <div class="card" id="detail">
+    <h3 id="d-title">Click anything</h3>
+    <div class="meta" id="d-meta">node detail</div>
+    <p id="d-body">Every box is clickable. The chips up top light a named request path across the nodes and edges that belong to it. The gold-highlighted node is the diagram's one hero component - use that class once per diagram.</p>
+  </div>
+</div>
+
+<script>
+const DETAIL = {
+  // one entry per node data-k. t = title, m = meta line, b = 1-3 sentences (HTML ok: <b>, <code>)
+  example: { t:"Component", m:"role · descriptor", b:"What this component is and why it matters. Use <code>code</code> for API calls and <b>bold</b> for the key point." },
+};
+
+const FLOWS = {
+  // one entry per chip (except "all", which is built in). key matches the chip's data-flow.
+  // edges/nodes = the ids/data-ks lit on this path. steps = ordered caption lines (HTML ok).
+  "flow-a": {
+    name: "Flow A - what it does",
+    edges: ["e-example"],
+    nodes: ["example"],
+    steps: ["First step", "Second step", "Third step"]
+  },
+  "flow-b": {
+    name: "Flow B - what it does",
+    edges: ["e-example"],
+    nodes: ["example"],
+    steps: ["First step", "Second step"]
+  }
+};
+
+const stage = document.getElementById('stage');
+const nodes = document.querySelectorAll('.node');
+const edges = document.querySelectorAll('.edge');
+const elbls = document.querySelectorAll('.elbl');
+const chips = document.querySelectorAll('.chip');
+const fcap = document.getElementById('flowcap');
+
+function setFlow(key) {
+  chips.forEach(c => c.classList.toggle('on', c.dataset.flow === key));
+  edges.forEach(e => e.classList.remove('lit'));
+  elbls.forEach(l => l.classList.remove('lit'));
+  nodes.forEach(n => n.classList.remove('lit'));
+  if (key === 'all') { stage.classList.remove('flowing'); fcap.classList.remove('show'); return; }
+  const f = FLOWS[key];
+  stage.classList.add('flowing');
+  f.edges.forEach(id => document.getElementById(id)?.classList.add('lit'));
+  elbls.forEach(l => { if (f.edges.includes(l.dataset.e)) l.classList.add('lit'); });
+  f.nodes.forEach(k => document.querySelector(`.node[data-k="${k}"]`)?.classList.add('lit'));
+  document.getElementById('f-name').textContent = f.name;
+  document.getElementById('f-steps').innerHTML = f.steps.map(s => `<li>${s}</li>`).join('');
+  fcap.classList.add('show');
+}
+chips.forEach(c => c.addEventListener('click', () => setFlow(c.dataset.flow)));
+
+nodes.forEach(n => n.addEventListener('click', () => {
+  nodes.forEach(x => x.classList.remove('sel'));
+  n.classList.add('sel');
+  const d = DETAIL[n.dataset.k];
+  if (!d) return;
+  document.getElementById('d-title').textContent = d.t;
+  document.getElementById('d-meta').textContent = d.m;
+  document.getElementById('d-body').innerHTML = d.b;
+}));
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const dark = !document.documentElement.classList.contains('dark');
+  document.documentElement.classList.toggle('dark', dark);
+  try { localStorage.setItem('diagram-theme', dark ? 'dark' : 'light'); } catch (e) { /* storage blocked */ }
+});
+</script>
+</body>
+</html>

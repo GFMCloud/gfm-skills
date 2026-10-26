@@ -1,0 +1,41 @@
+cases:
+  - id: drifted-readme
+    prompt: Is the README in this folder still accurate?
+    setup:
+      - files/drifted-readme/README.md
+      - files/drifted-readme/scripts/dedupe.sh
+      - files/drifted-readme/scripts/rename.sh
+      - files/drifted-readme/pyproject.toml
+    expect:
+      - Reports that there are two scripts, not three, and that scripts/archive.sh does not exist
+      - Reports that npm install does not fit (no package.json; the project uses pyproject.toml)
+      - Reports that Python 3.11 conflicts with requires-python >=3.12 in pyproject.toml
+      - Says the "all three scripts are tested" claim could not be checked (no tests found)
+      - Uses the CLAIM / WHERE / TRUTH / CHECK format and ends with a one-line summary
+    grader: human
+
+  - id: accurate-readme
+    prompt: Check this README against the code before I share it.
+    setup:
+      - files/accurate-readme/README.md
+      - files/accurate-readme/scripts/count.sh
+    expect:
+      - Finds no defects
+      - Still ends with the one-line summary (claims found, checked, defects, not checkable)
+      - Does not invent problems or rewrite the README
+    grader: human
+
+  - id: every-member-quantifier
+    prompt: Does STATUS.md match what is actually in skills/?
+    setup:
+      - files/status-note/STATUS.md
+      - files/status-note/skills/alpha/SKILL.md
+      - files/status-note/skills/alpha/README.md
+      - files/status-note/skills/beta/SKILL.md
+      - files/status-note/skills/gamma/SKILL.md
+      - files/status-note/skills/gamma/README.md
+    expect:
+      - Checks all three skills rather than one
+      - Reports that beta has no README, so "each of the three skills now has its own README" is false
+      - Confirms the description-length claim by measuring each description
+    grader: human

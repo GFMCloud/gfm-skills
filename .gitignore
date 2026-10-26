@@ -1,0 +1,8 @@
+# Your own brand material and other per-copy files. Never shipped (house rule 9).
+skills/*/local/
+# Local agent settings and secrets.
+.claude/settings.local.json
+.env
+.env.*
+.DS_Store
+__pycache__/

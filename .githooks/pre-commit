@@ -1,0 +1,14 @@
+#!/bin/sh
+# Runs before every commit (enable with: sh tools/install-hooks.sh).
+# Uses your employer-terms file if it exists; the pre-push hook requires it.
+set -e
+root=$(git rev-parse --show-toplevel)
+export GFM_SKILLS_DENY_FILE="${GFM_SKILLS_DENY_FILE:-$HOME/.config/gfm-skills/deny.txt}"
+command -v uv >/dev/null || { echo "pre-commit: uv is required (https://docs.astral.sh/uv/)"; exit 1; }
+uv run -q "$root/tests/run_fixtures.py" > /dev/null || { echo "pre-commit: fixtures failed; run uv run tests/run_fixtures.py"; exit 1; }
+uv run -q "$root/tools/check_skills.py"
+if command -v gitleaks >/dev/null; then
+  gitleaks protect --staged --redact --no-banner
+else
+  echo "pre-commit: gitleaks not installed; secret scan skipped (CI still runs it)"
+fi

@@ -1,0 +1,21 @@
+#!/bin/sh
+# Runs before every push: the last local check before content becomes public.
+# Requires your employer-terms file and scans the branch name and the messages of every commit
+# being pushed, as well as the files.
+set -e
+root=$(git rev-parse --show-toplevel)
+export GFM_SKILLS_DENY_FILE="${GFM_SKILLS_DENY_FILE:-$HOME/.config/gfm-skills/deny.txt}"
+if [ ! -s "$GFM_SKILLS_DENY_FILE" ]; then
+  echo "pre-push: no employer-terms file at $GFM_SKILLS_DENY_FILE; push blocked (see docs/house-rules.md)"
+  exit 1
+fi
+extra=$(mktemp)
+trap 'rm -f "$extra"' EXIT
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  echo "$local_ref $remote_ref" >> "$extra"
+  [ "$local_sha" = "$zero" ] && continue
+  if [ "$remote_sha" = "$zero" ]; then range="$local_sha"; else range="$remote_sha..$local_sha"; fi
+  git log --format=%B "$range" >> "$extra"
+done
+uv run -q "$root/tools/check_skills.py" --require-deny --extra-text "$extra"

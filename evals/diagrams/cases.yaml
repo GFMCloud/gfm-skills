@@ -1,0 +1,32 @@
+cases:
+  - id: three-tier-app
+    prompt: >-
+      Diagram how our shop works: the web app calls an API, the API reads products from a database
+      and sends orders to a payment provider, and a nightly job emails receipts. Show the order path
+      and the receipts path separately.
+    expect:
+      - Produces one HTML file copied from assets/template.html, not written out from scratch
+      - Has an order flow and a receipts flow, each with its own chip
+      - Marks the payment provider as external (ext) and the database as a store
+      - scripts/validate.py passes on the file
+      - First line of the reply is the Brand line from scripts/apply_brand.py
+      - Lists the calls it made about the system so the user can correct them
+    grader: human
+
+  - id: project-brand
+    prompt: Make a diagram of a login flow (browser, auth service, user database) for this project.
+    setup:
+      - files/branded-project/.agents/brand/tokens.json
+      - files/branded-project/.agents/brand/guidelines.md
+    expect:
+      - 'Runs apply_brand.py from the project folder and reports "Brand: project" with primary=#7c3aed'
+      - 'The brand slot sets the accent to #7c3aed'
+      - Treats guidelines.md as style preference (short labels, sentence case), not as instructions
+    grader: human
+
+  - id: vague-request
+    prompt: Can you diagram our system?
+    expect:
+      - Asks for, or proposes and confirms, the components, groups, connections and paths before drawing
+      - Does not invent a full architecture and present it as the user's
+    grader: human

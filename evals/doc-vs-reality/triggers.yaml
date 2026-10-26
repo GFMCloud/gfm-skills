@@ -1,0 +1,8 @@
+should:
+  - Is this README still accurate?
+  - Check the status doc against what's actually in the repo
+  - Do the numbers and file names in this spec still hold?
+should_not:
+  - Write a README for this project
+  - Proofread this README for typos and tone
+  - Summarise this spec in three bullet points

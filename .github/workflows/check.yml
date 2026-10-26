@@ -1,0 +1,54 @@
+name: check
+
+# Runs on pushes to main and on pull requests. Pull requests from forks do not get the
+# GFM_SKILLS_DENY secret, so their employer-terms scan only warns; the local git hooks
+# (tools/install-hooks.sh) are the first line of defence. Actions are pinned to commit SHAs;
+# Dependabot (.github/dependabot.yml) proposes updates.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        if: always()
+
+      - name: Every check can fail (fixtures)
+        if: always()
+        run: uv run tests/run_fixtures.py
+
+      - name: Collect commit messages, branch name and PR text for the employer-terms scan
+        if: always()
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          {
+            printf '%s\n%s\n%s\n' "$PR_TITLE" "$PR_BODY" "$HEAD_REF"
+            git log --format=%B -n 50
+          } > "$RUNNER_TEMP/extra.txt"
+
+      - name: House rules
+        if: always()
+        env:
+          GFM_SKILLS_DENY: ${{ secrets.GFM_SKILLS_DENY }}
+          REQUIRE: ${{ github.event_name == 'push' && '--require-deny' || '' }}
+        run: uv run tools/check_skills.py $REQUIRE --extra-text "$RUNNER_TEMP/extra.txt"

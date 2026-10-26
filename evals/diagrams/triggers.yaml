@@ -1,0 +1,8 @@
+should:
+  - Diagram how our checkout service talks to payments and inventory
+  - Make an architecture diagram of this data pipeline
+  - Show me how a request flows through these services
+should_not:
+  - Make a bar chart of monthly sales
+  - Build a slide deck about our architecture
+  - Draw a logo for the project
