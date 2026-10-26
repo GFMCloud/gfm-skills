@@ -1,0 +1,8 @@
+should:
+  - This email sounds like ChatGPT wrote it. Can you make it sound human?
+  - Remove the AI tells from this blog post
+  - Edit this so it doesn't read like a chatbot
+should_not:
+  - Was this essay written by AI? Tell me if it was
+  - Summarise this blog post in three sentences
+  - Translate this email into French

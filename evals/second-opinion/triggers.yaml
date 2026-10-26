@@ -1,0 +1,8 @@
+should:
+  - Are you just agreeing with me? Argue the other side of shipping this on Friday.
+  - Get me a second opinion on whether to rewrite the billing service or patch it
+  - Have this press release checked by two independent reviewers before it goes out
+should_not:
+  - Review this pull request for bugs
+  - What's the second-largest city in Canada?
+  - Give me your opinion on this paragraph's tone

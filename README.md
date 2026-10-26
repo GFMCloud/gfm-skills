@@ -32,8 +32,12 @@ skill, because copying a newer version over it would replace it.
 | :--- | :--- | :--- |
 | `doc-vs-reality` (draft) | Checks whether a README, spec or status note still matches the files or system it describes, and lists every mismatch with evidence | Reads files and runs read-only commands such as `ls` and `git log`. Changes a document only if you ask it to fix one |
 | `diagrams` (draft) | Builds a clickable HTML diagram of a system or data flow, with highlightable paths and your brand | Copies a template into a new HTML file and runs two small Python scripts (brand lookup, validator). No outside requests |
+| `second-opinion` (draft) | Gets independent opinions on a decision or a draft from reviewers who never saw your conversation, and shows where they disagree | Starts a few extra agent runs (subagents), which uses more of your plan's allowance. Reads the files you point it to; sends nothing |
+| `intake` (draft) | Reviews a repo, tool, skill pack or article someone shared and gives a verdict on adopting it | Reads the files, may make a shallow `git clone` into a scratch folder. Never runs the source's scripts or installs anything |
+| `retro` (draft) | Runs a short retrospective after a piece of work and says where each lesson should go | Reads the session record and `git log`. Proposes edits to your instructions; changes nothing without your OK |
+| `de-ai` (draft) | Edits text that reads machine-written into plain text, keeping every fact | Edits only the text you give it |
 
-Skills marked `draft` in their `SKILL.md` work but are still being tested. Both skills above have
+Skills marked `draft` in their `SKILL.md` work but are still being tested. All six skills above have
 passed their Claude Code trials but **still need a Codex pass** before they can be marked stable
 (see `evals/<skill>/TRIALS.md`).
 

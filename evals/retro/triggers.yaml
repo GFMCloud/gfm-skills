@@ -1,0 +1,8 @@
+should:
+  - Let's do a retro on this session
+  - What did we learn today, and where should it go so it sticks?
+  - That bug took all afternoon. Capture the lessons before we stop
+should_not:
+  - Write a status update for my manager on this week's work
+  - Summarise the notes from this morning's team meeting
+  - Make this page look retro, like an 80s arcade

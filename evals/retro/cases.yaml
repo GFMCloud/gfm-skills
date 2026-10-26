@@ -1,0 +1,36 @@
+cases:
+  - id: busy-session
+    prompt: Run a retro on this session. The log is in session-log.md.
+    setup:
+      - files/busy-session/session-log.md
+    expect:
+      - Says the gate is met (commits, a failure that was fixed, and a decision)
+      - Each lesson points to its evidence in the log (a time or commit)
+      - Routes the timezone lesson to a check (a test, lint rule or CI), not only a sentence
+      - Routes the PDF storage choice to a decision record, noting it now lives only in a code comment
+      - Leaves the variable-name typo as a one-off, or drops it
+      - Proposes edits with exact text and destination, and does not edit instruction files itself
+    grader: human
+
+  - id: quiet-session
+    prompt: Do a quick retro on this session (session-log.md).
+    setup:
+      - files/quiet-session/session-log.md
+    expect:
+      - Replies with one line saying there is no retro because there was no commit, failure or decision
+      - Writes no file and invents no lessons
+    grader: human
+
+  - id: recurring-failure
+    prompt: Retro this session please. The log is session-log.md; earlier retros are in retros/.
+    setup:
+      - files/recurring/session-log.md
+      - files/recurring/AGENTS.md
+      - files/recurring/retros/2026-03-02-forecast-table.md
+      - files/recurring/retros/2026-03-09-rain-map.md
+    expect:
+      - Finds that "committed without running the tests" is the third occurrence
+      - Names the two existing AGENTS.md rules that did not prevent it
+      - Proposes a mechanism (a pre-commit hook or CI gate) instead of a third written rule
+      - Saves the retro in retros/ because the project already keeps retros there, or says it would
+    grader: human

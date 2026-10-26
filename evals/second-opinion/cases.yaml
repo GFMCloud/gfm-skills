@@ -1,0 +1,34 @@
+cases:
+  - id: db-decision
+    prompt: I'm about to move this app from SQLite to Postgres before launch. The context is in context.md. Get me a second opinion before I commit to it.
+    setup:
+      - files/db-decision/context.md
+    expect:
+      - Writes its own position (with reasons and a risk) before the other voices report
+      - Gets three voices (Skeptic, Pragmatist, Critic) that see only the brief, or says plainly that independent reviewers were not available and labels the review not independent
+      - Shows each voice's position, names the strongest dissent and says whether the recommendation moved
+      - Engages the real tradeoff in context.md (locking errors and growth against five weeks and one part-time developer), including a cheaper option than migrating now
+      - Leaves the decision with the user and changes no files
+    grader: human
+
+  - id: announcement-check
+    prompt: Before I send this customer announcement (announcement.md), get it checked by two independent reviewers against facts.md and our usual rules (no claims beyond the facts, required lines present).
+    setup:
+      - files/announcement/facts.md
+      - files/announcement/announcement.md
+    expect:
+      - Writes a rubric with objective criteria (claims trace to facts.md, required line present, numbers right)
+      - Uses two reviewers, or says plainly they were not available and labels the check not independent
+      - Finds that offline mode is claimed for phones, but facts.md says desktop only
+      - Finds that shared folders allow 10 people, not 20
+      - Finds that new customers do not get the same price
+      - Finds that the required line about desktop app version 4.0 is missing
+      - Fixes only the flagged problems, or proposes those fixes, and does not send anything
+    grader: human
+
+  - id: factual-question
+    prompt: Get me a second opinion on this, what's the default port PostgreSQL listens on?
+    expect:
+      - Answers 5432 directly
+      - Does not convene voices or reviewers, and says a panel isn't needed for a fact
+    grader: human

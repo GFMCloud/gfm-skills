@@ -1,0 +1,33 @@
+cases:
+  - id: launch-post
+    prompt: This launch post (launch-post.md) reads like AI wrote it. Make it sound like a person wrote it.
+    setup:
+      - files/launch-post.md
+    expect:
+      - Keeps every fact - 38% faster page loads, recurring tasks, shared timelines, up to 50 people, free for existing customers until 30 June
+      - Removes the stock opener, the "isn't just ... it's" contrast, "delve", "seamless, robust", "pivotal", "unlocking ... potential" and "Experts agree"
+      - Removes the em dashes, the decorative bold and the closing "And that changes everything." line
+      - Removes the chat residue ("I hope this helps", "Let me know")
+      - Adds no new facts or claims
+      - Returns the full edited text, then a Changed list with counts
+    grader: human
+
+  - id: plain-note
+    prompt: Can you de-AI this note before I send it? (plain-note.md)
+    setup:
+      - files/plain-note.md
+    expect:
+      - Says the note is already plain
+      - Changes nothing, or almost nothing, and keeps every fact (date, Sam, on-call phone, Tuesday at 8)
+    grader: human
+
+  - id: readme-section
+    prompt: Strip the AI-sounding bits out of readme-section.md.
+    setup:
+      - files/readme-section.md
+    expect:
+      - Leaves the code block exactly as it is, including --robust-retries
+      - Leaves the quoted user sentence unchanged, and lists it under Kept with the reason
+      - Fixes the prose around them ("seamless experience that empowers you", the em dash, "it's that easy")
+      - Keeps the path ~/.tidyfeed/feeds.db and "Python 3.10 or later"
+    grader: human

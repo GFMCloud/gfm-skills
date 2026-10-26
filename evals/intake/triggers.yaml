@@ -1,0 +1,8 @@
+should:
+  - Is this repo worth adopting? Someone sent it to me
+  - A coworker shared this skill pack. Should I install it?
+  - Review this article and tell me if there's anything I should take from it
+should_not:
+  - Review my own code in src/ for bugs
+  - Research the best note-taking apps on the market this year
+  - Install this package for me
