@@ -1,6 +1,6 @@
 ---
 name: proof-of-work
-description: Confirms work is really done, fixed or working by running it where a failure would show, then reports what was checked, what it returned and what was not. Use when asked to confirm or verify that something worked, before saying "done", or to lint a hand-over. Not for code review.
+description: Use when asked to confirm, verify or check that something worked or is done (an import, data job, fix, deploy or install), above all before someone tells others it worked. Runs the check where a failure would show; reports what was and was not checked. Lints hand-overs. Not for code review.
 metadata:
   status: draft
   codex-check: "pending: not yet tried in Codex; must pass before stable"
@@ -20,7 +20,10 @@ and say why that's true.** A missing list reads as "everything was checked".
 1. **Write down the claims you are about to make.** "Fixed", "works", "deployed", "imported",
    "passes", "matches". Each one is a claim a check could disprove.
 2. **Pick the check where the failure would show.** A check that can't see the failure isn't one,
-   however green it comes back.
+   however green it comes back. Check without side effects: run on a copy, a dry run or a read-only
+   query. Never check against live or shared systems on your own, and ask before rerunning anything
+   that writes, sends or deletes (rerunning an import overwrites its output, so copy its inputs to a
+   scratch folder and run it there).
 
    | Kind of work | A real check | Not enough on its own |
    | :--- | :--- | :--- |
@@ -36,7 +39,7 @@ and say why that's true.** A missing list reads as "everything was checked".
    open what it says it made. When output was cut (`head`, a size limit), say which part you read;
    "no errors seen" covers only that part.
 4. **Ask what the check would miss.** Could it pass with the claim false? If showing that is cheap,
-   do it: break the thing on purpose (or use the old version) and see the check fail.
+   do it: break a copy on purpose (or use the old version) and see the check fail.
 5. **If you can't run a check**, don't reason your way to "it should work". Mark it not run, say
    why, and give the exact command for the person who can run it.
 

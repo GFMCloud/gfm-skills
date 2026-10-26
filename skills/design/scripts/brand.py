@@ -24,7 +24,8 @@ import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-COLOUR = re.compile(r"^(#[0-9a-fA-F]{3,8}|(rgba?|hsla?|oklch|oklab|lab|lch|color)\([^;{}<>]+\))$")
+COLOUR = re.compile(r"^(#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,20}|(rgba?|hsla?|oklch|oklab|lab|lch|color)\([^;{}<>]+\))$")
+HEX = re.compile(r"^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
 FONT = re.compile(r"^[\w\s,\"'.-]+$")
 LENGTH = re.compile(r"^\d+(\.\d+)?(px|rem|em|%)?$")
 KEY = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -44,13 +45,19 @@ def read_tokens(folder):
         css = open(tc, encoding="utf-8").read()
         out = {}
         for k, v in re.findall(r"--([\w-]+)\s*:\s*([^;}]+)", css):
-            k = re.sub(r"^(brand|color)-", "", k.lower())
+            k = re.sub(r"^(brand-)?(colou?r-)?", "", k.lower())
             out.setdefault(k, v.strip())
         return out
     return {}
 
 
+def font_ok(v):
+    return bool(FONT.match(v)) and v.count('"') % 2 == 0 and v.count("'") % 2 == 0
+
+
 def rgb(hexv):
+    if not HEX.match(hexv):
+        return None  # a named or functional colour: contrast is not computed for it
     h = hexv.lstrip("#")
     if len(h) in (3, 4):
         h = "".join(c * 2 for c in h[:3])
@@ -80,6 +87,9 @@ def main():
     elif args:
         print(__doc__)
         sys.exit(2)
+    if os.getcwd().startswith(os.path.dirname(HERE)):
+        print("warn  running from inside the skill's folder, so a project brand can't be found; "
+              "run this script with the user's project folder as the working directory")
     found = subprocess.run(["sh", os.path.join(HERE, "find-brand.sh")], capture_output=True, text=True, check=True)
     source, folder = found.stdout.strip().split(" ", 1)
     tokens = read_tokens(folder)
@@ -95,7 +105,7 @@ def main():
             skipped.append(k)
         elif colour_key(k) and COLOUR.match(v):
             lines.append(f"  --brand-{k}: {v};")
-        elif k.startswith("font") and FONT.match(v):
+        elif k.startswith("font") and font_ok(v):
             lines.append(f"  --brand-{k}: {v};")
         elif not colour_key(k) and LENGTH.match(v):
             lines.append(f"  --brand-{k}: {v};")
@@ -105,6 +115,9 @@ def main():
         print(f"skipped (not a colour, font or length): {', '.join(skipped)}")
 
     bg, text, primary = tokens.get("background", "#ffffff"), tokens.get("text") or tokens.get("foreground"), tokens.get("primary")
+    unchecked = [v for v in (bg, text, primary) if v and not HEX.match(v)]
+    if unchecked:
+        print(f"note  contrast not computed for {', '.join(unchecked)} (not a hex colour); check it by eye")
     if text:
         r = contrast(text, bg)
         if r is not None and r < 4.5:
