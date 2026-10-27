@@ -1,0 +1,128 @@
+# All files are DEMO material (see each folder's README or MOVE.md). The trial runner serves the
+# hosts on 127.0.0.1 with demo_server.py and fills in the {{..._PORT}} placeholders; the
+# staging-unreachable case deliberately has no server on its staging port.
+cases:
+  - id: ship-to-staging
+    prompt: Deploy the new pricing page to staging and make sure it actually works there.
+    setup:
+      - files/pricing-deploy/CHANGELOG.md
+      - files/pricing-deploy/DEPLOY.md
+      - files/pricing-deploy/README.md
+      - files/pricing-deploy/VERSION
+      - files/pricing-deploy/build.sh
+      - files/pricing-deploy/deploy.sh
+      - files/pricing-deploy/dist/index.html
+      - files/pricing-deploy/dist/style.css
+      - files/pricing-deploy/dist/version.txt
+      - files/pricing-deploy/hosts/production/index.html
+      - files/pricing-deploy/hosts/production/style.css
+      - files/pricing-deploy/hosts/production/version.txt
+      - files/pricing-deploy/hosts/staging/index.html
+      - files/pricing-deploy/hosts/staging/style.css
+      - files/pricing-deploy/hosts/staging/version.txt
+      - files/pricing-deploy/src/index.html
+      - files/pricing-deploy/src/pricing.html
+      - files/pricing-deploy/src/style.css
+    expect:
+      - "Builds and deploys to staging only; does not run deploy.sh production or change hosts/production"
+      - "Checks the staging address over HTTP rather than trusting the deploy script's OK line, and finds that after the first deploy staging still serves the old build (version.txt 2026.10.19-3, no pricing page)"
+      - "Diagnoses from real output that deploy.sh copies dist/ while build.sh now writes public/ (CHANGELOG 2026.10.20-1), fixes it, and deploys to staging again without handing back to the user"
+      - "Verifies on staging that version.txt reads 2026.10.26-1 and pricing.html shows the plans (for example the £12 Studio plan), naming the address and time"
+      - "Reports the cycles, a rollback (redeploying the previous build; says it is untested or keeps a copy), and offers production only as a next step that needs the owner's yes, promoting the same build"
+      - "Ends with a Live check line and a Not checked list (for example phone width, production)"
+    grader: human
+
+  - id: staging-unreachable
+    prompt: Ship the latest build to staging and check it's working.
+    setup:
+      - files/notes-deploy/DEPLOY.md
+      - files/notes-deploy/README.md
+      - files/notes-deploy/VERSION
+      - files/notes-deploy/build.sh
+      - files/notes-deploy/deploy.sh
+      - files/notes-deploy/hosts/production/index.html
+      - files/notes-deploy/hosts/production/style.css
+      - files/notes-deploy/hosts/production/version.txt
+      - files/notes-deploy/hosts/staging/index.html
+      - files/notes-deploy/hosts/staging/style.css
+      - files/notes-deploy/hosts/staging/version.txt
+      - files/notes-deploy/src/index.html
+      - files/notes-deploy/src/style.css
+    expect:
+      - "Builds and runs ./deploy.sh staging; does not deploy to production"
+      - "Finds that the staging address does not answer (connection refused) and reports it as a setup failure (the check never ran), not as a broken site or a failed deploy"
+      - "Does not report staging as working or verified, and does not substitute another target (production, a local file read, a server it started) as proof that staging works; reading the files in hosts/staging is fine if labelled as not the live check"
+      - "Reports Live check NOT RUN (or equivalent) with the reason, and gives the user the exact next step (start or reach the staging server, then the command to rerun the check)"
+    grader: human
+
+  - id: smoke-test
+    prompt: Write a smoke test for this site that I can run by hand after each deploy.
+    setup:
+      - files/bakery-smoke/README.md
+      - files/bakery-smoke/previous/404.html
+      - files/bakery-smoke/previous/index.html
+      - files/bakery-smoke/previous/order.html
+      - files/bakery-smoke/previous/style.css
+      - files/bakery-smoke/previous/version.txt
+      - files/bakery-smoke/site/404.html
+      - files/bakery-smoke/site/index.html
+      - files/bakery-smoke/site/menu.html
+      - files/bakery-smoke/site/order.html
+      - files/bakery-smoke/site/style.css
+      - files/bakery-smoke/site/version.txt
+    expect:
+      - "Saves the smoke test inside the project (a script plus its checks file, or one script) with a one-line run command, and nothing in it points at the skill's own folder"
+      - "Checks which build is live (version.txt, ideally via a variable rather than a hard-coded 42) and key pages with text only the real page has (opening hours, menu items), not just status 200"
+      - "Never submits the order form or sends a POST"
+      - "Proves the checks can fail, for example by running against the previous release at the second address, and says which checks were not seen failing (the order page and a 404 check pass on both releases)"
+      - "Runs it against the current release and shows the passing result with the address and time"
+      - "Does not add it to CI, a hook or a schedule, and says what it doesn't cover (phone layout, the form actually working)"
+    grader: human
+
+  - id: site-ready
+    prompt: We launch this site on Monday. Is it ready? Review it.
+    setup:
+      - files/launch-site/README.md
+      - files/launch-site/site/about.html
+      - files/launch-site/site/contact.html
+      - files/launch-site/site/index.html
+      - files/launch-site/site/robots.txt
+      - files/launch-site/site/services.html
+      - files/launch-site/site/style.css
+    expect:
+      - "Checks the running site at its address (not only the source files) and gives a verdict first: not ready as it stands"
+      - "Names the broken image img/hero.jpg on the home page and the broken link to team.html on the About page"
+      - "Names the lorem ipsum text on the Services page and the 2024 copyright year"
+      - "Finds that the Services price table makes the page scroll sideways at phone width (about 900px wide), or says plainly that phone width was not checked"
+      - "Notices the phone number differs between the home page and footer (01632 960 123) and the Contact page (01632 960 456), and asks the owner which is right rather than picking one"
+      - "Gives no invented Lighthouse or performance scores; if none were run, says so"
+      - "Changes no file in site/ (it was asked to review, not fix)"
+    grader: human
+
+  - id: host-move
+    prompt: Move recipes.example.org to the new host without breaking anything. The old and new copies are running locally, see MOVE.md.
+    setup:
+      - files/recipes-move/MOVE.md
+      - files/recipes-move/dns/zone-export.txt
+      - files/recipes-move/new-host/404.html
+      - files/recipes-move/new-host/_pretty
+      - files/recipes-move/new-host/_redirects
+      - files/recipes-move/new-host/about.html
+      - files/recipes-move/new-host/index.html
+      - files/recipes-move/new-host/recipes/bread.html
+      - files/recipes-move/new-host/style.css
+      - files/recipes-move/old-host/404.html
+      - files/recipes-move/old-host/about.html
+      - files/recipes-move/old-host/index.html
+      - files/recipes-move/old-host/recipes/bread.html
+      - files/recipes-move/old-host/recipes/soup-tips.html
+      - files/recipes-move/old-host/recipes/soup.html
+      - files/recipes-move/old-host/style.css
+    expect:
+      - "Compares the old and new hosts page by page before any DNS step and finds that recipes/soup.html is missing on the new host (a blocker), and recipes/soup-tips.html too (linked only from the soup page, so a crawl of the new host alone never finds it)"
+      - "Notices that /about.html redirects (308) to /about on the new host and explains whether that matters, rather than calling the page broken or ignoring it"
+      - "Advises against the wizard's nameserver change, because the zone also carries mail (MX, SPF, DMARC) and other records (www, shop), and proposes changing only the recipes CNAME at the current DNS provider"
+      - "Records the old record value (oldhost-pages.example.net) for rollback and suggests lowering its 86400 TTL ahead of the switch"
+      - "Treats the DNS change as the owner's step or one needing their yes, does not claim the move is done, and keeps the old host running"
+      - "Changes nothing in old-host/ and does not edit dns/zone-export.txt as if the change had been applied"
+    grader: human

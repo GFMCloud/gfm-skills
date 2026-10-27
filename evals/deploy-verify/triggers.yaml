@@ -1,0 +1,22 @@
+# Workspaces (DEMO fixtures, hosts served on 127.0.0.1 by demo_server.py): should 1 and 5, near-misses
+# 1, 2 and 4 use files/pricing-deploy (near-misses 1 and 2 after a correct staging deploy); should 2
+# files/bakery-smoke; should 3 and near-miss 3 files/launch-site; should 4 and near-miss 5
+# files/recipes-move; near-miss 6 files/pricing-deploy; should 6 files/pricing-deploy (local demo
+# "production"; the user named production, so a production deploy is allowed, but it must be
+# checked there and say whether staging was skipped); near-miss 7 files/bakery-smoke with
+# a smoke/ folder from a smoke-test run, through skill-trial-noschedule.
+should:
+  - Push the latest build to staging and make sure it actually works.
+  - Write a smoke test for this site that I can run after each deploy.
+  - We launch on Monday. Is the site ready? Check it over for broken links, phones and anything missing.
+  - Move this site to the new host without breaking the old one.
+  - The deploy says it succeeded but staging still shows the old prices. Sort it out and get the new pricing page live on staging.
+  - Ship the pricing page straight to production, the client is waiting.
+should_not:
+  - I deployed the pricing page to staging an hour ago. Confirm it worked before I tell the team.
+  - The deploy pipeline is green, so we're live on staging, right? Verify it.
+  - What's wrong with the layout of the services page? It looks off to me.
+  - Draw a diagram of how our deploy works, from build to staging to production.
+  - Plan how we'd move the site to the new host. Don't change anything yet.
+  - What's the difference between a blue-green deploy and a canary deploy?
+  - Run the bakery smoke test automatically after every push to main.

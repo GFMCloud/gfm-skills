@@ -1,0 +1,13 @@
+; Zone export for example.org (DEMO, not a real zone)
+$ORIGIN example.org.
+@        3600  IN  SOA   ns-101.dnsprovider.example. hostmaster.example.org. 2026102101 7200 900 1209600 300
+@        3600  IN  NS    ns-101.dnsprovider.example.
+@        3600  IN  NS    ns-202.dnsprovider.example.
+@        3600  IN  A     192.0.2.10
+@        3600  IN  MX    10 mail.example.org.
+@        3600  IN  TXT   "v=spf1 include:_spf.mailhost.example ~all"
+mail     3600  IN  A     192.0.2.25
+_dmarc   3600  IN  TXT   "v=DMARC1; p=quarantine; rua=mailto:dmarc@example.org"
+www      3600  IN  CNAME example.org.
+recipes  86400 IN  CNAME oldhost-pages.example.net.
+shop     3600  IN  CNAME shops.example.com.
