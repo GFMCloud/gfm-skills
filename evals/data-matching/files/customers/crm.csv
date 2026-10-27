@@ -1,0 +1,25 @@
+crm_id,company,contact_email,town
+C001,Brindle & Moss Ltd,ops@brindlemoss.example,Hexham
+C002,Quillfeather Stationers,hello@quillfeather.example,Alnwick
+C003,Café Lumen,cafe@lumen.example,Morpeth
+C004,Harrow Lane Pottery,studio@harrowlane.example,Rothbury
+C005,Ostrava Joinery,info@ostravajoinery.example,Hexham
+C006,Pellbrook Orchards Limited,,Corbridge
+C007,Tamsin Vale Florist,,Alnwick
+C008,Northgate Bakery,,Morpeth
+C009,Greyfield Tool Hire,accounts@ledgerwise.example,Blyth
+C010,Wren & Daughter Glaziers,,Hexham
+C011,Sable Hill Kennels,,Wooler
+C012,Ivel Valley Print Co,print@ivelvalley.example,Amble
+C013,Moorcroft Cycle Works,,Bellingham
+C014,Larkspur Dental Studio,,Ponteland
+C015,Ashdown Tutoring,,Prudhoe
+C016,Fennick & Rowe Solicitors,,Hexham
+C017,Copperbeech Nursery School,office@copperbeech.example,Haltwhistle
+C018,Orrin Street Deli,,Blyth
+C019,Halden Marine Supplies,,Amble
+C020,Brightwater Laundry,,Morpeth
+C021,Kestrel Yard Studios,,Alnwick
+C022,Thistle & Thorn Gardens,,Wooler
+C023,Merriweather Opticians,eyes@merriweather.example,Hexham
+C024,Penhallow Surf School,,Seahouses

@@ -1,0 +1,11 @@
+# Workspaces for these prompts hold the matching files/ folder (all invented demo data).
+should:
+  - Which customers in crm.csv are also in billing.csv? The names are spelled differently, so my VLOOKUP misses half of them.   # files/customers
+  - Find the people who are in members.csv more than once under slightly different names.   # files/members
+  - Match the vendor names on invoices.csv to our vendor master list.   # files/vendors
+  - Some suppliers in suppliers.xlsx show up under different names than in supplier-master.csv. Work out which are the same supplier.   # files/rerun
+should_not:
+  - Join orders.csv to customers.csv on customer_id and give me the total spent per customer.   # files/orders (clean shared key)
+  - Make a chart of invoice amounts by vendor from invoices.csv.   # files/vendors
+  - Add a column to crm.csv with each town name in capitals.   # files/customers
+  - I imported billing.csv into the new accounts system and it should have 26 rows. Confirm the import file is complete before I tell finance.   # files/customers

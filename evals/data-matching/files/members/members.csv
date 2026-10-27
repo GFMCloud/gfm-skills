@@ -1,0 +1,22 @@
+member_no,full_name,email,date_of_birth,phone
+M01,Ada Quillon,ada.q@mail.example,1984-03-12,07700 900101
+M02,"Quillon, Ada",ada.q@mail.example,1984-03-12,07700 900101
+M03,Bryn Tolley,bryn@post.example,1979-07-01,07700 900103
+M04,Bryn Tolly,,1979-07-01,
+M05,Arlo Pemberton,arlo.p@mail.example,1958-11-30,07700 900105
+M06,Arlo Pemberton,arlo.jr@mail.example,1991-02-14,07700 900106
+M07,Tomasz Wrenley,tw@post.example,1990-05-05,07700 900107
+M08,Tomas Wrenley,,,
+M09,Thomas Wrenly,thomas.wrenly@mail.example,1966-09-09,07700 900109
+M10,Ines Okafor-Hale,ines@post.example,1988-12-01,07700 900110
+M11,Ines Okafor Hale,ines.oh@work.example,1988-12-01,
+M12,Priya Sandhu-Marsh,family.sm@mail.example,1975-04-22,07700 900112
+M13,Callum Marsh,family.sm@mail.example,1973-08-19,07700 900112
+M14,Juno Ashgrove,juno@mail.example,2001-06-18,
+M15,Rafe Collingwood,rafe@post.example,1969-10-10,07700 900115
+M16,Odile Marchetti,,1982-02-02,
+M17,Odile Marchetti-Brown,odile@post.example,,07700 900117
+M18,Wilf Ashby,wilf@mail.example,1955-05-25,
+M19,Nell Garrow,nell@mail.example,1995-01-01,07700 900119
+M20,Nell Garrow,nell@mail.example,1995-01-01,07700 900119
+M21,Sefton Hale,,1987-07-17,

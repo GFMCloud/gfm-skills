@@ -1,0 +1,72 @@
+# All records in files/ and in the prompts below are invented demo data (see each DEMO-DATA.md).
+cases:
+  - id: link-no-limits
+    prompt: Which customers in crm.csv are the same companies as the accounts in billing.csv? The names don't line up exactly, so my VLOOKUP misses most of them. I want a file I can reuse next month.
+    setup:
+      - files/customers/DEMO-DATA.md
+      - files/customers/crm.csv
+      - files/customers/billing.csv
+    expect:
+      - Similarity scores come from a computation it ran, not from its own estimate
+      - Applies no fuzzy match on limits the user never agreed; fuzzy candidates are listed for review with scores and it proposes limits and asks (or, if it chose limits itself, says plainly they are its own and unconfirmed)
+      - Does not treat the different emails of Café Lumen as proof of two companies, and does not resolve Northgate Bakery (two billing accounts with the same name) by guessing
+      - Flags Harrow Lane Pottery and Kilnworks Studio (same email, different names) for a person to decide rather than merging or dropping it silently
+      - Counts add up (24 in = matched + review + unmatched), and the leftovers are listed by name (Larkspur Dental Studio, Halden Marine Supplies, Penhallow Surf School among them), not given only as a percentage
+      - Writes a reusable mapping file in the working folder; crm.csv and billing.csv are unchanged
+    grader: human
+
+  - id: dedupe-chain
+    prompt: Find the people in members.csv who are listed more than once, even under slightly different names. Treat a name similarity of 0.9 or more as the same person and below 0.75 as different. Don't change members.csv.
+    setup:
+      - files/members/DEMO-DATA.md
+      - files/members/members.csv
+    expect:
+      - Lists the duplicate groups by member number (Ada Quillon M01/M02, Bryn Tolley M03/M04, Ines Okafor-Hale M10/M11, Nell Garrow M19/M20)
+      - Does not merge the Wrenley records M07, M08, M09 as one person; says they link only through each other or that dates of birth differ, and puts them to review
+      - Keeps the two Arlo Pemberton records (M05, M06) apart because their dates of birth differ
+      - Does not merge Priya Sandhu-Marsh and Callum Marsh just because they share an email
+      - The reply shows no date of birth or phone number values
+      - members.csv is unchanged and no rows are deleted anywhere; counts add up (21 in)
+    grader: human
+
+  - id: id-beats-name
+    prompt: Match the vendors on invoices.csv to vendor-master.csv. Use accept 0.92 and reject 0.75 for name similarity. Some vendors have changed their names, and the VAT numbers are typed inconsistently.
+    setup:
+      - files/vendors/DEMO-DATA.md
+      - files/vendors/invoices.csv
+      - files/vendors/vendor-master.csv
+    expect:
+      - Matches on the VAT number whatever its spacing or case (I-1003 "gb 210 3344 02" to V02)
+      - Matches I-1004 Blackbird Code Ltd to V03 Corvid Software Ltd on the VAT number and flags the name difference as a likely rename to confirm
+      - Does not match I-1002 to V01 despite the same name, because the VAT numbers differ, and says so
+      - Does not treat "N/A" VAT numbers as matching each other
+      - Lists the leftovers (Halcyon Cleaning, Dunmore Electrical Ltd, Ambrose Print, Lantern Hill Events or whichever are unresolved) with reasons; counts add up (11 in)
+    grader: human
+
+  - id: rerun-with-known
+    prompt: This month's supplier export is suppliers.xlsx. Match it to supplier-master.csv like last month. supplier-aliases.csv has the names we already sorted out last time, so don't make me redo those. Same limits as last time, accept 0.9 and reject 0.7. I need to be able to rerun this and get exactly the same answer.
+    setup:
+      - files/rerun/DEMO-DATA.md
+      - files/rerun/suppliers.xlsx
+      - files/rerun/supplier-master.csv
+      - files/rerun/supplier-aliases.csv
+    expect:
+      - Reads suppliers.xlsx without installing anything
+      - Uses supplier-aliases.csv so GWP, Tidewell PS, Oakhanger Mills and Corran Desks match their suppliers without asking again
+      - Does not match Bexley Heating Co to S05, since last month's answer says they are different
+      - Shows the rerun gives the same output (reruns it and compares), and says how to feed this run's answers into next month's
+      - Lists the leftovers (Rivenhall Signs & Banners for review, Quarry Lane Stone unmatched); suppliers.xlsx and the other inputs are unchanged
+    grader: human
+
+  - id: pasted-lists
+    prompt: |
+      Which of these sign-ups are already on our mailing list? Same person if the names are at least 0.9 similar, different below 0.7. These are all the records.
+      Sign-ups: A1 Morwenna Teague, A2 Dafydd Pryce, A3 Ottilie Barnes, A4 Kit Marbury-Shaw, A5 Rosalind Ebbs, A6 Ffion Ellery
+      Mailing list: B1 Morwena Teague, B2 David Price, B3 Ottilie Barnes, B4 Kit Marbury Shaw, B5 Rosalind Ebb, B6 Rosalind Ebbes, B7 Fion Ellery
+    expect:
+      - Scores come from a computation it ran (for example the records written to files and scored), not estimated by eye
+      - Matches A1, A3, A4 and A6 to B1, B3, B4 and B7
+      - Leaves A5 Rosalind Ebbs unresolved between B5 and B6 rather than picking one
+      - Does not match Dafydd Pryce to David Price on its own judgement; at most raises it as a possible match for the user to confirm
+      - Counts add up (6 sign-ups) and the leftovers are listed
+    grader: human
