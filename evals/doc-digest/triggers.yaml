@@ -1,0 +1,12 @@
+# Trigger prompts run in a copy of files/trigger-project/ (DEMO material).
+should:
+  - Turn handbook.pdf into knowledge files I can upload to the committee's Claude Project.
+  - I missed the board meeting. Digest board-update.pptx into notes I can read in five minutes.
+  - Summarise expenses-policy.docx for me. What can members claim, and how?
+  - Pull the key rules, fees and dates out of handbook.pdf into a notes file.
+should_not:
+  - Does README.md still match the files in this folder?
+  - notes.md reads like an AI wrote it. Make it sound like a person wrote it.
+  - Turn notes.md into a five-slide deck for the AGM.
+  - Rotate page 14 of handbook.pdf and save the result as handbook-rotated.pdf.
+  - Set up a Claude Project for the allotment committee so every chat starts with the right context.
