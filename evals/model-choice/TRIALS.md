@@ -4,7 +4,7 @@ House rule 8: tried in Claude Code (Haiku, Sonnet, Opus) and in Codex before `st
 
 | Agent | Eval cases | Triggers | State |
 | :--- | :--- | :--- | :--- |
-| Claude Code | Opus 4 of 4 (post-fix text). Sonnet 4 of 4 (local-offload passed again after the fixes). Haiku: pick-one 2 of 2, breakdown-codex 1 of 1, split-review 1 of 3 (passes on the final description, missed on the first two), local-offload 1 of 3 (see below) | Should: Haiku 5 of 5, Sonnet 5 of 5. Near-miss: Haiku 6 of 6, Sonnet 6 of 6 (to claude-api, second-opinion, planning, intake, or nothing). Final description | done, one Haiku gap |
+| Claude Code | Opus 4 of 4 (post-fix text). Sonnet 4 of 4 (local-offload passed again after the fixes). Haiku: pick-one 2 of 2, breakdown-codex 1 of 1, split-review 1 of 3 (passes on the final description, missed on the first two), local-offload 1 of 3 (see below). workflow-check (2026-10-27): Haiku 1 of 1, Sonnet 1 of 1; not run on Opus | Workflow description (2026-10-27): should Haiku 6 of 6 plus the bare "Should I use a workflow for this?" 1 of 1; near-miss Haiku 6 of 6 (to claude-api, second-opinion, planning, intake, proof-of-work, or nothing). Sonnet: the workflow should-prompt 1 of 1 on the first fold text; the other Sonnet counts (5 of 5, 6 of 6) are from the earlier description | done, one Haiku gap |
 | Codex | not run | not run | **pending** |
 
 **Haiku gap: local-offload.** On "Tag each message ... keep the messages on this machine; run it
@@ -19,6 +19,10 @@ near-miss n6, and `references/split.md` step 7 defers to proof-of-work.
 
 Not rerun: the last local.md sandbox sentence ("stop there; don't retry it outside the sandbox"),
 added after an Opus run tried a sandbox bypass. Rerun local-offload on Opus at the next change.
+
+**supahcode-review fold (2026-10-27, decision 36).** The old supahcode-review is now the step 4
+**Workflow** row, a job-table row and a description clause; reviewed by Fable. One Haiku trigger run
+(t05) read files outside its workspace (read only).
 
 Trigger workspace: copy `files/trigger-project/` (all demo files) into the working folder for every
 trigger prompt, should and near-miss alike.

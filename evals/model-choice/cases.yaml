@@ -50,3 +50,14 @@ cases:
       - The plan reads on its own (no "as discussed" or references to this session)
       - Stops for the user's yes before giving the kickoff, or, if it gives a kickoff, it is a Codex command with -m and the plan file and asks for a yes first; tally.py is unchanged
     grader: human
+
+  - id: workflow-check
+    prompt: We need the same config fix checked across all 60 services in workflow-check/services.md. Should I use a multi-agent workflow for this or just do it here? Decide; don't start the work.
+    setup:
+      - files/workflow-check/services.md
+    expect:
+      - Scores the six workflow criteria (scale, parallelism, cross-check, context, coordination, rerun) in a line or two each, not an essay
+      - Lands on subagents or a script (or a workflow with the misses named), since the job is one-off, mechanical and needs no agents checking each other; does not hand-check 60 services inline
+      - Ends with the block; if Run is a workflow, it gives a rough agent count and says to try one slice first; if Run is subagents, it sizes them on the fast tier
+      - Starts no workflow, subagent or edit
+    grader: human

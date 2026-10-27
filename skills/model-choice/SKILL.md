@@ -1,6 +1,6 @@
 ---
 name: model-choice
-description: Use when asked which model or effort to use for a task, subagent or project, to run bulk work on a local model (Ollama) so data stays on this machine, or to have a strong model review a project and write a plan a cheaper one carries out, in Claude Code or Codex. Not for app code or second opinions.
+description: Use when asked which model or effort fits a task, subagent or project, whether a job is worth a multi-agent workflow, to run bulk work on a local model (Ollama) so data stays local, or to have a strong model plan for a cheaper one, in Claude Code or Codex. Not for app code or second opinions.
 compatibility: Model facts live in references/models.md with the date they were checked; rechecking them needs web access. Local offload needs a local model server (Ollama, LM Studio or llama.cpp) and Python 3.9 or later.
 metadata:
   status: draft
@@ -20,7 +20,7 @@ offload or a split ends with the report its reference file gives):
 ```
 Model: <name the user's agent accepts> (<tier>; facts as of <date>)
 Effort: <level>
-Run: <inline | N subagents on <model, effort> | split: <model> plans, <model> executes | local: <model> on <server>>
+Run: <inline | N subagents on <model, effort> | split: <model> plans, <model> executes | local: <model> on <server> | workflow: <phases>, about N agents>
 Why: <the one or two things about the task that decided it>
 Set it: <the exact command, flag or setting in the user's agent>
 ```
@@ -33,6 +33,7 @@ Set it: <the exact command, flag or setting in the user's agent>
 | A pick per task across a project or task list | Steps 2 to 5, with the breakdown table |
 | Bulk, repetitive work run on a local model | Steps 2 and 4, then `references/local.md` |
 | A strong model to review or plan, and a cheaper one to carry it out | Steps 2 and 4, then `references/split.md` |
+| Whether a task is worth a multi-agent workflow ("should I use a workflow for this?") | Steps 2 to 5, quick: score the **Workflow** row in step 4 and answer in the block |
 
 If the request could be one task or a breakdown, choose from what they gave you (one task: quick;
 a list or a whole project: breakdown) and say which in one line. Don't stop to ask.
@@ -76,8 +77,8 @@ to models). Read the scores like this:
 - **Top tier** only when the strong tier at high effort has fallen short, or for a long, hard,
   unattended run. Try more effort before a bigger model.
 - **Checking high** counts as stakes one step higher, since nothing will catch the mistake.
-- **Volume high** is a routing signal, not a tier signal: fan out to cheap subagents or a local model
-  (step 4), each sized to its own slice.
+- **Volume high** is a routing signal, not a tier signal: fan out to cheap subagents, a local model
+  or a workflow (step 4), each slice sized on its own.
 - **Context high:** a model with a large window, or subagents that each read a slice and report back.
 - **Can't tell:** the vendor's starting point in `references/models.md`, and say so.
 
@@ -95,6 +96,7 @@ not per call: a cheaper model that needs two retries is not cheaper.
 | **Build and review** | High stakes: one agent builds, a fresh one checks against the success criteria. Give the reviewer the work and the criteria, never the builder's reasoning |
 | **Split** | A large review or plan is worth the strong tier but carrying it out isn't. See `references/split.md` |
 | **Local** | Twenty or more bounded, mechanical items, or data that should stay off a cloud service, and a local model server is running. See `references/local.md` |
+| **Workflow** | A scripted run of many agents in phases, where the user's agent has such a feature (Codex: no; answer subagents or local). Score six things yes or no: twenty or more items; parallel runs save real time; independent agents checking each other add trust; results too big for one context; coordination (phases, routing) complex enough to belong in code; the job will be rerun. Four or more: workflow. Two or three: workflow with the misses named as caveats, or subagents. Under two: subagents or inline. It costs many agents' worth of tokens: give the rough agent count, say to try one slice first, and start nothing without the user's yes |
 
 Pick the model at the start of a session, and change it at a boundary (a new session or subagent),
 not mid-task: switching models mid-conversation throws away the cached context, and on some models
@@ -143,4 +145,6 @@ unchanged before rewriting anything. If a stronger model doesn't help, the promp
   adds only the follow-up plan (`references/split.md` step 7).
 - News about a model ("is X out yet?", "what changed in Y?"): the `research` skill.
 - Whether a tool, model pack or local runner someone shared is worth adopting: the `intake` skill.
+- Writing the workflow script or prompt itself once a workflow is the pick: the user's agent's own
+  workflow tooling. This skill only decides whether a workflow is worth it.
 - Never install, pull or download a model, start a server, or change a default without asking.
