@@ -1,0 +1,14 @@
+# Workspace material for each prompt is listed in TRIALS.md (demo files only, in files/trigger-project/).
+should:
+  - Which model and effort level should I use for the refactor in REFACTOR.md?
+  - Is Opus overkill for writing the unit tests listed in tests-todo.md, or will Sonnet do?
+  - I have 500 product descriptions in products.jsonl to tag by category. Can a local model on my laptop do it instead of burning my usage?
+  - We use Codex. What reasoning effort should I set for each job in jobs.md?
+  - Have a strong model review this repo and write a plan a cheaper model can execute
+should_not:
+  - Which Claude model should our support bot's code call through the API to keep costs down? The code is in bot/
+  - Get a few independent opinions on whether we should ship the pricing change in pricing-plan.md
+  - Plan the change to move photo uploads to object storage before we start; notes are in upload-notes.md
+  - Is the local LLM runner in tools/llm-runner worth adopting?
+  - Rename every tempC variable to temp_c in kiln.py
+  - The cheaper model says it finished the improvement plan in improvement-plan.md. Check each item against the plan
