@@ -147,13 +147,16 @@ def run_case(title, c):
         if c["hidden"]:
             with open(os.path.join(root, S), "a", encoding="utf-8") as f:
                 f.write("hidden" + chr(c["hidden"]) + "note\n")
+        # Run from a git hook, GIT_DIR and friends point at the real repo; keep them away from the
+        # fixture repo, or `git init` and `commit` act on the real one.
+        clean = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
         if c["git"]:
             git = ["git", "-C", root, "-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid"]
-            subprocess.run(git + ["init", "-q"], check=True)
+            subprocess.run(git + ["init", "-q"], check=True, env=clean)
             if c["git"] == "commit-all":
-                subprocess.run(git + ["add", "-f", "."], check=True)
-                subprocess.run(git + ["commit", "-qm", "fixture"], check=True)
-        env = {k: v for k, v in os.environ.items() if k not in ("GFM_SKILLS_DENY", "GFM_SKILLS_DENY_FILE")}
+                subprocess.run(git + ["add", "-f", "."], check=True, env=clean)
+                subprocess.run(git + ["commit", "-qm", "fixture"], check=True, env=clean)
+        env = {k: v for k, v in clean.items() if k not in ("GFM_SKILLS_DENY", "GFM_SKILLS_DENY_FILE")}
         env["GFM_SKILLS_DENY"] = c["deny"]
         cmd = [sys.executable, CHECK, "--root", root]
         if c["require_deny"]:
