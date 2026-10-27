@@ -1,0 +1,4 @@
+body{font-family:Georgia,serif;margin:0 auto;max-width:60rem;padding:0 1rem}
+.prices{width:900px;border-collapse:collapse}
+.prices td,.prices th{border:1px solid #ccc;padding:.5rem}
+img{max-width:100%}
