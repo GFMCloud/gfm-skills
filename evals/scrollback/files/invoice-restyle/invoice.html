@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- DEMO invoice for a skill eval. Invented company and numbers. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invoice INV-0042</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <h1>Demo Supplies Ltd</h1>
+    <span class="badge paid">✔ Paid</span>
+  </div>
+  <p class="addr">4 Example Street, Demo Town, DT1 2AB</p>
+  <table id="items">
+    <tr><th>Item</th><th>Qty</th><th>Price</th><th>Amount</th></tr>
+    <tr><td>Sync seats <small>October</small></td><td>112</td><td>€30.00</td><td>€3,360.00</td></tr>
+    <tr><td>Extra storage <small>500 GB</small></td><td>1</td><td>€615.18</td><td>€615.18</td></tr>
+  </table>
+  <div class="totals">
+    <p>Subtotal: <b>€3,975.18</b></p>
+    <p>VAT 20%: <b>€795.04</b></p>
+    <p class="grand">Total: <b>€4,770.22</b></p>
+  </div>
+  <p class="meta">Invoice INV-0042 · Issued 31 Oct 2026 · Due 14 Nov 2026 (Net 14)</p>
+  <button class="btn-primary" onclick="printInvoice()">🖨 Print invoice</button>
+  <a class="link" href="mailto:billing@example.com">Questions? Email billing</a>
+</div>
+<script>
+function printInvoice(){ window.print(); }
+</script>
+</body>
+</html>

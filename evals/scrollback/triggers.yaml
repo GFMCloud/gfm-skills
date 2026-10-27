@@ -1,0 +1,11 @@
+# Each prompt runs in a workspace holding the matching folder under files/triggers/ (demo material).
+should:
+  - Restyle status.html so it looks like a terminal readout, all monospace, dark, with dashed frames  # status-page
+  - Turn CHANGELOG.md into a changelog page in the Scrollback style  # changelog
+  - Make this usage report (report.md) into a page with a monospace terminal look  # usage-report
+  - Build a docs page for this CLI from README.md, styled like a terminal  # cli-readme
+should_not:
+  - Design a landing page for my bakery's new website from brief.md  # bakery -> design
+  - Make a chart of the monthly sales in sales.csv  # sales -> dataviz or none
+  - Draw a diagram of how our sync pipeline works from pipeline.md  # pipeline -> diagrams
+  - Redesign settings.html in our brand, it looks dated  # brand-settings (.agents/brand present) -> design

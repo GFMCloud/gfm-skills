@@ -1,0 +1,17 @@
+{
+  "_note": "DEMO DATA for a skill eval. Not a real service.",
+  "service": "Demo ledger sync",
+  "updated": "2026-10-27T09:45:00Z",
+  "components": [
+    {"name": "API", "state": "ok", "uptime_30d": 99.98, "latency_ms_14d": [8, 8, 9, 8, 7, 8, 8, 9, 8, 8, 9, 10, 9, 8]},
+    {"name": "Importer", "state": "degraded", "uptime_30d": 99.41, "latency_ms_14d": [12, 11, 12, 13, 12, 12, 14, 13, 15, 16, 18, 19, 20, 21]},
+    {"name": "Exporter", "state": "failed", "uptime_30d": 97.20, "latency_ms_14d": [20, 21, 20, 22, 21, 20, 22, 21, 23, 22, 25, 30, 41, 0]},
+    {"name": "Webhooks", "state": "ok", "uptime_30d": 100.0, "latency_ms_14d": [5, 5, 6, 5, 5, 5, 6, 5, 5, 5, 5, 6, 5, 5]}
+  ],
+  "quota": {"used": 3400, "limit": 10000},
+  "incidents": [
+    {"time": "09:41:44", "severity": "warn", "message": "Importer rate limit at 82%, backing off 2s"},
+    {"time": "09:42:38", "severity": "fail", "message": "Exporter batch 6/8 rejected: schema changed on issued_at"},
+    {"time": "09:30:02", "severity": "info", "message": "Nightly sync started, 48,200 rows queued"}
+  ]
+}
