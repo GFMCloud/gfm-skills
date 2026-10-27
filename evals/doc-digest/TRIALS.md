@@ -7,7 +7,7 @@ after any script change.
 
 | Agent | Eval cases | Triggers | State |
 | :--- | :--- | :--- | :--- |
-| Claude Code | Sonnet 4 of 4. Haiku 3 of 4: handbook-kb, deck-notes and policy-docx loaded and passed; chat-summary never loaded the skill (see below). Opus: see the build's trial log | Haiku 4 of 4 should on the current description (s3 needed it), 5 of 5 near-miss. Sonnet 4 of 4 should, 5 of 5 near-miss | done, one open trigger |
+| Claude Code | Sonnet 4 of 4. Haiku 3 of 4: handbook-kb, deck-notes and policy-docx loaded and passed; chat-summary never loaded the skill (see below). Opus 4 of 4, run after the first independent review's fixes | Haiku 4 of 4 should on the current description (s3 needed it), 5 of 5 near-miss. Sonnet 4 of 4 should, 5 of 5 near-miss | done, one open trigger |
 | Codex | not run | not run | **pending** |
 
 **Open: Haiku answers "What are the main rules and costs in handbook.pdf? Just tell me here"
