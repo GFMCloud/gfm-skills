@@ -1,0 +1,4 @@
+pr,title,body,files
+901,Add keyboard shortcut to reset zoom,Press R to reset.,src/interactive.py
+902,Drop Python 3.9 from CI,CI matrix change.,.github/workflows/ci.yml
+903,Bar labels no longer clipped,Expands the axis to fit labels.,src/bar.py;tests/test_bar.py

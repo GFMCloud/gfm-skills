@@ -1,0 +1,11 @@
+# Workspaces for these prompts hold the matching files/ project (all invented demo data).
+should:
+  - Where could Jev help in this project?   # files/games-catalog
+  - Add a TypeSafe Jev check to the title matching step.   # files/games-catalog
+  - Could a Jev judgment replace the Claude call that labels pull requests in classify_prs.py?   # files/release-notes
+  - We just got a TypeSafe key. What's worth trying Jev on in this repo?   # files/issue-triage
+should_not:
+  - Match the shop listings to the catalogue and give me a mapping file I can reuse.   # files/games-catalog (data-matching)
+  - Which Claude model and effort should the pull-request labelling step in classify_prs.py use?   # files/release-notes (model-choice)
+  - Write the release notes from the merged pull requests in data/merged_prs.csv.   # files/release-notes (no skill)
+  - Improve the keyword rules in triage.py so fewer issues get the wrong label.   # files/issue-triage (no skill)
