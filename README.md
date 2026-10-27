@@ -58,6 +58,11 @@ editing the skill. They look in this order and use the first one they find:
 Put a `tokens.json` there, for example `{ "primary": "#0f766e" }`, and optionally a
 `guidelines.md` with tone and style notes. The skill tells you which one it used.
 
+## Suggested agent rules
+
+Some habits apply to every task, so they work better as a line in your `AGENTS.md` or `CLAUDE.md`
+than as a skill. [`docs/agent-rules.md`](docs/agent-rules.md) has them, ready to paste.
+
 ## Contributing
 
 See `AGENTS.md` and `docs/house-rules.md`. Before a change: `uv run tools/check_skills.py` and
