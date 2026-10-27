@@ -1,0 +1,18 @@
+#!/bin/sh
+# Blocks a commit that adds a secret. Turned on per clone with: git config core.hooksPath .githooks
+# Uses gitleaks when it is installed and the project's own tools/secret_scan.py when Python is.
+# With neither, it refuses the commit rather than letting it through unscanned.
+ran=0
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact --no-banner --verbose || exit 1
+  ran=1
+fi
+py=$(command -v python3 || command -v python)
+if [ -f tools/secret_scan.py ] && [ -n "$py" ]; then
+  "$py" tools/secret_scan.py --staged . || exit 1
+  ran=1
+fi
+if [ "$ran" = 0 ]; then
+  echo "pre-commit: no secret scanner found. Install gitleaks or Python 3, then commit again." >&2
+  exit 1
+fi
