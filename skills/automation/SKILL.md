@@ -1,6 +1,6 @@
 ---
 name: automation
-description: Use when asked to automate a task, run it on a schedule, "tell me when X changes", or leave an agent fixing something unattended until a check passes. Writes the job, limits and install steps as files, proves it runs and installs nothing. Not for one-off checks, deploys or agent hooks.
+description: Use when asked to automate a task, run it on a schedule or on each push, "tell me when X changes", or leave an agent fixing something unattended until a check passes. Writes the job, limits and install steps as files, proves it runs, installs nothing. Not for one-off checks, deploys or agent hooks.
 metadata:
   status: draft
   codex-check: "pending: not yet tried in Codex; must pass before stable"
