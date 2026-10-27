@@ -1,0 +1,4 @@
+{
+  "name": "tile-shop-demo",
+  "scripts": {"test": "node test.js", "lint": "node lint.js", "build": "node build.js"}
+}

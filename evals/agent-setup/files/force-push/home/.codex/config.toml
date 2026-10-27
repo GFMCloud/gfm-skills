@@ -1,0 +1,4 @@
+# Demo material for a skill trial, not real.
+model = "demo-model"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
