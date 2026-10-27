@@ -11,3 +11,7 @@ House rule 8: tried in Claude Code (Haiku, Sonnet, Opus) and in Codex before `st
 **Still needed before `stable`: a Codex pass.** At minimum the vague-request case, one "should"
 trigger and one near-miss, run in Codex with the skill installed. Then change
 `metadata.codex-check` in `SKILL.md` to `pass` and `status` to `stable`.
+
+**2026-10-27, R12 real-task fixes (branch `fix/r12-trial-findings`):** SKILL.md text changed after
+real-task trials on private projects (logs kept outside this repo). Earlier counts in this file
+predate the change; rerun the triggers and cases before `stable`.

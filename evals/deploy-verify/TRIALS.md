@@ -25,3 +25,7 @@ Known limits:
 **Still needed before `stable`: a Codex pass** (at minimum `ship-to-staging`, `staging-unreachable`,
 `site-ready`, should triggers 1 and 3, and near-misses 1, 2 and 5), run with the demo servers started
 outside the Codex sandbox. Then set `metadata.codex-check` to `pass` and `status` to `stable`.
+
+**2026-10-27, R12 real-task fixes (branch `fix/r12-trial-findings`):** SKILL.md text changed after
+real-task trials on private projects (logs kept outside this repo). Earlier counts in this file
+predate the change; rerun the triggers and cases before `stable`.

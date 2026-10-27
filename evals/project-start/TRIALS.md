@@ -42,3 +42,7 @@ No Codex runs yet (the allowance is used up until 2026-11-02; each batch needs t
 on a run count). At minimum: `folder-with-secrets`, `local-repo-to-github`, `new-python-tool`, one
 "should" trigger and one near-miss. Then set `metadata.codex-check` to `pass` and `status` to
 `stable`.
+
+**2026-10-27, R12 real-task fixes (branch `fix/r12-trial-findings`):** SKILL.md text changed after
+real-task trials on private projects (logs kept outside this repo). Earlier counts in this file
+predate the change; rerun the triggers and cases before `stable`.

@@ -2,7 +2,9 @@ should:
   - Design a landing page for my bakery's new website
   - This settings page looks dated, can you redesign it so it works on phones too?
   - Make our sign-up form look better and easier to use
+  - Is my dashboard page usable on a phone? Tell me what's wrong, don't change anything yet
 should_not:
   - Make a slide deck for the product launch
   - Draw a diagram of how our deploy pipeline works
   - Review the design doc for the database migration
+  - We launch on Monday. Is the live site ready? Check broken links and how it looks on phones

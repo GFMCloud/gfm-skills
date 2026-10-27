@@ -1,6 +1,6 @@
 ---
 name: design
-description: Designs, redesigns or critiques web pages, app screens and forms in the user's brand, with a stated visual direction, every state and a check at phone width. Use for UI design or "what's wrong with this page?". Not for slide decks, diagrams or charts.
+description: Designs, redesigns or critiques web pages, app screens and forms in the user's brand, with one visual direction, every state and a phone-width check. Use for UI design, "what's wrong with this page?" or "is it usable on my phone?". Not for decks, diagrams or charts.
 metadata:
   status: draft
   brand: "true"
@@ -17,7 +17,7 @@ skill does three jobs. Pick one from the request.
 | :--- | :--- |
 | A page, screen, form or component that doesn't exist yet | **New** |
 | An existing page or app to look or work better ("looks dated", "fix it on mobile") | **Redesign** |
-| Only an opinion ("what's wrong with this page?") | **Critique** (the Redesign look and audit, then stop) |
+| Only an opinion ("what's wrong with this page?", "is it usable on my phone?") | **Critique** (the Redesign look and audit, then stop) |
 
 **Your reply starts with the `Brand:` line that `scripts/brand.py` prints. Nothing comes before it.**
 
@@ -52,7 +52,8 @@ project. Read [references/craft.md](references/craft.md) before starting any job
    server and pass the URL). `--shots` needs playwright; without it, try
    `uv run --with playwright python <skill>/scripts/check_page.py ...`. If you script the browser
    yourself (to test a form's error state, say) and Chromium won't start in a sandbox, launch it
-   with `--single-process --no-zygote` as the checker does. Fix every FAIL and run it again.
+   with `--single-process --no-zygote` as the checker does; never turn the sandbox off to start
+   it. Fix every FAIL and run it again.
    Screenshots go to `.design-check/` beside the page; tell the user it's there to delete. Then
    open both screenshots and look: name one thing you checked in each. If screenshots can't be
    taken, say the visual check did not run.
@@ -66,9 +67,10 @@ project. Read [references/craft.md](references/craft.md) before starting any job
    the project folder on the current version, so you have before shots and a list of failures.
    For a **Critique**, pass `--out` a fresh temporary folder (`mktemp -d`) instead, so nothing is
    written to the user's project, and say where the screenshots are.
-2. **Audit.** List problems by impact. For each: where (element or selector), what's wrong, which
-   rule in craft.md, and the fix. Split **broken** (fails at phone width, unreadable, unlabelled,
-   no focus) from **taste**. For a Critique, stop here and change nothing.
+2. **Audit.** Two lists, headed **Broken** (fails at phone width, unreadable, unlabelled, no
+   focus) and **Taste**, each by impact. For each item: where (element or selector), what's wrong,
+   which rule in craft.md, and the fix. If the page is generated, the fix goes in its template or
+   generator, not the output file. For a Critique, stop here and change nothing.
 3. **Keep what it does.** Every piece of content, field, name, id, route, handler and script stays.
    A redesign changes how it looks and reads, not what it does. If something looks functionally
    wrong, report it; don't fix it silently.

@@ -16,6 +16,11 @@ reading its files is part of using it.
 No GitHub repo and no push until the user has said yes to the exact `owner/name` and visibility
 (step 6). A request like "put it on GitHub" is not that yes.
 
+**Scan before you read.** In a folder that already has files, run the scan (step 4) before you
+open any of them, apart from the conventions file (step 1). Until then, look only at names and
+sizes (`ls -la`, `find . -type f -not -path '*/node_modules/*' -not -path '*/.venv/*'`); reading a
+file to see what the project is can put a key into the conversation.
+
 **First line of the reply** for every repo job: the `Conventions:` line that
 `find-conventions.sh` prints (step 1). A chat project skips it.
 
@@ -82,7 +87,10 @@ the file, line, kind and commit are all the user needs. Act on each line:
   move the value out (an environment variable or the password manager) and, if it was ever real,
   rotate it, because it may already be copied elsewhere. In history (`in commit <hash>`), removing
   the file today doesn't help: the key must be rotated, and rewriting history before the first push
-  is the user's call. Rerun the scan once they say it is fixed.
+  is the user's call. Rerun the scan once they say it is fixed. If they asked for GitHub, still
+  propose the exact `owner/name` and visibility now, for after the fix: the name from the folder and
+  the conventions; the owner from the conventions if they name one, else written
+  `TBD (your GitHub login)`. Don't call `gh` until the scan passes; the lookup is step 6.
 - `IGNORE SECRET-FILE` (`.env`, keys, state files): add it to `.gitignore` and tell the user which
   files you kept out. `IGNORE GENERATED`, `JUNK`, `LARGE`: add to `.gitignore` (ask about large
   files: ignore or Git LFS).
@@ -155,8 +163,10 @@ Name any generated files and what generates them.}}
 
 Skip this unless the user wants the repo on GitHub.
 
-1. Owner: the conventions' owner, else `gh api user --jq .login`. If `gh` is missing or signed
-   out, stop here and give the commands below for the user to run.
+1. Owner: the conventions' owner, else `gh api user --jq .login`. If `gh` is missing, signed out
+   or refused, still propose the string with the owner marked TBD, skip the name check (point 2)
+   and say it was not checked, and give the commands below for the user to run. Don't call `gh`
+   again unless the user says it now works.
 2. Check the name is free: `gh repo view <owner>/<name>` should fail with "Could not resolve".
 3. Propose the exact string and visibility ("Create `owner/name`, private?") and wait for a yes to
    that string. For a public repo, first show the list of files that will be published
@@ -164,7 +174,7 @@ Skip this unless the user wants the repo on GitHub.
    and offer GitHub's noreply address for this repo if they would rather not publish it. If it
    looks like work material going to a personal account, say in one line
    that work others depend on belongs in the organisation's account.
-4. On the yes: `gh repo create <owner>/<name> --private --source=. --push` (or `--public`).
+4. On the yes, and only after the first commit exists (step 5): `gh repo create <owner>/<name> --private --source=. --push` (or `--public`).
 5. Never force-push, never change an existing remote, never create the repo under another
    account to get round a problem.
 

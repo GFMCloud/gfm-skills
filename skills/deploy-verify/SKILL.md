@@ -17,7 +17,8 @@ deploy tool saying "success", a green pipeline, or a 200 from a health check are
    records, deleting or switching off an old host, and data migrations each need the user's yes
    naming that target, in this conversation. A yes for staging is not a yes for production.
 2. **Checks against a live site are read-only:** GET and HEAD requests and a browser. No form
-   submissions, sign-ups, orders or load tests on anything real.
+   submissions, sign-ups, orders or load tests on anything real. `check_site.py` starts Chromium
+   in a mode that works inside a sandbox; never turn the sandbox off to run a check.
 3. **Every report opens with the bottom line and ends with a `Live check:` line and a
    `Not checked:` list** (format in step 5). `Not checked: none` needs a reason.
 
