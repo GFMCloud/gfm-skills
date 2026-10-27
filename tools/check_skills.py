@@ -177,7 +177,9 @@ def check_skill(root, folder, rep, reserved, seen):
         (rep.fail if status == "stable" else rep.warn)(7, f"evals/{folder_name}", problem)
 
     # Rule 11: time-sensitive content
-    if re.search(r"\b20\d\d-\d\d(-\d\d)?\b|[$€£]\s?\d|\b(claude|gpt|gemini)-[\w.]+", body, re.I):
+    # Built-in skill names such as claude-api are not model names.
+    unreserved = re.sub(r"\b(" + "|".join(map(re.escape, sorted(reserved))) + r")\b", "", body) if reserved else body
+    if re.search(r"\b20\d\d-\d\d(-\d\d)?\b|[$€£]\s?\d|\b(claude|gpt|gemini)-[\w.]+", unreserved, re.I):
         rep.warn(11, path, "body has a date, price or model name; date and link it, or move it to an 'old patterns' section")
 
     # Rule 12: brand convention
