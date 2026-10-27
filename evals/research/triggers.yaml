@@ -1,0 +1,11 @@
+# Trigger prompts run in a copy of files/trigger-project/ (DEMO material).
+should:
+  - The README says Node.js 18 is the current LTS. Fact-check that before I share it with the club.
+  - Look up the current free plans of the main static site hosts and compare them for this club site.
+  - Is it still true that Python 3.9 gets security fixes?
+  - Find out what the latest stable version of Node.js is.
+should_not:
+  - Does the README still match package.json in this folder?
+  - A friend shared https://github.com/sharkdp/hyperfine with me. Is it worth adopting?
+  - Should the committee rebuild the site with a different generator? Get me a second opinion before the meeting.
+  - Add a Research section to notes.md listing the committee's open questions.
