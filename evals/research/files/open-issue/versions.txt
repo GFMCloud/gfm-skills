@@ -1,0 +1,3 @@
+DEMO: output of `widget --version` on our build machines, pasted by hand for a skill trial.
+build-01: widget-cli 3.2.1
+build-02: widget-cli 3.2.1
