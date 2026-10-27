@@ -1,0 +1,11 @@
+# Run in a copy of files/pantry-pal (DEMO project) so each prompt has material to act on.
+should:
+  - Let's brag about this project. Make me a launch video I can post.
+  - Turn this app into a short promo video for social media
+  - Can you make a 20-second video showing off what I built here?
+should_not:
+  - Make a slide deck presenting this project to my team on Friday
+  - Draw an architecture diagram of how this app's pieces fit together
+  - Write the launch announcement post for this project's blog
+  - Make a bar chart of the recipe counts by cuisine
+  - Record a screen recording of me using the recipe search, for the bug report
