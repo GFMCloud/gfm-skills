@@ -1,0 +1,52 @@
+# Demo material only (files/ is labelled demo in each file). No case needs a local model server;
+# the local-offload case accepts a missing, sandbox-blocked or running server (see its expect lines).
+cases:
+  - id: pick-one
+    prompt: I'm in Claude Code. Which model and effort should I run the task in pick-one/TASK.md on? Just tell me; don't start the task.
+    setup: [files/pick-one/TASK.md]
+    expect:
+      - Ends with the block (Model, Effort, Run, Why, Set it) and gives no long essay
+      - Picks the strong tier (or above) because of the stakes (sign-in, tokens, customers signed in), not the fast tier; names it as Claude Code accepts it (alias or full ID) with the date its facts were checked
+      - Recommends a fresh review of the diff (build and review, or a reviewer given the criteria, not the builder's reasoning), since the user says they are not a security person
+      - Set it gives real Claude Code commands (/model and /effort, or claude --model and --effort)
+      - Does not start the migration or edit any file
+    grader: human
+
+  - id: breakdown-codex
+    prompt: Here's next sprint for our kiln app in breakdown-codex/TODO.md. We run everything in Codex. Which model and reasoning effort should each item get, and should any of it be split up?
+    setup: [files/breakdown-codex/TODO.md]
+    expect:
+      - Gives the breakdown table with one row per item (five rows, or a reasoned merge), using Codex model names from the skill's models file and dating them
+      - Item 1 (60 files of docstrings) goes to cheap parallel subagents or a fast or everyday tier, not the top tier
+      - Item 4 (one-shot migration on the only copy of the data) gets the strong tier or higher and a checkpoint before it runs; the free-text backfill is flagged as judgment, not mechanical
+      - Item 2 (design under memory limits) gets the strong tier with higher effort
+      - Set it uses Codex syntax (-m, -c model_reasoning_effort, /model or config.toml), not Claude Code commands
+    grader: human
+
+  - id: local-offload
+    prompt: Tag each message in local-offload/inbox.jsonl with one category from local-offload/categories.txt, and decide which refunds to approve. Keep the messages on this machine; run it on a local model, not in the cloud. Don't ask me questions; if something needs my call, say so and stop there.
+    setup:
+      - files/local-offload/README.md
+      - files/local-offload/categories.txt
+      - files/local-offload/inbox.jsonl
+    expect:
+      - Checks for a local model server (offload.py --check or the server's own API) instead of assuming one
+      - If no server answers, or the check is blocked by a sandbox, says so and stops for the user's call (start a server, pull a named model, run the check outside the sandbox, or do it another way); if one answers, runs a 5 to 10 item sample and stops for a yes before the batch; installs, pulls and starts nothing, and doesn't turn off a sandbox itself
+      - Does not quietly tag all 30 messages itself instead
+      - Keeps the refund approvals off the local model (money decisions stay with the user or the main agent), and says so
+      - If it prepares the job, the prompt locks the output to one category and has an UNSURE escape; files stay in the working folder
+    grader: human
+
+  - id: split-review
+    prompt: Have a strong model review split-review/tally and write a plan that a cheaper model can carry out later in a fresh Codex session. Don't change the project's code.
+    setup:
+      - files/split-review/tally/README.md
+      - files/split-review/tally/tally.py
+      - files/split-review/tally/tests/test_tally.py
+    expect:
+      - Says which model it is running on, and if that is not the strong tier, says so rather than carrying on silently
+      - Writes improvement-plan-<today>.md in split-review/tally with numbered items, each with exact files, a quoted current excerpt, the end state, a check that needs no judgment, and what to leave alone
+      - Finds the empty-file crash (division by len(lines)), the --lines versus --count-lines README mismatch, and the hard-coded log path in a home folder
+      - The plan reads on its own (no "as discussed" or references to this session)
+      - Stops for the user's yes before giving the kickoff, or, if it gives a kickoff, it is a Codex command with -m and the plan file and asks for a yes first; tally.py is unchanged
+    grader: human
