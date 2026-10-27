@@ -1,0 +1,28 @@
+listing_id,listing_title,catalog_id,catalog_title,score,decision,correct_catalog_id,reviewed_by
+L101,Harbourlight 2nd Edition (Tidewater),C002,Harbourlight: Second Tide,0.66,same,,vol-a
+L102,Harbor Light - Tidewater Games,C002,Harbourlight: Second Tide,0.60,different,C001,vol-a
+L103,Ember and Ash board game,C003,Ember & Ash,0.70,same,,vol-a
+L105,On the Road (Brindle Box),C006,On the Road Again,0.67,different,none,vol-a
+L106,The Long Road - Brindle Box,C005,The Long Road,0.68,same,,vol-b
+L107,Gloamwood Deluxe Edition,C008,Gloamwood Deluxe,0.80,same,,vol-a
+L108,"Gloamwood (Kettle Hill, deluxe)",C008,Gloamwood Deluxe,0.68,same,,vol-b
+L110,Copper Kingdom Junior Edition,C010,Copper Kingdom Junior,0.84,same,,vol-a
+L112,Starfall Atlas: Collector's Box,C012,Starfall Atlas,0.62,same,,vol-a
+L113,Quarry Deep Seams expansion,C014,Quarry: Deep Seams,0.76,same,,vol-b
+L118,Harbourlight Second Tide promo pack,C002,Harbourlight: Second Tide,0.80,different,none,vol-a
+L120,Copper Kingdoms - 2015 printing,C009,Copper Kingdoms,0.68,same,,vol-a
+L121,The Long Road Home,C005,The Long Road,0.84,different,none,vol-a
+L125,Saltmarsh Traders Big Box,C011,Saltmarsh Traders,0.81,same,,vol-b
+L127,Moth & Lamp sleeves (100),C015,Moth & Lamp,0.65,different,none,vol-a
+L128,"Harbourlight base game, 2019",C002,Harbourlight: Second Tide,0.64,different,C001,vol-b
+L129,Starfall Atlas insert organiser,C012,Starfall Atlas,0.62,different,none,vol-a
+L130,Copper Kingdoms 2nd ed.,C009,Copper Kingdoms,0.79,same,,vol-b
+L131,Gloamwood - Kettle Hill,C008,Gloamwood Deluxe,0.70,different,C007,vol-b
+L133,The Long Road (2018),C005,The Long Road,0.79,same,,vol-a
+L134,Quarry: Deep Seams (Brindle),C014,Quarry: Deep Seams,0.78,same,,vol-b
+L136,Harbourlight Second Tide Kickstarter edition,C002,Harbourlight: Second Tide,0.70,same,,vol-a
+L137,Pinewatch 2-player,C016,Pinewatch,0.67,same,,vol-a
+L139,Moth & Lamp: Deluxe,C015,Moth & Lamp,0.76,different,none,vol-b
+L140,Gloamwood playmat,C007,Gloamwood,0.69,different,none,vol-b
+L141,On the Road Again - Lanternworks,C006,On the Road Again,0.72,same,,vol-a
+L142,Starfall Atlas 2nd printing,C012,Starfall Atlas,0.68,same,,vol-b

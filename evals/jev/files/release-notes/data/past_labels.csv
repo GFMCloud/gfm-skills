@@ -1,0 +1,21 @@
+pr,title,body,files,user_facing,labelled_by
+812,Fix legend overlap with 9+ series,Moves the legend outside the axes when it would cover data.,src/legend.py;tests/test_legend.py,yes,maintainer
+813,Bump CI runner image,Updates the CI image to the newer base.,.github/workflows/ci.yml,no,maintainer
+814,Add dashed grid style,New grid_style='dashed' option.,src/grid.py;docs/grid.md;tests/test_grid.py,yes,maintainer
+815,Refactor tick locator internals,No behaviour change; splits one long function.,src/ticks.py,no,maintainer
+816,Clear error for empty data,plot([]) now raises ValueError('data is empty').,src/core.py;tests/test_core.py,yes,maintainer
+817,Add type hints to internal helpers,Typing only.,src/_util.py,no,maintainer
+818,Docs: remove style= from quickstart,Quickstart no longer uses the removed argument.,docs/quickstart.md,yes,maintainer
+819,Speed up test suite,Parallelises slow image tests.,tests/conftest.py;pyproject.toml,no,maintainer
+820,Reverse colour bar option,colorbar(reverse=True).,src/colorbar.py;tests/test_colorbar.py,yes,maintainer
+821,Pin dev dependency versions,Locks linters for reproducible CI.,requirements-dev.txt,no,maintainer
+822,Fix memory leak when closing figures,close() now releases cached renderers.,src/figure.py;tests/test_figure.py,yes,maintainer
+823,Rename private _draw_x to _render_x,Internal rename.,src/render.py,no,maintainer
+824,SVG export embeds fonts,"savefig('x.svg', embed_fonts=True).",src/export.py;docs/export.md,yes,maintainer
+825,Add pre-commit config,Developer tooling.,.pre-commit-config.yaml,no,maintainer
+826,Faster import time,Lazy-loads the colour maps; import is 40% faster.,src/__init__.py;src/cmaps.py,yes,maintainer
+827,Fix flaky test on macOS,Test-only change.,tests/test_fonts.py,no,maintainer
+828,Log scale warns on zeros instead of crashing,Zeros are masked with a warning.,src/scale.py;tests/test_scale.py,yes,maintainer
+829,Update CONTRIBUTING links,Fixes broken links for contributors.,CONTRIBUTING.md,no,maintainer
+830,Right-to-left text in titles,Titles now render RTL scripts in order.,src/text.py;tests/test_text.py,yes,maintainer
+831,Benchmark script for rendering,Adds a dev benchmark.,bench/render_bench.py,no,maintainer
