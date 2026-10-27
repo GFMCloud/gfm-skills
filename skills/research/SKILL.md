@@ -32,8 +32,12 @@ Open: <what is unsettled or could not be checked, or "none">
 ## 1. Check what you can reach
 
 Before anything else, know your tools: web search, page fetch (WebSearch and WebFetch in Claude
-Code), a shell with network (`curl` reads a page where there is no fetch tool), files the user
-gave. If you have no way to reach outside sources, say so in your first line. You can still plan
+Code), a shell with network, files the user gave. Where there is no fetch tool at all, one plain
+`curl` (or urllib) may stand in for it. A refusal is an answer: if a tool, a command or the network
+is refused or blocked, don't try the same thing again another way (another command, another flag,
+another path, turning a sandbox off); that route is closed for the rest of the task. Use the tools
+you still have; if a page is blocked, find the fact elsewhere (step 4). If you have no way to reach
+outside sources, say so in your first line. You can still plan
 the check (what to look up, where), and you can say what you remember, labelled **from memory, not
 checked**. Memory never earns CONFIRMED, however sure it
 feels: what you remember is the world as of your training data, and this skill exists for the

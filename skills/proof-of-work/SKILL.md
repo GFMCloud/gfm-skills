@@ -24,14 +24,15 @@ site before launch: the deploy-verify skill.
    "passes", "matches". Each one is a claim a check could disprove.
 2. **Pick the check where the failure would show.** A check that can't see the failure isn't one,
    however green it comes back. Check without side effects: run on a copy, a dry run or a read-only
-   query. Never check against live or shared systems on your own, and ask before rerunning anything
-   that writes, sends or deletes (rerunning an import overwrites its output, so copy its inputs to a
-   scratch folder and run it there).
+   query. Reading a live or shared system is fine when that is where the failure would show (a GET
+   or HEAD at the live address, a read-only query); never write to, send through or rerun anything
+   on one on your own, and ask before rerunning anything that writes, sends or deletes (rerunning an
+   import overwrites its output, so copy its inputs to a scratch folder and run it there).
 
    | Kind of work | A real check | Not enough on its own |
    | :--- | :--- | :--- |
    | Code | Run it on the real input from the bug or request, then the tests | Tests passing when none covers the case; lint; reading it |
-   | Page or UI | Load it, at desktop and phone width, and look at it | It builds |
+   | Page or UI | Load it, at desktop and phone width, and look at it (if the design or deploy-verify skill is installed, its page checker renders inside a sandbox; otherwise, in a sandbox, start Chromium with `--single-process --no-zygote`) | It builds |
    | Data job | Count rows in and out; open the rejected or changed rows | Exit code 0; "Success" in the log |
    | Deploy | Call the live endpoint and check the answer | A green pipeline |
    | Config or install | Load it where it's used and use one thing it enables | A validator passing |
@@ -44,7 +45,10 @@ site before launch: the deploy-verify skill.
 4. **Ask what the check would miss.** Could it pass with the claim false? If showing that is cheap,
    do it: break a copy on purpose (or use the old version) and see the check fail.
 5. **If you can't run a check**, don't reason your way to "it should work". Mark it not run, say
-   why, and give the exact command for the person who can run it.
+   why, and give the exact command for the person who can run it. A refusal is an answer: if a
+   tool, a command or the network is refused or blocked, don't try it again another way (`curl` in
+   place of a fetch tool, another flag); that check is not run. Never turn a sandbox off or widen it
+   to make a check run, whatever failed; a check that needs that is not run.
 
 ## Report
 
