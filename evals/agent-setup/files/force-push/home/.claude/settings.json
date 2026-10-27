@@ -1,0 +1,7 @@
+{
+  "model": "sonnet",
+  "permissions": {
+    "allow": ["Bash(npm run lint)", "Bash(npm test *)"],
+    "deny": ["Read(./.env)"]
+  }
+}
