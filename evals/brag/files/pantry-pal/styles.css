@@ -1,0 +1,16 @@
+/* DEMO PROJECT styles for the gfm-skills brag evals. */
+:root {
+  --bg: #fff8ef;
+  --ink: #2b1d14;
+  --tomato: #e4572e;
+  --basil: #4c8c4a;
+  --card: #ffffff;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); }
+h1, h2 { font-family: var(--font-display); }
+h1 { font-size: 64px; font-weight: 800; }
+.cta { background: var(--tomato); color: #fff; padding: 14px 28px; border-radius: 999px; }
+.recipe-card { background: var(--card); border-radius: 18px; box-shadow: 0 8px 24px rgba(43, 29, 20, .12); }
+.badge-zero { background: var(--basil); color: #fff; border-radius: 6px; padding: 2px 8px; }

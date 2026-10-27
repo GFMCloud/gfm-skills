@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- DEMO PROJECT for the gfm-skills brag evals. Made up. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tomato Clock: the timer that makes you take the break</title>
+<style>
+  :root { --bg: #1c1b22; --fg: #f4efe6; --red: #ff5d47; --mint: #7be0b0; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: "Space Grotesk", "Helvetica Neue", sans-serif; text-align: center; }
+  .clock { font-size: 160px; font-weight: 700; letter-spacing: -4px; color: var(--red); }
+  .mode { text-transform: uppercase; letter-spacing: 6px; }
+  button { font: inherit; padding: 12px 24px; border-radius: 12px; border: 0; }
+  #start { background: var(--red); color: var(--bg); }
+  #skip { background: transparent; color: var(--fg); border: 2px dashed var(--fg); position: relative; }
+  .streak { color: var(--mint); }
+</style>
+</head>
+<body>
+  <h1>Tomato Clock</h1>
+  <p class="mode" id="mode">Focus</p>
+  <div class="clock" id="clock">25:00</div>
+  <button id="start">Start focusing</button>
+  <button id="skip">Skip break</button>
+  <p class="streak">Honest breaks in a row: <span id="streak">0</span></p>
+  <p class="toast" id="toast" hidden>Break time. You earned it. You can't skip it.</p>
+<script>
+  // The Skip break button dodges the cursor during a break.
+  const skip = document.getElementById("skip");
+  skip.addEventListener("mouseenter", () => {
+    if (document.getElementById("mode").textContent === "Break") {
+      skip.style.left = (Math.random() * 300 - 150) + "px";
+      skip.style.top = (Math.random() * 200 - 100) + "px";
+    }
+  });
+  let left = 25 * 60, timer = null;
+  document.getElementById("start").onclick = () => {
+    timer = setInterval(() => {
+      left -= 1;
+      const m = String(Math.floor(left / 60)).padStart(2, "0"), s = String(left % 60).padStart(2, "0");
+      document.getElementById("clock").textContent = `${m}:${s}`;
+      if (left === 0) { document.getElementById("mode").textContent = "Break"; document.getElementById("toast").hidden = false; }
+    }, 1000);
+  };
+</script>
+</body>
+</html>
