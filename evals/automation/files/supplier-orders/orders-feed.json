@@ -1,0 +1,9 @@
+{
+  "_note": "DEMO MATERIAL for a skill trial: stands in for the supplier's order-status page",
+  "checked_at": "2026-10-26T09:14:03Z",
+  "orders": [
+    {"id": "ORD-101", "item": "rye flour 25kg", "status": "processing"},
+    {"id": "ORD-102", "item": "paper bags", "status": "shipped"},
+    {"id": "ORD-103", "item": "oven gloves", "status": "processing"}
+  ]
+}

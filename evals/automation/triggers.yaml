@@ -1,0 +1,10 @@
+should:
+  - Can you make report/make_report.sh run every weekday at 7am?
+  - Let me know whenever a price in prices/price.txt changes, but only when it changes.
+  - Set it up so an agent keeps fixing the tests in flaky-tests/ overnight until they pass, while I'm away.
+  - Automate the weekly sales report in report/ so I don't have to run it by hand any more.
+should_not:
+  - Did last night's backup actually work? The log is backup-log/backup.log.
+  - Make backup-log/backup.sh handle file names with spaces.
+  - Write a short README for report/ explaining what make_report.sh does.
+  - Why does the bulk discount test in flaky-tests/ fail?

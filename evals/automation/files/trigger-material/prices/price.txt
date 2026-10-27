@@ -1,0 +1,3 @@
+Demo material for a skill trial.
+Sourdough loaf: 4.20
+Rye loaf: 3.80
