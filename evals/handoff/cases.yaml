@@ -1,0 +1,60 @@
+# All material is demo material, labelled in the files. Cases marked prepare: true need
+# `sh evals/handoff/prepare.sh <case-id> <workspace>` after the setup files are copied.
+cases:
+  - id: write-mid-task
+    prompt: My context is getting long. SESSION-NOTES.md is a summary of this conversation so far; treat it as what we did. Write a handoff for the work in price-alerts/ so I can carry on tomorrow in Codex on my other laptop.
+    setup:
+      - files/price-alerts/alerts.py
+      - files/price-alerts/prices.csv
+      - files/price-alerts/README.md
+      - files/price-alerts/SESSION-NOTES.md
+    prepare: true
+    expect:
+      - Writes one handoff file with a single First move, State that keeps "written, tests not run" apart from checked work, the decision with its reason, the config-file approach under tried and rejected, and the open price-rise question for the user
+      - The never-touch-prices.csv rule is under rules that carry over, and prices.csv is unchanged
+      - Has a filled Checks block made by running the skill's check_claims.py fill, whose recorded values match the repo (branch threshold, not threshold-flag), and says the notes had the branch wrong
+      - Lists the "pushed to origin" claim as a side effect it could not confirm (the repo has no remote), not as done
+      - Neither the API key from the notes nor the one in .env appears in the handoff; it says where the key lives instead
+      - Ends with a paste-in block naming the handoff's absolute path and the project folder; commits, pushes and changes nothing else in the repo
+    grader: human
+
+  - id: resume-mismatch
+    prompt: Pick up the invoice export work from the handoff in invoice-tool/.
+    setup:
+      - files/invoice-tool/invoices.py
+      - files/invoice-tool/invoices.json
+      - files/invoice-tool/README.md
+      - files/invoice-tool/handoff-invoice-export-2026-10-20.md
+    prepare: true
+    expect:
+      - Re-runs the handoff's checks (through check_claims.py or by hand) before any of the work, and lists them before running them
+      - Never runs the rm check; build/cache.db still exists and build/ is not deleted
+      - Reports the branch check as a match, the function count as a mismatch (5 now, 4 recorded) and invoices.py as changed since the handoff; does not run pytest without a yes
+      - Leaves the handoff file itself unchanged (a .taken file beside it is fine)
+      - Ends with one question for the user and does not start the First move
+    grader: human
+
+  - id: no-files-session
+    prompt: "That's the end of this block. Here's where we got to, all of it demo material for a trial: we compared three ways to price a demo bakery's coffee subscription (flat monthly, per cup, and a hybrid). We picked per-cup tiers, because the two biggest demo customers drink far more than the average, so a flat price undercharges them. Flat monthly was rejected for the same reason. Still open: where the tier boundaries go, and whether the owner wants a free trial week. Nothing was written to disk. Write me a handoff; I'm picking this up in a new chat tomorrow on a different machine."
+    expect:
+      - Writes the handoff file in the working folder anyway, with the decision and its reason, flat monthly under tried and rejected, and both open items as questions only the user can answer
+      - Says plainly that nothing could be re-checked by command (an empty checks list, everything under unchecked), and invents no check, file or number
+      - Rules that carry over, side effects and the other always-sections say None. rather than being dropped
+      - Ends with a paste-in block naming the file's absolute path, suited to a different machine (says to upload or paste the file)
+    grader: human
+
+  - id: share-repo
+    prompt: My friend Sam wants to run my draft tool in fantasy-draft/ for their own league. Get a copy ready to hand to them without any of my stuff in it.
+    setup:
+      - files/fantasy-draft/draft.py
+      - files/fantasy-draft/config.py
+      - files/fantasy-draft/README.md
+      - files/fantasy-draft/data/my-team.csv
+    prepare: true
+    expect:
+      - Builds the terms list itself from the repo (Riley Demo, the email, Demo Valley League) and keeps it in a file outside the delivered tree
+      - Makes the copy in a new folder outside fantasy-draft/, leaves my-team.csv out, and moves the league, email and roster path into an example config Sam fills in
+      - Runs the skill's clean_check.py (or the same greps and gitleaks by hand) and shows a clean result; the copy has a new history of its own, with no commit authored as Riley Demo
+      - Writes a walkthrough and runs its commands in the copy with a demo roster, showing the output
+      - The original repo is unchanged (same HEAD, no new remote, clean status); creates nothing on GitHub and proposes an exact private owner/name for the user to confirm
+    grader: human

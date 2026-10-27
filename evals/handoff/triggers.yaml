@@ -1,0 +1,11 @@
+# Workspace material for each prompt is listed in TRIALS.md (demo files only).
+should:
+  - My context is getting long. Write a handoff so a fresh session can pick this up tomorrow.
+  - I'm switching to Codex on my other laptop. Write up where this stands so it can carry on from there.
+  - Pick up from invoice-tool/handoff-invoice-export-2026-10-20.md.
+  - My friend wants to run fantasy-draft/, but it has my personal data in it. Get a clean copy ready for them.
+should_not:
+  - Set up the move of docs-old/ to the new format so we can work through it over several weeks
+  - Check draft-message.md for problems before I send it to the team
+  - What went wrong in the session in notes/SESSION-NOTES.md, and what should we change next time?
+  - Turn this folder into a git repo with a README and an AGENTS.md

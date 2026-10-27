@@ -1,0 +1,4 @@
+[
+  {"number": "DEMO-001", "customer": "Demo Cafe", "lines": [{"qty": 2, "price": 12.5}]},
+  {"number": "DEMO-002", "customer": "Demo Bakery", "lines": [{"qty": 1, "price": 40.0}, {"qty": 3, "price": 2.0}]}
+]
