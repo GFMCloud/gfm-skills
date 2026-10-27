@@ -34,7 +34,7 @@ folder, a database); then it gets `preflight.json` and `tools/preflight.py` like
 Evidence: <what was measured, how, when, with the numbers>
 Wrong if: <what result would overturn it, or "none: lesson from an incident">
 Recheck: <the command or test that measures it again>
-Recheck by: <date>
+Recheck by: <date; if the user gives none, propose 90 days from today and mark it proposed>
 Source: <where it came from: a run, an incident, a file>
 ```
 

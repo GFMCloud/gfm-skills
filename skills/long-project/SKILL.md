@@ -45,18 +45,20 @@ project can keep a rulings folder.
    and the project's instructions say to stop on a `TBD` that the next step needs.
 2. **Make a new folder named after the project** (unless the user names one), beside the thing
    being changed, not inside it, so the record survives the work. Every shape has:
-   - `AGENTS.md`: what this is, that it was set up with the long-project skill (a session that has
-     the skill loads it), the rules below that apply, what may go ahead without asking, what never
-     to do, and how to resume. Add a one-line `CLAUDE.md` containing `@AGENTS.md` so Claude Code
-     reads the same file.
+   - `AGENTS.md`, whose first line is: "Start of every session: if a skill named `long-project` is
+     available, load it before reading on." Then what this is, the rules below that apply, what may
+     go ahead without asking, what never to do, and how to resume. Add a one-line `CLAUDE.md`
+     containing `@AGENTS.md` so Claude Code reads the same file.
    - `STATE.md`: the one place a session resumes from (template below).
    - `preflight.json` and `tools/preflight.py`, a copy of this skill's `scripts/preflight.py`, so the
      project runs the same check in any agent and on any machine. Never write the skill's own path
      into the project.
    - the shape's own files, from its reference.
-3. **Write it fully.** No leftover `<placeholder>`; check with `grep -rn '<[A-Z]' <folder>`. Lists
-   and counts live in one file (the manifest, the register, the phase list); other files point to
-   it rather than repeat a number that will go stale.
+3. **Write it fully.** No leftover `<placeholder>`; check with
+   `grep -rn --exclude-dir=tools '<[a-zA-Z][^>]*>' <folder>` (a sweep's `state/<id>.md` is the
+   one expected hit).
+   Lists and counts live in one file (the manifest, the register, the phase list); other files
+   point to it rather than repeat a number that will go stale.
 4. **Set up only.** Don't start the work in the setup session unless the user asked for that too.
    Write a helper script only when the done-check needs one, and keep it under about 60 lines.
 
@@ -110,27 +112,33 @@ anything). Paths are relative to the project folder.
 
 - **Real targets.** Read the thing the work will read; write the smallest thing to where the work
   will write (never into a folder the work only reads), then remove it. A probe never creates its
-  target (no `mkdir -p`): a missing target is the failure you are looking for. `expect` is
-  `nonempty`, `contains:TEXT` or `number>=N` (the first number in the output), so a command that
-  ran but found nothing doesn't count. A system the work only reads gets `"write": "not needed: <why>"`. Prove
-  identity where a stand-in could pass: an empty folder passes `ls` as well as a mounted drive, so
-  read a marker file on the drive (or compare device ids).
-- **A control that must fail.** The read command with one thing taken away: the path, the
-  credential, the remote. If the control succeeds, the read proved nothing; if it fails only
+  target (no `mkdir`; the script rejects it): a missing target is the failure you are looking for.
+  `expect` is `nonempty`, `contains:TEXT` or `number>=N` (the first number in the output, so make
+  the count the only output, as with `| wc -l`); a command that ran but found nothing doesn't
+  count. For a folder that may be empty (a new destination), read `ls -ld <folder>` with
+  `nonempty`: a count of its contents is 0 there and proves nothing, and a bare `test -d` prints
+  nothing, so it never meets an evidence rule. A system the work only reads gets
+  `"write": "not needed: <why>"`. Prove identity where a stand-in could pass: an empty folder passes
+  `ls` as well as a mounted drive, so read a marker file on the drive (or compare device ids).
+- **A control that must fail.** The read command pointed at a path that doesn't exist, or run
+  without the credential or against a remote that doesn't exist. A control changes nothing: never
+  delete, move or overwrite something to make it fail (the script rejects the common ones: rm, mv,
+  cp, tee, touch, a redirect). If the control succeeds, the read proved nothing; if it fails only
   because the command is missing or doesn't parse, it proved nothing either, and the script says
   so. For a write that creates something on a server, the control is the same request with a
   required field left out, so the server refuses it before anything exists; never a "deliberately
   invalid" value, which the server may accept.
 - **Shared systems need a yes.** Mark a system `"shared": true` when its write would reach
-  something other people use or that lives off this machine (a remote repo, an API, a mailbox). The
-  script skips that write until you rerun with `--allow-shared`, which you pass only after the
-  user agrees to that exact write.
+  something other people use or that lives off this machine (a remote repo, an API, a mailbox).
+  The script skips those writes until you rerun with `--allow-shared "<name>"`, naming only the
+  systems whose exact write the user agreed to.
 - **"Unreachable" needs a probe.** If you plan around a system you believe can't be reached, give
   it `"unreachable": {"why": "...", "probe": "<command that fails while it is unreachable>"}`. If
   the probe succeeds, the plan is wrong.
 - The script runs each command with `bash -eu -o pipefail`, rejects `||`, `; true`, `set +e`,
-  `exit 0` and secrets written into commands (use environment variables), and blanks secret-looking
-  output. These catch slips, not intent: an honest check is still your job.
+  `exit 0`, `mkdir` and secrets written into commands (use environment variables), and blanks
+  secret-looking output. The report goes into `STATE.md`, so never make a probe print a credential.
+  These checks catch slips, not intent: an honest check is still your job.
 
 **Exit 1 means stop.** Send the user every BLOCKERS line with its fix in one message, then wait.
 Never work around a blocker: don't create a missing drive's folder, write somewhere else, or switch

@@ -1,0 +1,13 @@
+{
+  "project": "recipe card cleanup (demo material)",
+  "systems": [
+    {
+      "name": "recipe cards",
+      "covers": "recipes/ only: the 50 cards in MANIFEST.tsv",
+      "fix": "put the recipe cards back at recipes/ in this folder; don't create the folder by hand",
+      "read": { "run": "ls recipes | wc -l", "expect": "number>=1" },
+      "write": { "run": "printf ok > recipes/.preflight && cat recipes/.preflight && rm recipes/.preflight", "expect": "contains:ok" },
+      "control": { "run": "ls recipes/no-such-card.txt", "why": "a missing card must fail, or the read proves nothing" }
+    }
+  ]
+}
