@@ -1,0 +1,10 @@
+# Workspace material for each prompt is listed in TRIALS.md (demo files only).
+should:
+  - Start a new repo for my recipe scaler script, the notes are in recipe-idea.md
+  - Make the scans/ folder a proper git repo, I want it on GitHub eventually
+  - I want to build a small habit-tracker web app. Set up the project the right way before we write any code.
+should_not:
+  - Add a CLAUDE.md that describes this existing repo
+  - Set this up so any session can carry on the wiki migration over the next few weeks
+  - Commit what I've changed with a clear message
+  - Write a plan for how we'll build the habit tracker, with steps and a done-check
