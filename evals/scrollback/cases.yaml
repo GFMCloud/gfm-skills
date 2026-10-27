@@ -1,0 +1,51 @@
+# All fixtures are demo material, labelled in the files. regress/good.html is the checker's
+# known-good specimen, used by regress.py, not by the cases.
+cases:
+  - id: status-build
+    prompt: Build a status page for our sync service from status.json, in the Scrollback terminal style. One self-contained HTML file, status.html.
+    setup:
+      - files/status-build/status.json
+    expect:
+      - status.html starts from the shipped stylesheet (tokens unchanged, for example made with scripts/new_page.py) and scripts/check_scrollback.py --shots reports result pass, with no sideways scroll at 375px
+      - Each component's state is a word (ok, degraded, failed) in a status pill; degraded and failed use the signal colours, ok is bright, and nothing is green
+      - Uses only facts from status.json (four components, uptime, quota 3,400 of 10,000, three incidents); sparklines or bars are drawn from the latency arrays and carry role="img" with an aria-label naming shape, range and endpoint
+      - The accent appears only on frame titles, data marks and focus; no rounded corners, bold, shadows, gradients or emoji
+      - The reply gives the checker's result line and names one thing seen in each screenshot (or says the render check did not run)
+    grader: human
+
+  - id: invoice-restyle
+    prompt: Restyle invoice.html (and its style.css) into the Scrollback terminal look. Keep everything the invoice says and does.
+    setup:
+      - files/invoice-restyle/invoice.html
+      - files/invoice-restyle/style.css
+    expect:
+      - Keeps every line item, quantity, price, total, the address, invoice number and dates, the billing mailto link, the table id "items" and printInvoice() wired to the print button
+      - Uses the document pattern (a surface panel inside a frame) with no signal colours; "Paid" stays as a word but is not green, and the emoji are gone
+      - The restyled page passes scripts/check_scrollback.py (with --shots if it ran), including no sideways scroll at 375px (the old fixed 720px table is fixed)
+      - The print button is an outlined button, not a filled accent button, and the link is bright with a dashed underline, not blue
+      - The reply lists what changed and what was kept, and says the old style.css is no longer used or was replaced
+    grader: human
+
+  - id: check-dashboard
+    prompt: Does dashboard.html follow Scrollback? Tell me what's off. Don't change anything.
+    setup:
+      - files/check-dashboard/dashboard.html
+    expect:
+      - Runs scripts/check_scrollback.py and reports its findings, at least the radius on the document, accent on links, the bold total, the green ok pill, the nested frame and the legend with a second series colour
+      - Also flags the marketing lead sentence ("blazing-fast ... delight your whole team") as breaking the voice, which the checker does not catch
+      - Gives a fix for each item (for example split the nested frame into its own frame, split the two-team chart into small multiples)
+      - Changes no file in the working folder and writes no screenshots there (uses a temporary folder for --out, or no --shots), apart from RESULT.md
+    grader: human
+
+  - id: chart-split
+    prompt: Add a chart of weekly runs per team from runs.csv to dashboard.html.
+    setup:
+      - files/chart-split/dashboard.html
+      - files/chart-split/runs.csv
+    expect:
+      - Draws the three teams as three small single-series charts (or one chart per team) on a shared scale, with no legend and no second series colour; all marks use the accent
+      - Bar heights are computed from runs.csv (ingest rises 22 to 88, billing flat near 35 to 41, search 12 to 30), each chart labelled with its team and latest value, each with role="img" and an aria-label
+      - The new chart sits in its own frame; the rest of the page is unchanged
+      - dashboard.html still passes scripts/check_scrollback.py (with --shots if it ran)
+      - If the reply mentions general chart guidance, it says Scrollback's one-accent, no-legend rule takes precedence inside this page
+    grader: human

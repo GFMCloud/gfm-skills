@@ -1,0 +1,240 @@
+/* Scrollback SB-01, rev 1.1: the stylesheet.
+   This file is the only place the system's CSS is edited. A page inlines or links a copy; that
+   copy is generated output, so fixes go here first.
+   Font: the stack tries a licensed mono first (Berkeley Mono, if the reader has it installed),
+   then JetBrains Mono, which a page loads from Google Fonts or hosts itself. */
+
+/* tokens: the names are an API (see references/rulings.md, "Token contract") */
+:root{
+  /* core: exactly seven */
+  --canvas:#11110F;
+  --surface:#171715;
+  --rule:#494844;
+  --muted:#8A8781;
+  --text:#B7B4AD;
+  --bright:#E9E7E1;
+  --accent:#2E8EFF;
+  /* extension A: separators inside a --surface panel */
+  --rule-dim:#2B2B29;
+  /* extension B: system state only (logs, validation, alerts) */
+  --signal-warn:#E5A13A;
+  --signal-fail:#F26A5A;
+  /* layout */
+  --mono:"Berkeley Mono","JetBrains Mono","SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  --u:8px;
+  --measure:72ch;
+  --dash:repeating-linear-gradient(90deg,var(--rule) 0 8px,transparent 8px 18px);
+  --dash-dim:repeating-linear-gradient(90deg,var(--rule-dim) 0 8px,transparent 8px 18px);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;background:var(--canvas);color:var(--text)}
+body{
+  font:400 15px/1.6 var(--mono);
+  font-variant-numeric:tabular-nums;
+  padding:calc(var(--u)*6) calc(var(--u)*4) calc(var(--u)*12);
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+h1,h2,h3,h4,strong,b,th{font-size:inherit;font-weight:400}
+h1,h2,h3,h4{margin:0;color:var(--bright)}
+em,i,cite{font-style:normal}
+p{margin:0;max-width:var(--measure)}
+code{font:inherit;color:var(--bright)}
+img,svg{max-width:100%}
+
+/* column */
+.stack{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:calc(var(--u)*10)}
+
+/* the frame: dashed rules drawn as gradients so the dash phase never drifts, + glyph corners */
+.frame{
+  position:relative;
+  padding:calc(var(--u)*6) calc(var(--u)*6) calc(var(--u)*5);
+  background:
+    var(--dash) top left/100% 1px no-repeat,
+    var(--dash) bottom left/100% 1px no-repeat,
+    repeating-linear-gradient(180deg,var(--rule) 0 14px,transparent 14px 44px) top left/1px 100% no-repeat,
+    repeating-linear-gradient(180deg,var(--rule) 0 14px,transparent 14px 44px) top right/1px 100% no-repeat;
+}
+.frame > .c{position:absolute;color:var(--rule);font-size:15px;line-height:1}
+.c.tl{top:-7px;left:-4px}.c.tr{top:-7px;right:-4px}
+.c.bl{bottom:-8px;left:-4px}.c.br{bottom:-8px;right:-4px}
+.ttl{
+  position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);
+  max-width:calc(100% - 48px);overflow:hidden;text-overflow:ellipsis;
+  padding:0 calc(var(--u)*1.5);background:var(--canvas);
+  color:var(--accent);font-size:13px;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;
+}
+.ttl::before{content:"[ "}.ttl::after{content:" ]"}
+
+/* type roles: emphasis is a brightness step, never weight or size */
+.lead{font-size:19px;line-height:1.5;max-width:var(--measure)}
+.sub,.dim{color:var(--muted)}
+.br{color:var(--bright)}
+.cap{color:var(--muted);font-size:13px}
+.eyebrow{color:var(--muted);font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.eyebrow::before{content:"[ "}.eyebrow::after{content:" ]"}
+
+/* masthead */
+.mast{display:flex;flex-direction:column;gap:calc(var(--u)*3)}
+.mast .wm{color:var(--bright);font-size:clamp(24px,7vw,40px);line-height:1.1;letter-spacing:.2em;text-transform:uppercase;overflow-wrap:anywhere}
+.mast .wm .bk{color:var(--rule)}
+.mast .strip{display:flex;flex-wrap:wrap;gap:calc(var(--u)*1) calc(var(--u)*4);color:var(--muted);font-size:13px}
+.mast .strip .v{color:var(--text)}
+.hr{height:1px;background:var(--dash)}
+.hr.dim{background:var(--dash-dim)}
+
+/* layout helpers */
+.scroll{overflow-x:auto}
+.rows{display:flex;flex-direction:column;gap:calc(var(--u)*3)}
+.rows.tight{gap:calc(var(--u)*1)}
+.rows.wide{gap:calc(var(--u)*5)}
+.cols{display:flex;gap:calc(var(--u)*6)}
+.cols > *{flex:1;min-width:0}
+.r{text-align:right}
+.nw{white-space:nowrap}
+
+/* links, focus, selection */
+a{color:var(--bright);text-decoration:underline dashed var(--rule);text-underline-offset:4px;transition:text-decoration-color 120ms linear}
+a:hover{text-decoration-style:solid;text-decoration-color:var(--bright)}
+:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+::selection{background:var(--bright);color:var(--canvas)}
+
+/* 1 data table */
+table{width:100%;border-collapse:collapse}
+th{color:var(--text);text-align:left;padding:0 0 calc(var(--u)*1);white-space:nowrap}
+td{padding:calc(var(--u)*.75) 0;vertical-align:top}
+th+th,td+td{padding-left:calc(var(--u)*3)}
+tr.sep > td{padding:calc(var(--u)*1) 0}
+tr.sep > td::before{content:"";display:block;height:1px;background:var(--dash)}
+tfoot td{color:var(--bright)}
+
+/* 2 flow */
+.flow{display:flex;align-items:flex-end;gap:calc(var(--u)*3)}
+.flow .node{display:flex;flex-direction:column;gap:calc(var(--u)*1);align-items:flex-start}
+.flow .leader{flex:1;height:1px;background:var(--dash);margin-bottom:calc(var(--u)*4)}
+.flow .glyph{color:var(--muted);margin-bottom:calc(var(--u)*3)}
+.flow .step{color:var(--text);margin-bottom:calc(var(--u)*3)}
+
+/* 3 spec diagram: accent corner brackets, never a closed box */
+.spec-box{position:relative;padding:calc(var(--u)*3) calc(var(--u)*4);max-width:520px;margin:0 auto}
+.spec-box > .k{position:absolute;width:14px;height:14px;border:1px solid var(--accent)}
+.k.tl{top:0;left:0;border-width:1px 0 0 1px}.k.tr{top:0;right:0;border-width:1px 1px 0 0}
+.k.bl{bottom:0;left:0;border-width:0 0 1px 1px}.k.br{bottom:0;right:0;border-width:0 1px 1px 0}
+.formula{text-align:center;margin-top:calc(var(--u)*4)}
+
+/* 4 document (invoice, receipt, statement) */
+.doc{background:var(--surface);padding:calc(var(--u)*7);font-size:13px}
+.doc .drule{height:1px;margin:calc(var(--u)*3) 0;background:var(--dash-dim)}
+.doc .meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:calc(var(--u)*4)}
+.doc dl{margin:0;display:grid;grid-template-columns:auto auto;gap:calc(var(--u)*.25) calc(var(--u)*3)}
+.doc dt{color:var(--muted)}
+.doc dd{margin:0;text-align:right;color:var(--bright)}
+.doc .totals{margin-left:auto;width:min(340px,100%)}
+.doc .totals .row{display:flex;justify-content:space-between;gap:calc(var(--u)*4)}
+.doc .totals .total{color:var(--bright)}
+
+/* 5 chart: flat accent bars, one series */
+.bars{display:flex;align-items:flex-end;gap:3px;height:48px}
+.bars > i{display:block;width:16px;background:var(--accent)}
+
+/* 6 status pill: a bracketed word, word first and colour second */
+.pill{color:var(--muted);font-size:13px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.pill::before{content:"[ "}.pill::after{content:" ]"}
+.pill.ok{color:var(--bright)}
+.pill.live{color:var(--accent)}
+.pill.warn{color:var(--signal-warn)}
+.pill.fail{color:var(--signal-fail)}
+
+/* 7 log stream */
+.log{display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:1.7}
+.log .ln{display:grid;grid-template-columns:9ch 5ch 1fr;gap:calc(var(--u)*2)}
+.log .t{color:var(--muted)}
+.log .s{color:var(--text)}
+.log .warn .s{color:var(--signal-warn)}
+.log .fail .s{color:var(--signal-fail)}
+.log .fail .m{color:var(--bright)}
+
+/* 8 command block: white-space:pre is load-bearing */
+.cmd,pre{margin:0;background:var(--surface);padding:calc(var(--u)*3);font:13px/1.7 var(--mono);white-space:pre;overflow-x:auto;color:var(--text)}
+.cmd .p{color:var(--muted)}
+.cmd .in{color:var(--bright)}
+
+/* 9 spec sheet */
+.spec{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:calc(var(--u)*.25) calc(var(--u)*2)}
+.spec .lbl{color:var(--muted);white-space:nowrap}
+.spec .dots{border-bottom:1px dotted var(--rule);transform:translateY(-4px)}
+.spec .val{color:var(--bright);text-align:right;white-space:nowrap}
+
+/* 10 meter: track and fill must be blocks or a % width computes to 0 */
+.meter{display:grid;grid-template-columns:14ch 1fr 6ch;align-items:center;gap:calc(var(--u)*2);font-size:13px}
+.meter .label{color:var(--muted)}
+.meter .track{display:block;height:8px;background:var(--rule-dim)}
+.meter .fill{display:block;height:8px;background:var(--accent)}
+.meter .fill.warn{background:var(--signal-warn)}
+.meter .fill.fail{background:var(--signal-fail)}
+.meter .val{color:var(--bright);text-align:right}
+
+/* 11 sparkline: see components.md; colours come from var() in the SVG */
+.spark{display:flex;align-items:center;gap:calc(var(--u)*2);font-size:13px}
+.spark svg{flex:none}
+
+/* 12 note */
+.note{border-left:1px solid var(--muted);padding-left:calc(var(--u)*3);max-width:var(--measure)}
+.note .h{color:var(--muted);font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.note.warn{border-left-color:var(--signal-warn)}.note.warn .h{color:var(--signal-warn)}
+.note.fail{border-left-color:var(--signal-fail)}.note.fail .h{color:var(--signal-fail)}
+
+/* 13 tree */
+pre.tree .g{color:var(--muted)}
+pre.tree .d{color:var(--bright)}
+pre.tree .k{color:var(--muted)}
+
+/* 14 field and button */
+.field{display:flex;flex-direction:column;gap:calc(var(--u)*1)}
+.field label{color:var(--muted);font-size:13px}
+.field input,.field select,.field textarea{
+  font:inherit;color:var(--bright);background:var(--surface);
+  border:0;border-bottom:1px solid var(--muted);padding:calc(var(--u)*1.5) calc(var(--u)*2);width:100%;
+}
+.field ::placeholder{color:var(--muted)}
+.btn{
+  font:inherit;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text);background:none;border:1px solid var(--muted);
+  padding:calc(var(--u)*1.25) calc(var(--u)*3);cursor:pointer;
+  transition:color 120ms linear,border-color 120ms linear;
+}
+.btn:hover{color:var(--bright);border-color:var(--text)}
+.btn[disabled]{color:var(--rule);border-color:var(--rule-dim);cursor:not-allowed} /* --rule text on purpose: inactive controls are exempt from contrast floors */
+
+/* paper: print only; there is no light theme for screens */
+@media print{
+  /* browsers drop backgrounds when printing; the rules, bars and panels are backgrounds */
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  :root{
+    --canvas:#F2F1EC;--surface:#E8E6E0;--rule:#B5B2AA;--rule-dim:#D2CFC8;
+    --muted:#6E6B65;--text:#3A3833;--bright:#1B1B18;--accent:#1660C8;
+    --signal-warn:#8A5A08;--signal-fail:#A33526;
+  }
+  body{padding:0;font-size:11pt}
+  .frame,.doc{break-inside:avoid}
+}
+
+/* phone */
+@media (max-width:640px){
+  body{padding:calc(var(--u)*5) calc(var(--u)*2) calc(var(--u)*8)}
+  .stack{gap:calc(var(--u)*7)}
+  .frame{padding:calc(var(--u)*5) calc(var(--u)*3) calc(var(--u)*4)}
+  .ttl{font-size:11px;letter-spacing:.12em}
+  .cols,.flow{flex-direction:column;align-items:stretch;gap:calc(var(--u)*4)}
+  .flow .leader,.flow .glyph{display:none}
+  .doc{padding:calc(var(--u)*3)}
+  .bars > i{width:10px}
+  .log .ln{display:block}
+  .log .t,.log .s{margin-right:1ch}
+  .meter{grid-template-columns:10ch 1fr 5ch;gap:calc(var(--u)*1)}
+  .spec{grid-template-columns:1fr}
+  .spec .dots{display:none}
+  .spec .val{text-align:left;margin-bottom:calc(var(--u)*1)}
+  th+th,td+td{padding-left:calc(var(--u)*2)}
+}
