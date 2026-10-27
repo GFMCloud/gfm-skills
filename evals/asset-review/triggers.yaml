@@ -1,0 +1,11 @@
+# Each prompt runs in a workspace holding the matching demo asset from files/.
+should:
+  - Would a sales leader actually use this sell sheet? (sell-sheet.md)
+  - Is this one-pager field-ready before it goes out to the reps? (sell-sheet.md)
+  - Pressure-test this cold email to CFOs. Will it land? (email.md)
+  - Give me a sales gut check on this case study. (case-study.md)
+should_not:
+  - Does this deck read, or is it too busy? (deck-outline.md)
+  - This email sounds like AI wrote it. Make it sound like a person. (email.md)
+  - Get two independent reviewers to check this sell sheet before it ships. (sell-sheet.md)
+  - Summarise this case study in three bullet points for my notes. (case-study.md)
