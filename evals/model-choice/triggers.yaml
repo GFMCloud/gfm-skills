@@ -5,6 +5,7 @@ should:
   - I have 500 product descriptions in products.jsonl to tag by category. Can a local model on my laptop do it instead of burning my usage?
   - We use Codex. What reasoning effort should I set for each job in jobs.md?
   - Have a strong model review this repo and write a plan a cheaper model can execute
+  - We need the same config fix checked across all 60 services in services.md. Should I use a multi-agent workflow for this or just do it here?
 should_not:
   - Which Claude model should our support bot's code call through the API to keep costs down? The code is in bot/
   - Get a few independent opinions on whether we should ship the pricing change in pricing-plan.md

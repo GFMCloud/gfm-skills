@@ -1,0 +1,66 @@
+# Services (demo fixture for the model-choice workflow trigger; invented names)
+
+The shared config key `retry.max_backoff` was set to 0 in a template copied into every service. Each service needs checking and, where wrong, fixing.
+
+| Service | Repo folder | Owner |
+| :--- | :--- | :--- |
+| svc-01 | services/svc-01 | team-2 |
+| svc-02 | services/svc-02 | team-3 |
+| svc-03 | services/svc-03 | team-4 |
+| svc-04 | services/svc-04 | team-5 |
+| svc-05 | services/svc-05 | team-6 |
+| svc-06 | services/svc-06 | team-1 |
+| svc-07 | services/svc-07 | team-2 |
+| svc-08 | services/svc-08 | team-3 |
+| svc-09 | services/svc-09 | team-4 |
+| svc-10 | services/svc-10 | team-5 |
+| svc-11 | services/svc-11 | team-6 |
+| svc-12 | services/svc-12 | team-1 |
+| svc-13 | services/svc-13 | team-2 |
+| svc-14 | services/svc-14 | team-3 |
+| svc-15 | services/svc-15 | team-4 |
+| svc-16 | services/svc-16 | team-5 |
+| svc-17 | services/svc-17 | team-6 |
+| svc-18 | services/svc-18 | team-1 |
+| svc-19 | services/svc-19 | team-2 |
+| svc-20 | services/svc-20 | team-3 |
+| svc-21 | services/svc-21 | team-4 |
+| svc-22 | services/svc-22 | team-5 |
+| svc-23 | services/svc-23 | team-6 |
+| svc-24 | services/svc-24 | team-1 |
+| svc-25 | services/svc-25 | team-2 |
+| svc-26 | services/svc-26 | team-3 |
+| svc-27 | services/svc-27 | team-4 |
+| svc-28 | services/svc-28 | team-5 |
+| svc-29 | services/svc-29 | team-6 |
+| svc-30 | services/svc-30 | team-1 |
+| svc-31 | services/svc-31 | team-2 |
+| svc-32 | services/svc-32 | team-3 |
+| svc-33 | services/svc-33 | team-4 |
+| svc-34 | services/svc-34 | team-5 |
+| svc-35 | services/svc-35 | team-6 |
+| svc-36 | services/svc-36 | team-1 |
+| svc-37 | services/svc-37 | team-2 |
+| svc-38 | services/svc-38 | team-3 |
+| svc-39 | services/svc-39 | team-4 |
+| svc-40 | services/svc-40 | team-5 |
+| svc-41 | services/svc-41 | team-6 |
+| svc-42 | services/svc-42 | team-1 |
+| svc-43 | services/svc-43 | team-2 |
+| svc-44 | services/svc-44 | team-3 |
+| svc-45 | services/svc-45 | team-4 |
+| svc-46 | services/svc-46 | team-5 |
+| svc-47 | services/svc-47 | team-6 |
+| svc-48 | services/svc-48 | team-1 |
+| svc-49 | services/svc-49 | team-2 |
+| svc-50 | services/svc-50 | team-3 |
+| svc-51 | services/svc-51 | team-4 |
+| svc-52 | services/svc-52 | team-5 |
+| svc-53 | services/svc-53 | team-6 |
+| svc-54 | services/svc-54 | team-1 |
+| svc-55 | services/svc-55 | team-2 |
+| svc-56 | services/svc-56 | team-3 |
+| svc-57 | services/svc-57 | team-4 |
+| svc-58 | services/svc-58 | team-5 |
+| svc-59 | services/svc-59 | team-6 |
+| svc-60 | services/svc-60 | team-1 |
