@@ -15,6 +15,9 @@ Work is done when a check you ran says so, not when it looks done. This skill ha
 **Every report ends with a `Not checked` list. If everything was checked, write `Not checked: none`
 and say why that's true.** A missing list reads as "everything was checked".
 
+Making a deploy, fixing it until it works where users reach it, writing a smoke test or reviewing a
+site before launch: the deploy-verify skill.
+
 ## Prove
 
 1. **Write down the claims you are about to make.** "Fixed", "works", "deployed", "imported",
