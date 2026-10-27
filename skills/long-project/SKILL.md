@@ -26,6 +26,8 @@ Set one up only when both hold:
 Otherwise say which test fails and do the right thing instead: do the task now, or write a short
 to-do list. A scheduled repeat ("every morning") is a scheduling job, not this. A brand-new repo
 for the work is the project-start skill's job first; this project's folder then sits beside it.
+A one-off handoff file for a single next session is the handoff skill's job; a project with
+`STATE.md` keeps using that file.
 
 ## 2. Pick the shape
 

@@ -74,7 +74,9 @@ line (done or not, and what's left) before the blocks.
 ## Lint
 
 Before you send a hand-over, instructions or status message, save the draft and run
-`python3 scripts/lint_message.py <draft.md>` (or pipe it in with `-`). It flags:
+`python3 scripts/lint_message.py <draft.md>` (or pipe it in with `-`). Writing a hand-over file for a
+new session, agent or person from scratch is the handoff skill's job (it runs this lint on its file).
+The lint flags:
 
 - leftover placeholders (`YOUR_KEY`, `{{name}}`, `<path>`, `TODO`) in commands and text
 - a code block whose language doesn't match its contents (Python in a `bash` block)
