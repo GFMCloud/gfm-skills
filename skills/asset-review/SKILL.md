@@ -95,7 +95,7 @@ Don't imitate any real person, and don't swear.
 | Several independent reviewers, or a go/no-go panel | `second-opinion` |
 | Text that sounds machine-written | `de-ai` |
 | Claims checked against the files or system they describe | `doc-vs-reality` |
-| Summarising a long document, such as an RFP, into notes | a summarising or document skill |
+| Summarising a long document, such as an RFP, into notes | `doc-digest` |
 
 When a request mixes jobs ("is this deck field-ready, and is it too busy?"), review the message and
 name the other check under **Not reviewed**, with the skill that does it.

@@ -24,7 +24,8 @@ Set one up only when both hold:
   and its output.
 
 Otherwise say which test fails and do the right thing instead: do the task now, or write a short
-to-do list. A scheduled repeat ("every morning") is a scheduling job, not this.
+to-do list. A scheduled repeat ("every morning") is a scheduling job, not this. A brand-new repo
+for the work is the project-start skill's job first; this project's folder then sits beside it.
 
 ## 2. Pick the shape
 

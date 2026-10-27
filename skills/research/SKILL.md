@@ -155,7 +155,7 @@ rounds in a row add nothing; say what is still open.
 - A judgment call (should we, which plan is better): the second-opinion skill. This skill can
   supply the facts the judgment needs.
 - Whether your own fix, deploy or import worked: the proof-of-work skill.
-- Notes or a summary of one long document the user supplied: not research; summarise it directly.
+- Notes or a summary of one long document the user supplied: the doc-digest skill.
 - Change nothing: no installs, no edits to the user's files, no messages. The only files this skill
   leaves behind are deep-mode notes files (`references/deep.md`); a behaviour test's scratch folder
   is removed when the test is done (step 3).

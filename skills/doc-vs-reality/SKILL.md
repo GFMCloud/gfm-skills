@@ -1,6 +1,6 @@
 ---
 name: doc-vs-reality
-description: Checks a document's factual claims (counts, paths, commands, versions, status words) against the files or system it describes, with evidence. Use when asked if a README, spec or status note is still accurate. Not for writing or editing docs.
+description: Checks a document's factual claims (counts, paths, commands, versions, status words) against the files or system it describes, with evidence. Use when asked if a README, spec or status note is still accurate. Not for writing docs or outside-world facts.
 metadata:
   status: draft
   codex-check: "pending: not yet tried in Codex triggers; must pass before stable"
@@ -28,7 +28,9 @@ A clean pass still gets that line.
 1. **Name the ground truth first.** Prefer what is running (a command and its output), then what
    is on disk (files, `git log`). Another document is not ground truth; it is another claim.
 2. **Extract claims, not meaning.** Read once and list every statement a command could disprove,
-   with its file and line. Skip opinions and intent. The usual suspects:
+   with its file and line. Skip opinions and intent. A claim about the outside world (a third-party
+   release, a support date, a price) is the research skill's job; hand it over, or do both halves if
+   asked for both. The usual suspects:
 
    | Kind | Looks like | Check with |
    | :--- | :--- | :--- |
