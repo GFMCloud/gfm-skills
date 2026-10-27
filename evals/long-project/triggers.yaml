@@ -1,0 +1,9 @@
+should:
+  - We need to move all 40 pages in wiki-migration/ to the new wiki over the next couple of weeks. Set it up so I can work on it across sessions.
+  - Pick up the recipe cleanup where we left off last time
+  - We're moving the photo archive to the new drive over several sessions and deleting the originals at the end. Plan it so any session can resume.
+should_not:
+  - Rename these five photos to lowercase file names
+  - Write a to-do list for finishing the bakery website today
+  - Write up what we decided in today's meeting as a short note
+  - Check whether the numbers in our AGENTS.md are still accurate

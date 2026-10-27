@@ -1,0 +1,21 @@
+{
+  "project": "notes move (demo material)",
+  "systems": [
+    {
+      "name": "old notes",
+      "covers": "../old-notes only",
+      "fix": "restore ../old-notes from the backup",
+      "read": { "run": "ls ../old-notes | wc -l", "expect": "number>=1" },
+      "write": { "run": "printf ok > ../old-notes/.preflight && cat ../old-notes/.preflight && rm ../old-notes/.preflight", "expect": "contains:ok" },
+      "control": { "run": "ls ../old-notes/no-such-folder", "why": "a missing path must fail" }
+    },
+    {
+      "name": "new notes sync folder",
+      "covers": "../new-notes only",
+      "fix": "start the notes app so ../new-notes exists",
+      "read": { "run": "ls ../new-notes | wc -l", "expect": "number>=1" },
+      "write": { "run": "printf ok > ../new-notes/.preflight && cat ../new-notes/.preflight && rm ../new-notes/.preflight", "expect": "contains:ok" },
+      "control": { "run": "ls ../new-notes/no-such-folder", "why": "a missing path must fail" }
+    }
+  ]
+}
