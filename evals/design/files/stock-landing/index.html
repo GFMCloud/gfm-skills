@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tally - Invoicing</title>
+<!-- Demo material for the design eval: a stock landing page for a fictional product. -->
+<style>
+  body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #0b0b1a; color: #e5e7eb; text-align: center; }
+  .hero { padding: 96px 24px; background: linear-gradient(135deg, #6d28d9, #2563eb); }
+  .pill { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.15); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
+  .eyebrow { font-size: 11px; letter-spacing: .25em; text-transform: uppercase; color: #a78bfa; }
+  h1 { font-size: 56px; margin: 16px auto; max-width: 900px; }
+  h1 span { background: linear-gradient(90deg, #f0abfc, #93c5fd); -webkit-background-clip: text; color: transparent; }
+  .cards { display: flex; gap: 24px; justify-content: center; padding: 64px 24px; }
+  .card { width: 280px; padding: 32px; border-radius: 16px; background: rgba(255,255,255,.06); box-shadow: 0 0 40px rgba(124,58,237,.4); backdrop-filter: blur(8px); }
+  .steps { padding: 64px 24px; }
+  .step-num { font-family: monospace; color: #a78bfa; }
+  .btn { display: inline-block; padding: 14px 28px; border-radius: 12px; background: linear-gradient(90deg, #7c3aed, #2563eb); color: #fff; text-decoration: none; }
+  form { padding: 64px 24px; }
+  input { padding: 12px; border-radius: 8px; border: 1px solid #374151; background: #111827; color: #fff; }
+</style>
+</head>
+<body>
+<section class="hero">
+  <span class="pill">New · AI-powered</span>
+  <p class="eyebrow">The future of invoicing</p>
+  <h1>Unlock the power of <span>seamless invoicing</span> for the modern freelancer</h1>
+  <p>Elevate your workflow with our cutting-edge, all-in-one platform.</p>
+  <a class="btn" href="#signup">Get started</a> <a class="btn" href="#features">Learn more</a>
+</section>
+<section class="cards" id="features">
+  <div class="card"><div>⚡</div><h3>Lightning fast</h3><p>Invoices in English, Portuguese and Spanish from one form.</p></div>
+  <div class="card"><div>🔒</div><h3>Secure</h3><p>Exports the SAF-T PT file your accountant files with the tax office.</p></div>
+  <div class="card"><div>🚀</div><h3>Get paid</h3><p>Clients pay by MB Way or SEPA transfer from a link on the invoice.</p></div>
+</section>
+<section class="steps">
+  <h2>How it works</h2>
+  <p><span class="step-num">01</span> Add a client</p>
+  <p><span class="step-num">02</span> Log the words or hours</p>
+  <p><span class="step-num">03</span> Send the invoice</p>
+</section>
+<section>
+  <p>"Tally changed my life." - Sarah K.</p>
+  <p>Trusted by 10,000+ freelancers worldwide</p>
+</section>
+<form id="signup" action="/waitlist" method="post" onsubmit="return checkEmail()">
+  <h2>Join the waitlist</h2>
+  <p>Made in Porto by two former translators. 9 euros a month, first invoice free.</p>
+  <input type="email" name="email" id="email" placeholder="you@example.com" aria-label="Email">
+  <button type="submit" class="btn">Join</button>
+</form>
+<script>
+function checkEmail() { return document.getElementById('email').value.includes('@'); }
+</script>
+</body>
+</html>
