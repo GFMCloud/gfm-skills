@@ -1,0 +1,13 @@
+# Workspaces: build them with make_workspace.py (see cases.yaml). Should 1 and near-miss 2 and 4
+# run in empty-export; should 2 in flaky-totals; should 3 and near-miss 1 and 3 in slow-import
+# (near-miss 1 after one real import run so out/customers.db exists); should 4 in refund-500.
+should:
+  - The export script started writing an empty CSV since yesterday. Debug it.
+  - test_totals fails about one run in five. Find out why.
+  - The import got really slow after my last commit. Figure out what's wrong.
+  - The payment webhook started throwing 500s on Tuesday. Ops put what they captured in incident/. What's broken?
+should_not:
+  - Did the import actually work? Check before I tell the team.
+  - Deploy this fix to staging and make sure it took.
+  - Plan how we'd fix the duplicate-rows bug before touching anything.
+  - Review the last commit for bugs before I push it.

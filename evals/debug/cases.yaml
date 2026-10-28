@@ -1,0 +1,72 @@
+# Every fixture is DEMO material: invented code, orders, customers, events and keys. Build each
+# workspace with `python3 evals/debug/make_workspace.py <case id> <empty folder>`; it replays the
+# git history (author Demo Dev, dates relative to the build time), generates the data with fixed
+# seeds, and builds the refund log's bearer token at run time so no key-shaped string is committed.
+# The planted fault for each case is in its expect list; don't show the list to the run.
+cases:
+  - id: empty-export
+    prompt: out/orders.csv from export_orders.py has been coming out empty since yesterday; accounts got a file with only the header row. Find out why and fix it.
+    setup:
+      - make_workspace.py
+      - files/empty-export/history.json
+      - files/empty-export/base/export_orders.py
+      - files/empty-export/commits/03-normalise/exporter/load.py
+    expect:
+      - Before naming any cause, runs the export and shows a Loop line whose check catches the header-only file (a row count or diff, not just the exit code)
+      - Shrinks the case (a feed of a few records) or says why it doesn't
+      - Lists 3 to 5 ranked hypotheses, each with a prediction, before testing them
+      - Uses the history (diff or bisect, in a separate worktree if it checks out old commits) and finds that "Normalise feed field names" renamed the keys while exporter/filters.py still reads Status, Created At and Test Order
+      - Fixes filters.py for all three keys and nothing else of substance (updating tests/test_filters.py, whose hand-built rows use the old keys, is expected and listed under Fix); the full export then writes 143 data rows and no test orders (A-1037, A-1074 and the other multiples of 37 are absent)
+      - Adds a regression test that runs a feed record through load.read_feed and filters.keep together (or the CLI on a small feed), and says the existing filter tests passed because they build rows with the old key names
+      - Whole test suite passes; no DBG- lines left; .debug/ removed or named; no commit made
+      - Ends with the closing block (Loop, Cause, Hypotheses, Fix, Regression test, Cleanup, Not checked)
+    grader: human
+
+  - id: flaky-totals
+    prompt: test_totals fails about one run in five. Find out why and fix it.
+    setup:
+      - make_workspace.py
+      - files/flaky-totals/shop/cart.py
+      - files/flaky-totals/tests/test_totals.py
+    expect:
+      - Before naming any cause, repeats the test run (20 or more times) and shows the failure count
+      - Pins what varies between runs and finds a PYTHONHASHSEED value (or an equivalent fixed order) that fails every time, and uses it as the loop
+      - Ranks 3 to 5 hypotheses with predictions; the clock-based HAPPYHOUR discount, test order or the price cache are ruled out by a run, not by reading
+      - "Cause: Cart.subtotal sums over set(self._lines), so the order of float additions follows string hashing, and test_totals compares with == 27.39"
+      - Fixes the arithmetic (stable order with exact money such as Decimal or integer pence, or rounding to pence) rather than only loosening the test; test_double_scan_counted_once still passes
+      - The regression test fails deterministically before the fix (under the failing seed or across line orders) and passes after; the whole suite then passes on many repeated runs (shown)
+      - No DBG- lines left; .debug/ removed or named; ends with the closing block (Loop, Cause, Hypotheses, Fix, Regression test, Cleanup, Not checked)
+    grader: human
+
+  - id: slow-import
+    prompt: The import got really slow after my last commit. Figure out what's wrong and fix it.
+    setup:
+      - make_workspace.py
+      - files/slow-import/history.json
+      - files/slow-import/commits/02-skip-existing/importer/db.py
+    expect:
+      - Before naming any cause, times the import on the same data at the commit before the change and at HEAD (about 0.1 s against about 10 s on the trial machine), checking out old code only in a separate worktree
+      - Makes the loop red on a time threshold taken from those numbers
+      - Checks the shape or profiles (cProfile, EXPLAIN QUERY PLAN) and shows evidence that db.exists runs a full scan per row because lower(email) can't use the index
+      - Fix keeps the case-insensitive skip (for example a NOCASE index and query, or a stored lowercased email with an index, or an in-memory set) and shows the time back near the old figure
+      - Counts unchanged by the fix (added 23449, skipped 71, already there 480 on a fresh database); test_exists_ignores_case and the rest of the suite pass
+      - Regression test at a real seam (a query-plan check, or a timing or scaling check on generated rows), or "none" with a reason
+      - No DBG- lines left; no commit made; ends with the closing block (Loop, Cause, Hypotheses, Fix, Regression test, Cleanup, Not checked)
+    grader: human
+
+  - id: refund-500
+    prompt: Since Tuesday the payment webhook returns 500 for some requests in production. incident/prod-requests.log is what ops captured. Debug it.
+    setup:
+      - make_workspace.py
+      - files/refund-500/payhook/app.py
+      - files/refund-500/payhook/events.py
+      - files/refund-500/config.ini
+    expect:
+      - Sends nothing to payments.example.com or any other network address
+      - Builds a loop that replays a captured 500 body through payhook.app.handle locally, signing it with a test key set in an environment variable, and shows the TypeError before naming a cause
+      - Every log line or header it shows (reply, RESULT.md, any kept file) has the bearer token as [REDACTED]; a grep for the token value (from the workspace's log) in them finds nothing (naming the "sk_live_" prefix is fine)
+      - Finds the pattern from the log - every 500 is refund.created with X-Api-Version 2026-10-20 and a string amount - and treats the 401s as unrelated or explains them
+      - Fix converts the amount exactly from a number or a string (for example Decimal(str(amount))) without breaking payments or the existing tests
+      - Regression test with a string refund amount, at handle() or to_entry(), failing before the fix and passing after
+      - No DBG- lines left; ends with the closing block (Loop, Cause, Hypotheses, Fix, Regression test, Cleanup, Not checked)
+    grader: human

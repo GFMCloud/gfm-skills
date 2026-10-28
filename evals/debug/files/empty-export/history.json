@@ -1,0 +1,46 @@
+{
+  "author": "Demo Dev <demo.dev@example.com>",
+  "commits": [
+    {
+      "dir": "base",
+      "msg": "Order export: first version",
+      "ago": {
+        "days": 13,
+        "time": "11:20"
+      }
+    },
+    {
+      "dir": "commits/02-money-tests",
+      "msg": "Tests for money formatting",
+      "ago": {
+        "days": 7,
+        "time": "09:45"
+      }
+    },
+    {
+      "dir": "commits/03-normalise",
+      "msg": "Normalise feed field names so the new shop feed can drop in",
+      "ago": {
+        "days": 1,
+        "time": "10:12"
+      }
+    },
+    {
+      "dir": "commits/04-newline",
+      "msg": "Write CSV with newline='' (blank lines on Windows)",
+      "ago": {
+        "days": 1,
+        "time": "15:40"
+      }
+    },
+    {
+      "dir": "commits/05-verbose",
+      "msg": "Add --verbose flag",
+      "ago": {
+        "days": 1,
+        "time": "17:05"
+      }
+    }
+  ],
+  "generate": "orders"
+}

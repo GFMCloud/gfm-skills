@@ -1,0 +1,28 @@
+{
+  "author": "Demo Dev <demo.dev@example.com>",
+  "commits": [
+    {
+      "dir": "base",
+      "msg": "Customer import: first version",
+      "ago": {
+        "days": 8,
+        "time": "14:00"
+      }
+    },
+    {
+      "dir": "commits/02-skip-existing",
+      "msg": "Skip customers already imported (case-insensitive), validate emails, --debug logging",
+      "ago": {
+        "minutes": 95
+      }
+    },
+    {
+      "dir": "commits/03-readme",
+      "msg": "README: rerunning is safe",
+      "ago": {
+        "minutes": 84
+      }
+    }
+  ],
+  "generate": "customers"
+}
