@@ -1,0 +1,12 @@
+# Workspaces: files/trigger-design/ for every prompt except the host move, which uses files/host-move/.
+should:
+  - Grill me on the plan in DESIGN.md before I commit to it.
+  - Interview me hard about the design in DESIGN.md until we agree on every decision.
+  - "Stress-test my thinking on moving the app to a new host: ask me the questions."
+  - Before anyone writes up steps, ask me every question you need to pin down DESIGN.md, with your recommended answers.
+should_not:
+  - "Plan this first: add CSV export to the weekly report."
+  - Get independent opinions on whether to switch databases; I think I'm anchored.
+  - Plan the migration that drops two columns from the scores table.
+  - Ask me one question if you need to, then add a --dry-run flag to report/weekly_report.py.
+  - Review DESIGN.md and tell me what's wrong with it.

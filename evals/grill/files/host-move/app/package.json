@@ -1,0 +1,8 @@
+{
+  "name": "bakery-orders-demo",
+  "description": "DEMO FIXTURE for the grill skill evals, not a real app",
+  "version": "2.3.0",
+  "engines": { "node": "18.x" },
+  "scripts": { "start": "node server.js", "migrate": "node db/migrate.js" },
+  "dependencies": { "express": "^4.19.0", "pg": "^8.11.0", "multer": "^1.4.5", "node-cron": "^3.0.3" }
+}

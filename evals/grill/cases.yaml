@@ -1,0 +1,67 @@
+# All fixtures under files/ are demo material, labelled DEMO FIXTURE inside each file.
+cases:
+  - id: host-move-round1
+    prompt: Grill me on moving the app in this folder to a managed host. My notes are in NOTES.md and the app is in app/.
+    setup:
+      - files/host-move/NOTES.md
+      - files/host-move/app/package.json
+      - files/host-move/app/docker-compose.yml
+      - files/host-move/app/crontab.txt
+      - files/host-move/app/env.example
+    expect:
+      - Reads app/ before asking and reports facts it found with their source (for example Node 18, Postgres 12, uploads on the VPS disk, backups on the same disk) instead of asking for them
+      - Flags that NOTES.md says there is one cron job while app/crontab.txt has three, and turns it into a question or finding
+      - Asks round 1 only, as numbered questions, each with a recommended answer worded so "yes" accepts it
+      - Round 1 stays at about ten questions or fewer, or says the subject is too big and offers one branch
+      - Leaves questions that depend on an earlier answer for a later round (for example which managed database or scheduler, before the host type is settled), or says they wait
+      - Ends the turn waiting for answers; writes no plan and creates no file other than RESULT.md
+    grader: human
+
+  - id: signup-round2
+    prompt: My answers to round 1 are at the bottom of GRILL-SO-FAR.md. Carry on grilling me.
+    setup:
+      - files/signup-round2/GRILL-SO-FAR.md
+      - files/signup-round2/site/README.md
+      - files/signup-round2/site/mail.config.json
+    expect:
+      - Records Q1 as an accepted recommendation, Q4 as settled by the user, Q3 as delegated (the agent's recommendation), and Q2 as settled to "own SMTP" against the recommendation
+      - Raises the conflict between own SMTP and the facts in site/ (a 200 a day send limit against about 1,400 past customers), either as a push-back question now or held with a stated reason until the list size is settled, without overriding the user
+      - Round 2 asks what the answers unblocked (for example unsubscribe and bounce handling with own SMTP, where the list and first names are stored, the confirmation email) and repeats no settled question
+      - Numbered questions, each with a recommended answer worded so "yes" accepts it; ends waiting for answers
+      - Creates no file other than RESULT.md and edits no fixture file
+    grader: human
+
+  - id: booking-wrapup
+    prompt: The interview so far is in GRILL-SO-FAR.md. Do what the last line asks.
+    setup:
+      - files/booking-wrapup/GRILL-SO-FAR.md
+    expect:
+      - Gives a decision list covering Q1 to Q6 with what was settled, including the 5 pound per head deposit and the 20 minute release, and marks Q5 as delegated
+      - Shows where each decision came from (user, accepted recommendation, delegated, or a fact with its source)
+      - Lists Q7 (booking window) under still open rather than settling it
+      - Asks the user to confirm the list is the shared understanding
+      - Does not write a plan or implement anything, and creates no file other than RESULT.md
+    grader: human
+
+  - id: one-at-a-time
+    prompt: Grill me on IDEA.md, but one question at a time please, I'm on my phone.
+    setup:
+      - files/loyalty-idea/IDEA.md
+    expect:
+      - Asks exactly one question, from the first frontier (not one that depends on an unasked answer)
+      - The question has a recommended answer worded so "yes" accepts it
+      - Does not ask for a fact the file already gives (about 300 regulars, 9 plus 1 free)
+      - Ends waiting for the answer; no plan, and no file other than RESULT.md
+    grader: human
+
+  - id: vague-and-delegate
+    prompt: My answers to round 1 are at the bottom of GRILL-SO-FAR.md. Carry on.
+    setup:
+      - files/vague-and-delegate/GRILL-SO-FAR.md
+    expect:
+      - Treats "maybe" on Q1 as not settled and asks it again, narrower or as a choice between two options
+      - Records Q2 as settled by the user's yes (the exact tag is checked in booking-wrapup's final list, not here)
+      - Takes "decide the rest" as delegating every other open decision, tagged delegated, rather than asking a full new round of them
+      - Either finishes with a decision list (delegated items marked, Q1 still open or re-asked) and asks for confirmation, or asks one last short round limited to Q1 and decisions where a wrong guess would throw work away
+      - Writes no plan and no file other than RESULT.md
+    grader: human
