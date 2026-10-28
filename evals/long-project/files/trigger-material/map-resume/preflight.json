@@ -1,0 +1,13 @@
+{
+  "project": "online booking map (demo material)",
+  "systems": [
+    {
+      "name": "bakery website (read only)",
+      "covers": "../website only, read only",
+      "fix": "restore ../website from the repo",
+      "read": { "run": "cat ../website/STATUS.txt", "expect": "contains:Bakery website" },
+      "write": "not needed: the map only reads the site",
+      "control": { "run": "cat ../website/NO-SUCH-FILE.txt", "why": "the same read without the file must fail" }
+    }
+  ]
+}

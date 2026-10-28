@@ -1,0 +1,13 @@
+{
+  "project": "host move map (demo material)",
+  "systems": [
+    {
+      "name": "shop app (read only)",
+      "covers": "../shop-app only, read only",
+      "fix": "restore ../shop-app from the repo",
+      "read": { "run": "cat ../shop-app/APP-ID.txt", "expect": "contains:demo shop app" },
+      "write": "not needed: the map only reads the app",
+      "control": { "run": "cat ../shop-app/NO-SUCH-ID.txt", "why": "the same read without the marker file must fail" }
+    }
+  ]
+}
