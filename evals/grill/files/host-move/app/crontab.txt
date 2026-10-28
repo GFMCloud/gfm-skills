@@ -1,0 +1,4 @@
+# DEMO FIXTURE: crontab on the old VPS (crontab -l, copied here)
+0 2 * * *   /opt/orders/scripts/backup.sh          # pg_dump to /var/backups on the same disk
+*/15 * * * * /opt/orders/scripts/send-reminders.sh # pickup reminder emails
+30 6 * * 1  /opt/orders/scripts/weekly-report.sh   # Monday sales report to the owner

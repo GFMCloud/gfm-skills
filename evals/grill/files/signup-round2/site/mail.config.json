@@ -1,0 +1,7 @@
+{
+  "_note": "DEMO FIXTURE, not real settings",
+  "smtp_host": "smtp.example-mailhost.test",
+  "from": "hello@example-bakery.test",
+  "plan": "starter",
+  "daily_send_limit": 200
+}

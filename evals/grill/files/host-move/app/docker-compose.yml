@@ -1,0 +1,15 @@
+# DEMO FIXTURE for the grill skill evals, not a real deployment
+services:
+  web:
+    build: .
+    ports: ["3000:3000"]
+    volumes:
+      - ./uploads:/app/uploads   # customer cake photos, stored on the VPS disk
+    environment:
+      DATABASE_URL: postgres://orders@db:5432/orders
+  db:
+    image: postgres:12
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
