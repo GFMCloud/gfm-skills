@@ -1,0 +1,1 @@
+{ "name": "shop-demo", "private": true, "scripts": { "build": "echo build", "smoke": "node src/smoke.js" } }
