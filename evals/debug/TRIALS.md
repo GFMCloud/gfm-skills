@@ -20,7 +20,7 @@ the rerun loaded it.
 Every workspace is built with `python3 evals/debug/make_workspace.py <case> <empty folder>` (DEMO
 material only).
 
-## Codex runs owed (not before 2026-11-02, and only with Graham's OK on the count)
+## Codex runs owed (not before 2026-11-02, and only with the maintainer's OK on the count)
 
 Proposed: 6 runs.
 
