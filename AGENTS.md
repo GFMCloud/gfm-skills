@@ -22,3 +22,8 @@ Follow `docs/house-rules.md`. In short: one folder per skill under `skills/`, a 
 a description of at most about 250 characters in the third person that says what the skill does,
 when to use it and what it is not for, and a body under 500 lines. A skill is `draft` until it has
 evals in `evals/<name>/` and has been tried in both Claude Code and Codex.
+
+Before adding a new skill, decide whether it belongs in one that exists. For a skill from another
+pack, run `intake`; for an idea, follow agent-setup's "Before writing" check. If an existing skill
+produces the same kind of output, fold the new job into it or improve its description instead of
+adding a competitor. A new skill merges as `draft`; house rule 8 decides when it is `stable`.
