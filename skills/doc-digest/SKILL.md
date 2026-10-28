@@ -180,3 +180,4 @@ locations, and anything you could not read.
 - Whether a shared article, repo or tool is worth adopting: the intake skill. This skill says what a
   document says, not whether to act on it.
 - Spreadsheets and data files: not a digest; use a data or spreadsheet tool.
+- Teaching the topic of a document over several sessions: the teach skill; a digest can be one of its sources.

@@ -19,6 +19,8 @@ rewriting. The facts, the argument, the order and the author's voice stay.
 3. `Kept:` anything you deliberately left alone and why (a quotation, a term of art, a legal phrase).
 
 If the text is already plain, say so and change little or nothing. Don't edit for the sake of it.
+A skill, `AGENTS.md` or `CLAUDE.md` is read by agents, not people: tightening one is the agent-setup
+skill's job.
 
 ## Steps
 

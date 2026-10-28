@@ -13,3 +13,8 @@ mostly on a different model from the caller. The skill's fallback (no subagents)
 **Still needed before `stable`: a Codex pass.** At minimum the `db-decision` case (to see which
 reviewer route Codex takes), one "should" trigger and one near-miss. Then change
 `metadata.codex-check` in `SKILL.md` to `pass` and `status` to `stable`.
+
+**2026-10-28, after the grill merge.** The description now ends "Not for code review, facts or
+interviewing the user." and the body names the grill skill. Rerun on Sonnet with grill installed:
+`triggers.yaml` 3 of 3 should loaded second-opinion, 3 of 3 near-misses loaded nothing; grill's 4
+should-prompts all loaded grill, none loaded second-opinion.

@@ -1,6 +1,6 @@
 ---
 name: second-opinion
-description: Gets independent second opinions on a decision, plan or draft from reviewers who never saw the conversation, and shows where they disagree. Use for go/no-go calls, tradeoffs, "am I anchored?", or checking work no test can check. Not for code review or facts.
+description: Gets independent second opinions on a decision, plan or draft from reviewers who never saw the conversation, and shows where they disagree. Use for go/no-go calls, tradeoffs, "am I anchored?", or checking work no test can check. Not for code review, facts or interviewing the user.
 metadata:
   status: draft
   codex-check: "pending: not yet tried in Codex; must pass before stable"
@@ -22,7 +22,9 @@ is given**, not from telling it to be neutral.
 
 A draft that only needs checking against one source document is a plain fact check, not this skill
 (`doc-vs-reality` in this library). Use **Check** when the user asks for independent reviewers, or
-when the work must meet a rubric rather than match one source.
+when the work must meet a rubric rather than match one source. Questioning the user themselves
+until their decisions are settled is the grill skill; this skill asks reviewers who never saw the
+conversation.
 
 ## How to get an independent reviewer
 

@@ -28,7 +28,8 @@ Otherwise say which test fails and do the right thing instead: do the task now, 
 to-do list. A scheduled repeat ("every morning") is a scheduling job, not this. A brand-new repo
 for the work is the project-start skill's job first; this project's folder then sits beside it.
 A one-off handoff file for a single next session is the handoff skill's job; a project with
-`STATE.md` keeps using that file.
+`STATE.md` keeps using that file. Learning a topic over several sessions (lessons, what has stuck)
+is the teach skill's job.
 
 ## 2. Pick the shape
 

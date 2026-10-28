@@ -160,6 +160,7 @@ rounds in a row add nothing; say what is still open.
   supply the facts the judgment needs.
 - Whether your own fix, deploy or import worked: the proof-of-work skill.
 - Notes or a summary of one long document the user supplied: the doc-digest skill.
+- Lessons on a topic over several sessions: the teach skill, which loads this skill to check its sources.
 - Change nothing: no installs, no edits to the user's files, no messages. The only files this skill
   leaves behind are deep-mode notes files (`references/deep.md`); a behaviour test's scratch folder
   is removed when the test is done (step 3).
