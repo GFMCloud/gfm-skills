@@ -30,7 +30,7 @@ that relies on `AGENTS.md` without the import line: Claude Code would stop readi
   that must never happen and why, where generated files come from, who owns what.
 - Each rule as a rule, then the reason: "Run `make check` before saying a change is done; CI runs the
   same target and a red build blocks the release."
-- Commands exactly as typed, with paths relative to the repo.
+- The commands a rule names, exactly as typed, with paths relative to the repo.
 
 ## What doesn't
 
@@ -39,6 +39,8 @@ that relies on `AGENTS.md` without the import line: Claude Code would stop readi
 - Secrets, tokens, internal hostnames. In a file others read: personal details, home-folder paths,
   employer or client names.
 - A personal preference in a committed file (it goes in the user scope or `CLAUDE.local.md`).
+
+For how to word a line, and how to find lines that change nothing, read `writing.md`.
 
 ## Before adding a line
 
