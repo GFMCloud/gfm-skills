@@ -1,0 +1,22 @@
+# Demo workflow.
+name: deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm run build
+      - name: Upload to EdgeCDN
+        run: npx edgecdn deploy dist --zone "$EDGECDN_ZONE_ID"
+        env:
+          EDGECDN_API_TOKEN: ${{ secrets.EDGECDN_API_TOKEN }}
+          EDGECDN_ZONE_ID: ${{ vars.EDGECDN_ZONE_ID }}
+      - name: Smoke test payments
+        run: npm run smoke
+        env:
+          PAYLY_SECRET_KEY: ${{ secrets.PAYLY_SECRET_KEY }}
+          HOOKWISE_SIGNING_SECRET: ${{ secrets.HOOKWISE_SIGNING_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

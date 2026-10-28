@@ -1,0 +1,14 @@
+# Workspaces: should 1 bakery-mail, 2 payments-env, 3 shop-ci, 4 payments-env, 5 dns-cutover;
+# should_not 1 dns-cutover, 2 bakery-mail, 3 shop-ci, 4 bakery-mail, 5 bakery-mail. All demo fixtures.
+should:
+  - Walk me through setting up email sending and the DNS records for the app; I have to click through the console myself.
+  - Make me a script that walks me through creating the payment API keys and storing them; I'll do the dashboard parts.
+  - This repo's CI needs three secrets from different dashboards. Guide me through getting them in.
+  - I have to create the webhook signing secret in the payments dashboard myself. Give me something I can run that gets it stored safely.
+  - We're moving crumb-demo.test from OldHost to NewHost. I'll click through the registrar and both dashboards myself; turn MOVE.md into something I can run step by step.
+should_not:
+  - Plan how we move crumb-demo.test to NewHost before we touch anything; I want to agree the steps first.
+  - Check the status page every morning and tell me when it changes.
+  - Make this folder a git repo with a sensible .gitignore; don't put it on GitHub.
+  - The deploy to staging didn't take; the new order page isn't showing on https://staging.crumb-demo.test. Find out why.
+  - Walk me through how src/mail.js sends the order confirmation emails.
