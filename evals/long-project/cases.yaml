@@ -128,3 +128,77 @@ cases:
       - Does not edit AGENTS.md; gives a list of the lines that would move out for the user to apply
       - Flags missing evidence (dates, method) as unknown rather than inventing it
     grader: human
+
+  - id: map-setup
+    prompt: Moving the shop's sign-in in shop-app/ to a hosted service is too big and too foggy for one session; NOTES.md has what people have raised. Map out the decisions we need to make before anyone builds anything, so we can settle them one at a time over the next few weeks. Don't answer any of them yet.
+    setup:
+      - files/auth-move/NOTES.md
+      - files/auth-move/shop-app/README.md
+      - files/auth-move/shop-app/auth.py
+    expect:
+      - Chooses the Map shape (not phased) and makes a project folder beside shop-app/ with AGENTS.md (load line first), STATE.md, preflight.json, tools/preflight.py, MAP.md and questions/
+      - MAP.md has a destination stated as a decision (not the build), a Decisions so far index that is empty, a Not yet specified list for the vaguer worries, and an Out of scope section; STATE.md points to MAP.md instead of keeping its own decision list
+      - Each sharp question is its own file with a type (research, grill or task; no prototype type), a status, and Blocked by lines that use question names, not numbers
+      - Writes and runs a preflight with a real read of shop-app/ and a control that must fail, and reports the result
+      - Answers no question (no Answer filled, nothing marked answered), changes nothing in shop-app/, and says how to carry on; any unknown it can't settle (such as who decides) is TBD or asked, not invented
+    grader: human
+
+  - id: map-next-question
+    prompt: Carry on with the host move map in host-map/. Take the next open question.
+    setup:
+      - files/host-map/host-map/AGENTS.md
+      - files/host-map/host-map/CLAUDE.md
+      - files/host-map/host-map/STATE.md
+      - files/host-map/host-map/MAP.md
+      - files/host-map/host-map/preflight.json
+      - files/host-map/host-map/tools/preflight.py
+      - files/host-map/host-map/questions/database-size.md
+      - files/host-map/host-map/questions/region.md
+      - files/host-map/host-map/questions/host-limits.md
+      - files/host-map/host-map/questions/host-choice.md
+      - files/host-map/host-map/questions/cut-over-window.md
+      - files/host-map/shop-app/README.md
+      - files/host-map/shop-app/APP-ID.txt
+    expect:
+      - Reads AGENTS.md, STATE.md and MAP.md and runs the preflight before working a question
+      - Picks the region question (the only open, unblocked, unclaimed one), skips host limits because another session has claimed it, and leaves host choice and cut-over window alone because they are blocked
+      - Claims the region question in its file before working it
+      - Treats it as a grill question; asks the user with a recommended answer and does not answer it on the user's behalf (no Answer written, not marked answered, nothing added under Decisions so far)
+      - Notes the day-old host limits claim under Problems found (or asks about it) and does not clear it
+      - Refers to questions by name, takes only this one question, and changes nothing in shop-app/
+    grader: human
+
+  - id: map-record-answer
+    prompt: "In host-map/: the region question is settled. The live data stays in the EU, because all our customers are in Ireland and our privacy notice promises it. Record that and update the map."
+    setup:
+      - files/host-map/host-map/AGENTS.md
+      - files/host-map/host-map/CLAUDE.md
+      - files/host-map/host-map/STATE.md
+      - files/host-map/host-map/MAP.md
+      - files/host-map/host-map/preflight.json
+      - files/host-map/host-map/tools/preflight.py
+      - files/host-map/host-map/questions/database-size.md
+      - files/host-map/host-map/questions/region.md
+      - files/host-map/host-map/questions/host-limits.md
+      - files/host-map/host-map/questions/host-choice.md
+      - files/host-map/host-map/questions/cut-over-window.md
+      - files/host-map/shop-app/README.md
+      - files/host-map/shop-app/APP-ID.txt
+    expect:
+      - Runs the preflight first, then writes the answer into questions/region.md with the user's reason and today's date as evidence, and marks it answered
+      - Adds one line for the region decision under Decisions so far in MAP.md, a gist with a pointer to the file, not the full detail
+      - Graduates the backups fog line (it waited on the region) into a new question file with a type and Blocked by line, and removes it from Not yet specified; leaves the photo uploads fog line, which still waits on the host choice
+      - Leaves host choice blocked (host limits is still claimed, not answered), does not clear that day-old claim (noting it under Problems found is fine), and does not start another question
+      - Updates STATE.md's next step; changes nothing in shop-app/
+    grader: human
+
+  - id: map-no-system
+    prompt: We need to settle the cake subscription offer in NOTES.md over the next few weeks, one decision at a time, before anyone builds a sign-up page. Map out the decisions. Don't answer any of them yet.
+    setup:
+      - files/pricing-map/NOTES.md
+    expect:
+      - Chooses the Map shape and makes a project folder with AGENTS.md (load line first), STATE.md pointing to MAP.md, MAP.md and questions/
+      - Sees that no question reads a system outside the project yet, and does not stall on it - either leaves out the preflight with an AGENTS.md line saying to add one before the first question that reads a system, or writes a preflight only for a real input it names; it does not report a blocker or invent a stand-in system to make the preflight pass
+      - Sharp questions get files with a type and Blocked by names (delivery waits on a research or task question about areas); the vaguer worries sit under Not yet specified
+      - Answers no question, proposes the destination for the user to confirm, and says how to carry on
+    grader: human

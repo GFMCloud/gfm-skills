@@ -1,6 +1,6 @@
 ---
 name: long-project
-description: Sets up, resumes and finishes work spanning many sessions (phased projects, sweeps over many items, experiments, registers of findings to recheck) in files any session can pick up. Proves access first. Use for multi-session work, or to carry on a folder with a STATE.md. Not for one-sitting tasks.
+description: Sets up, resumes and finishes multi-session work (phased projects, sweeps, experiments, rechecks, decision maps) in files any session can pick up. Proves access first. Use for work spanning sessions, "map out the decisions" over weeks, or to carry on a STATE.md folder. Not for one-sitting tasks.
 metadata:
   status: draft
   codex-check: "pending: not yet tried in Codex; must pass before stable"
@@ -21,7 +21,8 @@ Set one up only when both hold:
 - **It won't fit in one session.** Days of work, more items than one context can track, or a
   project that keeps going (a model you keep tuning).
 - **Each part has a checkable "done".** A phase, item or run can be shown finished with a command
-  and its output.
+  and its output. In a decision map, a question is done when its file holds the answer and its
+  evidence, or the user's decision in their words with the date.
 
 Otherwise say which test fails and do the right thing instead: do the task now, or write a short
 to-do list. A scheduled repeat ("every morning") is a scheduling job, not this. A brand-new repo
@@ -37,6 +38,7 @@ A one-off handoff file for a single next session is the handoff skill's job; a p
 | Sweep | Many items, one treatment ("every doc", "all repos") | A frozen list of items, one state file per item, one item planted to fail | `references/sweep.md` |
 | Experiment | No finish line: tuning, modelling, analysis | Predictions written before results, one file per run, a dead-ideas list | `references/experiment.md` |
 | Rulings | Measured decisions that may go stale ("A is faster than B") | One file per decision with its evidence, what would prove it wrong, and a recheck | `references/rulings.md` |
+| Map | The end is known but not the route: too many open decisions to plan yet ("map out what we need to decide") | A destination, one file per open question (research, grill or task) with blocked-by lines, a fog list, one question per session | `references/map.md` |
 
 Read only the reference for the shape you pick. Shapes combine: a phase can be a sweep, and any
 project can keep a rulings folder.
@@ -59,7 +61,8 @@ project can keep a rulings folder.
    - `STATE.md`: the one place a session resumes from (template below).
    - `preflight.json` and `tools/preflight.py`, a copy of this skill's `scripts/preflight.py`, so the
      project runs the same check in any agent and on any machine. Never write the skill's own path
-     into the project.
+     into the project. A map that reads no system yet uses the second line given in
+     `references/map.md` instead.
    - the shape's own files, from its reference.
 3. **Write it fully.** No leftover `<placeholder>`; check with
    `grep -rn --exclude-dir=tools '<[a-zA-Z][^>]*>' <folder>` (a sweep's `state/<id>.md` is the
@@ -77,13 +80,13 @@ Status: not started | in progress: <phase or batch> | done (<date>)
 Next step: <one line a fresh session can act on>
 
 ## Progress
-<phases with checkboxes, or "see MANIFEST.tsv and state/", or "see REGISTER.md">
+<phases with checkboxes, or "see MANIFEST.tsv and state/", or "see REGISTER.md", or "see MAP.md">
 
 ## Evidence
 <commands and their real output: the preflight report, each check that a step is done>
 
 ## Decisions
-<date, decision, who made it, one line why. Append only>
+<date, decision, who made it, one line why. Append only. A map writes "see MAP.md" here>
 
 ## Problems found
 <date, what, where, suggested fix. Raised at the next gate, not one by one>
@@ -167,9 +170,9 @@ the plan adds one: it proves access only at the moment it ran.
    list. "Just finish it" is not that yes. Nothing earlier counts as approval for this step.
 5. **Between gates, don't ask "shall I continue?"** Log anything unexpected under Problems found
    with a suggested fix, and keep going unless it blocks the next step.
-6. **One writer per shared file.** The main session owns `STATE.md`, manifests and registers.
-   Helpers (subagents, parallel workers) each get their own files, a list of files not to touch,
-   and the project's never-do rules repeated in their instructions.
+6. **One writer per shared file.** The main session owns `STATE.md`, `MAP.md`, manifests and
+   registers. Helpers (subagents, parallel workers) each get their own files, a list of files not
+   to touch, and the project's never-do rules repeated in their instructions.
 7. **If a step would break the end state or a rule in `AGENTS.md`, stop and ask.** The step
    changes, not the rule.
 8. **End each session at a clean point:** `STATE.md` current and its next step written, rather

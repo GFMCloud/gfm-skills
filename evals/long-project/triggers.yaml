@@ -3,8 +3,16 @@ should:
   - Pick up the recipe cleanup where we left off last time
   - Carry on with the cleanup in resume/.
   - We're moving the photo archive to the new drive over several sessions and deleting the originals at the end. Plan it so any session can resume.
+  - This auth migration (see auth/NOTES.md) is too big and too foggy for one session. Map out the decisions we need to make before we build anything.
+  - Chart the open questions for moving the app to a new host (hosting/NOTES.md); we'll settle them one at a time over the next few weeks.
+  - "Carry on with the decision map in map-resume/: take the next open question."
 should_not:
   - Rename these five photos to lowercase file names
   - Write a to-do list for finishing the bakery website today
   - Write up what we decided in today's meeting as a short note
   - Check whether the numbers in our AGENTS.md are still accurate
+  - "Plan this change first: add CSV export to the price list in app/."
+  - Write a handoff so a new session can carry on with what we did today in app/.
+  - Find out whether Auth0 supports SAML sign-in today.
+  - Grill me on the cake subscription offer in subscription/NOTES.md until every decision is settled today.
+  - Map out the decisions for the subscription sign-up page (subscription/NOTES.md) so we can plan it this afternoon.

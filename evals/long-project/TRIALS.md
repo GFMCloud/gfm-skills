@@ -7,6 +7,18 @@ House rule 8: tried in Claude Code (Haiku, Sonnet, Opus) and in Codex before `st
 | Claude Code | Sonnet 5 of 5 and Opus 5 of 5. Haiku: set-up cases 6 of 6 on the final description; "carry on" with an existing project 5 of 5 once the project's `AGENTS.md` starts with the load line (2 of 5 before it) | Sonnet 3 of 3 should, 4 of 4 near-miss. Haiku 4 of 4 near-miss; should: wiki and photo plans loaded, "Pick up the recipe cleanup" 5 of 5 with the load line (1 of 2 on the description alone) | done |
 | Codex | not run | not run | **pending** |
 
+## Map shape fold (2026-10-27)
+
+Map was folded in as a fifth shape (`references/map.md`, one table row, step 1's done test), and
+the description gained "decision maps" and "map out the decisions" over weeks. Rerun through the
+`skill-trial` agent on Sonnet and Opus (Sonnet in place of Haiku from here on), demo fixtures only;
+detail in the build's trial log.
+
+| Agent | Eval cases | Triggers | State |
+| :--- | :--- | :--- | :--- |
+| Claude Code | Sonnet 9 of 9 and Opus 9 of 9 (the 5 host cases, `map-setup`, `map-next-question`, `map-record-answer`, `map-no-system`). The three Map cases were rerun on Sonnet after the review fixes. `map-no-system` missed 3 of 3 on Sonnet with the old description (skill not loaded) and passed 5 of 5 on the new ones; Opus passed it on the old one | Sonnet, full file on the final description: 7 of 7 should, 8 of 9 near-miss. The miss: "Map out the decisions ... so we can plan it this afternoon" loads long-project, whose Map reference then sends it back to a one-sitting answer with no project folder | done, one near-miss open |
+| Codex | not run | not run | **pending** |
+
 ## How the Haiku resume misses were fixed
 
 On the description alone, Haiku loaded the skill for set-up requests but often not for "carry on"
@@ -68,5 +80,5 @@ instead of the skill's path on the author's machine.
   are several.
 
 **Still needed before `stable`: a Codex pass** (at minimum `preflight-blocker`,
-`finish-gate-resume`, one "should" trigger and one near-miss). Then set `metadata.codex-check` to
+`finish-gate-resume`, `map-next-question`, the map-resume "should" trigger and one near-miss). Then set `metadata.codex-check` to
 `pass` and `status` to `stable`.
