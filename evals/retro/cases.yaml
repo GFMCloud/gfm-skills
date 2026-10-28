@@ -17,7 +17,7 @@ cases:
     setup:
       - files/quiet-session/session-log.md
     expect:
-      - Replies with one line saying there is no retro because there was no commit, failure or decision
+      - Replies with one line saying there is no retro because there was no commit, failure, decision or lost time
       - Writes no file and invents no lessons
     grader: human
 
@@ -33,4 +33,46 @@ cases:
       - Names the two existing AGENTS.md rules that did not prevent it
       - Proposes a mechanism (a pre-commit hook or CI gate) instead of a third written rule
       - Saves the retro in retros/ because the project already keeps retros there, or says it would
+    grader: human
+
+  - id: lost-time
+    prompt: Run a retro on this session (session-log.md). What should change so the agent doesn't burn time like that again?
+    setup:
+      - files/lost-time/session-log.md
+      - files/lost-time/AGENTS.md
+    expect:
+      - Says the gate is met (lost time, or the partly diagnosed failure) though there was no commit; does not reply "No retro"
+      - Proposes a navigation pointer in AGENTS.md saying the export and report code lives in legacy/reports/, with the 15:04 to 15:31 searches as evidence
+      - Flags config/settings.py read three times in full as a tool-economy finding
+      - Flags that the agent could not see the server's errors (15:40 to 16:05) and proposes a way for it to see them next time, such as writing the dev server's log to a file
+      - Does not claim a root cause or fix beyond what the log shows (the PermissionError on /var/reports is a lead, not a fix)
+      - Proposes edits with exact text and destination, and edits no file itself
+    grader: human
+
+  - id: unwired-check
+    prompt: Retro this session (session-log.md).
+    setup:
+      - files/unwired-check/session-log.md
+      - files/unwired-check/Makefile
+      - files/unwired-check/AGENTS.md
+      - files/unwired-check/.github/workflows/ci.yml
+    expect:
+      - Reads the repo's own check commands (Makefile, CI workflow) before proposing anything
+      - Finds that `make lint` already exists but CI runs only `make test` and no pre-commit hook runs it
+      - Proposes wiring the existing lint into CI and/or a pre-commit hook, not a new linter and not only a sentence in AGENTS.md
+      - Points to the evidence (the 10:50 review comment, the 10:55 `make lint` errors, the CI step list)
+      - Proposes edits with exact text and destination, and edits no file itself
+    grader: human
+
+  - id: decision-test
+    prompt: Do a retro on this session, session-log.md. The project keeps decision records in docs/decisions/.
+    setup:
+      - files/decision-test/session-log.md
+      - files/decision-test/docs/decisions/0001-sqlite.md
+    expect:
+      - Routes the UUIDv7 public-ID choice (with its permanent redirect table) to a new record in docs/decisions/, following the existing record's form
+      - Says why it qualifies (hard to reverse, surprising without its context, a real trade-off), in its own words
+      - Does not make decision records for the helper's file location or for using pytest, and says or shows why (easy to reverse, or not a real trade-off)
+      - Does not make a decision record for the 5-second test timeout (a real trade-off and surprising, but one line to change back); it may go to the instructions file or nowhere
+      - Proposes the record's text and does not create the file itself
     grader: human
