@@ -1,0 +1,9 @@
+{
+  "TEA-01": {"name": "Breakfast tea (DEMO)", "price": 5.15},
+  "MUG-02": {"name": "Stoneware mug (DEMO)", "price": 2.95},
+  "JAM-03": {"name": "Plum jam (DEMO)", "price": 6.6},
+  "OAT-04": {"name": "Oat biscuits (DEMO)", "price": 7.7},
+  "HON-05": {"name": "Heather honey (DEMO)", "price": 4.99},
+  "BAG-06": {"name": "Tote bag (DEMO)", "price": 3.5},
+  "CUP-07": {"name": "Coffee cup (DEMO)", "price": 1.25}
+}
