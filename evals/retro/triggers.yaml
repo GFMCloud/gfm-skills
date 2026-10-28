@@ -2,7 +2,13 @@ should:
   - Let's do a retro on this session
   - What did we learn today, and where should it go so it sticks?
   - That bug took all afternoon. Capture the lessons before we stop
+  - "Run a retro on this session: what should change in the setup so the agent doesn't burn time like that again?"
+  - Look back at how that went and suggest improvements to this repo's checks and instructions
+  - "Retro: the agent kept missing lint errors in this repo. What should change?"
 should_not:
   - Write a status update for my manager on this week's work
   - Summarise the notes from this morning's team meeting
   - Make this page look retro, like an 80s arcade
+  - Write a handoff so I can pick this up tomorrow
+  - "Add a rule to AGENTS.md: always run make check before saying done"
+  - Which lines in my AGENTS.md don't change anything? Trim them
