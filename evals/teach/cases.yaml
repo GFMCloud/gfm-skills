@@ -1,0 +1,61 @@
+cases:
+  - id: sql-start
+    prompt: I want to learn SQL window functions properly over the next couple of weeks. I write monthly sales reports in SQL (see reports/) and keep copying ROW_NUMBER examples without understanding them; I want to write my own ranking and running-total queries. I've got about 15 minutes a session. Keep everything in learn-sql/ in this folder. Set it up and give me the first lesson.
+    setup:
+      - files/sql-start/reports/top-customers.sql
+      - files/sql-start/reports/README.md
+    expect:
+      - Makes learn-sql/ with MISSION.md (why, the goal as something the learner can do, about 15 minutes a session, starting point), RESOURCES.md, NOTES.md and lessons/0001-<slug>.html; writes nothing into reports/
+      - RESOURCES.md lists at least one primary source (a database's own documentation for window functions, not a tutorial blog) with how and when it was checked, or marks it not checked and says why; source vetting goes through the research skill or the reply says it was not available
+      - The lesson is self-contained (no external script, style, font or image) and states one win near the top, sized for about 15 minutes
+      - The lesson ties its example to the learner's reports (the top-customers query or monthly sales), has practice that asks for recall before showing answers, and links one primary source
+      - Writes no learning record that claims something has stuck before the learner has done the lesson
+      - Ends with the lesson's path for the user to open and does not run a command to open it
+    grader: human
+
+  - id: dns-next
+    prompt: Next DNS lesson please. Last time's quiz went badly on TTLs, 2 of 5, and honestly I still mix up CNAME and A records.
+    setup:
+      - files/dns-next/learn-dns/MISSION.md
+      - files/dns-next/learn-dns/RESOURCES.md
+      - files/dns-next/learn-dns/NOTES.md
+      - files/dns-next/learn-dns/records/0001-what-a-lookup-answers.md
+      - files/dns-next/learn-dns/records/0002-a-and-cname.md
+      - files/dns-next/learn-dns/lessons/0001-what-a-lookup-answers.html
+      - files/dns-next/learn-dns/lessons/0002-a-and-cname.html
+      - files/dns-next/learn-dns/lessons/0003-how-long-answers-last.html
+      - files/dns-next/site/README.md
+    expect:
+      - Finds and uses the existing learn-dns/ folder without asking where it is, and creates no second learning folder
+      - Writes new learning records numbered from 0003 (one, or one per topic) with the reported evidence (TTL 2 of 5, CNAME and A still confused); the one about CNAME and A says it revises record 0002 (which claimed they were solid), and 0002 is marked revised
+      - Writes lessons/0004-<slug>.html that targets the shaky parts (TTL, and CNAME versus A as retrieval practice) and ties TTL to the mission's domain move (lowering TTL before the move)
+      - Follows NOTES.md (a small diagram over long paragraphs, under 10 minutes) and links back to lesson 0003
+      - The lesson has one primary source from RESOURCES.md (an RFC or the registrar's own docs), is self-contained, and the reply ends with its path without opening it
+    grader: human
+
+  - id: pl-no-folder
+    prompt: Teach me how to read a P&L statement. I'll come back to it through the week.
+    setup:
+      - files/pl-no-folder/README.md
+      - files/pl-no-folder/app/invoice.py
+    expect:
+      - Writes no learning files into this folder (it is an invoicing app project), and does not silently pick a folder
+      - Asks where to keep the learning folder, proposing a new folder named for the topic
+      - In the same message asks the mission questions (why now, what the learner wants to be able to do, what they know, time per session), each with a proposed answer where the request allows one
+      - Does not produce a lesson or a long explanation in chat before the folder and mission are settled
+    grader: human
+
+  - id: mission-shift
+    prompt: Change of plan on the SQL lessons. My team is moving the reports to pandas, so I need window-style stuff (rank, rolling totals) in pandas instead. Next lesson please.
+    setup:
+      - files/mission-shift/learn-sql/MISSION.md
+      - files/mission-shift/learn-sql/RESOURCES.md
+      - files/mission-shift/learn-sql/NOTES.md
+      - files/mission-shift/learn-sql/records/0001-row-number-partitions.md
+      - files/mission-shift/learn-sql/lessons/0001-row-number-partitions.html
+    expect:
+      - Proposes new MISSION.md wording for the pandas goal and asks the user to confirm before changing MISSION.md
+      - Does not overwrite MISSION.md before the user says yes (it may draft the change in the reply)
+      - Either stops for that yes, or says plainly what it did meanwhile; any lesson it writes is numbered 0002 and builds on record 0001 (partitions and ROW_NUMBER)
+      - Any new primary source for pandas (the pandas documentation) goes into RESOURCES.md with how it was checked
+    grader: human
