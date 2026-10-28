@@ -9,8 +9,8 @@ For a file, it checks the source:
     var(--brand-...) uses it (with only the default brand, the comment alone is a warning)
   - no placeholder text or placeholder-image services; every <img> has alt; every field has a label
   - focus outlines are not removed without a :focus or :focus-visible rule that draws one
-  Warnings: more than 8 font sizes, things loaded from outside the file, open [NEEDS YOUR INPUT], TBD,
-  and elements marked data-sample (sample content to confirm before launch).
+  Warnings: more than 8 font sizes, things loaded from outside the file (font services excepted),
+  open [NEEDS YOUR INPUT], TBD, and elements marked data-sample (sample content to confirm).
 --shots renders the page (file or URL) with playwright at 1280px and 390px wide, writes full-page
 <name>-desktop.png and <name>-phone.png into .design-check/ beside the file (or --out), and fails on
 horizontal scroll at either width, on script errors and on text contrast under 3:1. At phone width
@@ -82,9 +82,11 @@ def source_checks(path):
         problems.append("brand block not found in the page's CSS; run brand.py and paste its :root block "
                         "(or, for a redesign that keeps the page's own colours, its brand-source comment)")
     elif "var(--brand-" not in styles + html:
-        if src.group(1) == "default":
-            warnings.append("brand: default, and no --brand-* variable is used; fine only for a redesign that "
-                            "keeps the page's own colours")
+        if src.group(1) == "default" and "/* dealt:" in styles and "var(--deal-" in styles + html:
+            pass  # no brand, and the colours come from a palette dealt by scripts/deal.py
+        elif src.group(1) == "default":
+            warnings.append("brand: default, and no --brand-* or --deal-* variable is used; fine only for a "
+                            "redesign that keeps the page's own colours")
         else:
             problems.append(f"brand block ({src.group(1)}) is pasted but no var(--brand-...) uses it")
     body = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", html, flags=re.S | re.I)
@@ -121,7 +123,7 @@ def source_checks(path):
         warnings.append(f"{len(sizes)} different font-size values; aim for five or fewer from one scale")
     for t in tags(html, "script") + tags(html, "link") + tags(html, "img") + tags(html, "iframe"):
         url = attr(t, "src") or attr(t, "href") or ""
-        if re.match(r"(https?:)?//", url) and "fonts.googleapis.com" not in url and "fonts.gstatic.com" not in url:
+        if re.match(r"(https?:)?//", url) and not re.search(r"fonts\.(googleapis|gstatic)\.com|(api|cdn)\.fontshare\.com", url):
             warnings.append(f"loads from outside the file: {url}")
     n = raw.count("NEEDS YOUR INPUT")
     if n:

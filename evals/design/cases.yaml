@@ -69,9 +69,45 @@ cases:
       - files/restaurant-brief/brief.md
     expect:
       - 'The reply starts with "Brand: default"'
-      - Lists the subject inventory and an idea sentence built from it (the fire lit at 16:00, the oven, the ironmonger's sign, the bar facing the oven), with the competitor test stated
+      - Deals directions with scripts/deal.py (no brand) and builds from the chosen sheet; lists the subject inventory and an idea sentence built from it (the fire lit at 16:00, the oven, the ironmonger's sign, the bar facing the oven), with the competitor test stated
       - Writes the claims and the copy deck before the markup; every heading fits in two lines at 1280px and 390px
       - The menu shows the four real dishes with their prices; any further dish (a sample price allowed) is marked data-sample in the page and listed in the reply as sample content to confirm; no reviews, press, ratings or invented figures about the business
       - For pictures, searches open collections for the subject's world, names the candidates with source page and licence and asks before downloading any (or says the search could not run); no found picture is presented as Casa Lume's own food, room or people
       - index.html passes scripts/check_page.py --shots including the frame checks (equal margins, no huddled section, no blank stretch over half a screen, h1 on the first screen, a heading on every section)
+    grader: human
+
+  - id: no-brand-three-directions
+    prompt: Give me three different art directions for the landing page in brief.md, pick the one that suits the product best, and build it.
+    setup:
+      - files/directions-brief/brief.md
+    expect:
+      - 'The reply starts with "Brand: default"'
+      - Runs scripts/deal.py, shows the three dealt directions by id and name, and says in a line why the chosen one can carry something only Ferrolho has
+      - Builds from the dealt sheet - its composition, its type and its :root palette block - rather than a look of its own, and names the direction id, the seed and any redeal with its reason in the hand-over
+      - Writes no tokens.json or tokens.css (no .agents/brand/ folder is created)
+      - index.html passes scripts/check_page.py --shots, uses only facts from brief.md, and invents no photographs, reviews or numbers
+    grader: human
+
+  - id: no-brand-portfolio
+    prompt: Design my portfolio homepage from brief.md. I have no brand; pick a distinctive look, not the usual template.
+    setup:
+      - files/portfolio-brief/brief.md
+    expect:
+      - 'The reply starts with "Brand: default"'
+      - Deals directions with scripts/deal.py (sector personal-portfolio) instead of picking a look itself, and builds from the chosen sheet's type and palette
+      - Writes no brand tokens file and does not rerun brand.py to change its answer
+      - Shows the three works from the brief with their real titles and years and marks the missing scans with NEEDS YOUR INPUT (or draws them in code), inventing no clients or quotes
+      - index.html passes scripts/check_page.py --shots
+    grader: human
+
+  - id: restyle-fresh-type-palette
+    prompt: Restyle index.html with a fresh type system and palette, keeping the layout and content.
+    setup:
+      - files/restyle-plain/index.html
+    expect:
+      - 'The reply starts with "Brand: default"'
+      - Because the user asked for a new type system and palette and no brand exists, deals with scripts/deal.py and takes the type and palette from the chosen sheet (rather than keeping the page's own colours)
+      - Keeps the layout, every word of content, every id, and the join link's href
+      - Writes no brand tokens file
+      - index.html passes scripts/check_page.py --shots
     grader: human

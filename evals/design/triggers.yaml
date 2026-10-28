@@ -3,8 +3,13 @@ should:
   - This settings page looks dated, can you redesign it so it works on phones too?
   - Make our sign-up form look better and easier to use
   - Is my dashboard page usable on a phone? Tell me what's wrong, don't change anything yet
+  - Give me three different art directions for the landing page in brief.md, pick the one that suits the product best, and build it.
+  - Design my portfolio homepage from brief.md. I have no brand; pick a distinctive look, not the usual template.
+  - Restyle index.html with a fresh type system and palette, keeping the layout and content.
 should_not:
   - Make a slide deck for the product launch
   - Draw a diagram of how our deploy pipeline works
   - Review the design doc for the database migration
   - We launch on Monday. Is the live site ready? Check broken links and how it looks on phones
+  - Restyle dashboard.html in a monospace terminal look, dark, like a status page in Scrollback.
+  - Make a 20-second launch video showing off index.html.

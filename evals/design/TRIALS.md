@@ -64,3 +64,34 @@ questions set as a section's first `h2` count as titles.
 
 Codex runs owed for this fold (only with the maintainer's OK on the count): 3, namely
 `restaurant-onepage`, `juror-critique-frame` and `redesign-signup`.
+
+## Directions fold (2026-10-28, branch `fold/design-directions`, on top of the taste-craft fold)
+
+For a page people read with no brand (the `Brand:` line says `default`) and no look the user named,
+New step 3 deals three art directions with `scripts/deal.py` from `references/directions.json` (cut
+from Leonxlnx/taste-skill's library, MIT, see `THIRD_PARTY_NOTICES.md`) and builds from the chosen
+sheet's composition, type and palette; with a brand, only the composition is dealt. Redesign deals
+type and palette when the user asks for a new look. Step 2 gains the rule that design writes no
+brand tokens file. All trials on Opus (visual build).
+
+| Agent | Eval cases | Triggers | State |
+| :--- | :--- | :--- | :--- |
+| Claude Code (Opus) | 3 of 3 pass: `no-brand-three-directions` (dealt three, chose split-stage for its drawn object, redealt the palette once with a reason), `no-brand-portfolio` (dealt, chose the direction that needs no photographs, scans left as NEEDS YOUR INPUT), `restyle-fresh-type-palette` (dealt, took type and palette only, every word and id kept). No run wrote a tokens file | The card's 3 triggers and its scrollback and brag near-misses, added to `triggers.yaml`: 3 of 3 should, 2 of 2 near-miss. The other 8 entries ran for the taste-craft fold with the same description | **draft** |
+| Codex | not run | not run | **pending** |
+
+Baseline (design without this fold, same prompts, Opus, installed copy): all three should-trigger
+runs picked their own look, and all three landed on a warm paper or sand ground (off-white paper with
+mono labels, warm paper with an old-style serif, sand with a book serif). One overwrote the default
+brand variables with its own values. With the fold the three looks were dealt: teal on pale paper,
+walnut and tan, soot and lime.
+
+Fable review: two rounds. Round 1 found library sentences pointing at the upstream's stock
+photographs, README credits contradicting the notices row, and picture-led directions dealt to
+briefs with no pictures; all fixed. Round 2 found nothing serious; its scope point (the deal is for
+pages people read) and the dealer's argument checks were fixed.
+
+Known limit: in a sandbox the checker's browser may not reach the font services, so its screenshots
+show the fallback fonts.
+
+Codex runs owed for this fold (only with the maintainer's OK on the count): 2, namely
+`no-brand-three-directions` and `restyle-fresh-type-palette`.
