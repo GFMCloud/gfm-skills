@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 A and CNAME records</title>
+<style>
+  :root { --bg: #fdfcf9; --fg: #1d1d1b; --muted: #5f5f5a; --line: #dedbd2; --accent: #0f766e;
+          --ok: #15803d; --bad: #b91c1c; --card: #f4f2ec; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181816; --fg: #ecebe6; --muted: #a3a29b; --line: #3a3934; --accent: #5eead4;
+            --ok: #4ade80; --bad: #f87171; --card: #23221f; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 17px/1.6 Georgia, "Iowan Old Style", "Times New Roman", serif; }
+  main { max-width: 40rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+  h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 .25rem; }
+  h2 { font: 600 .8rem/1.4 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase;
+       color: var(--muted); margin: 2.5rem 0 .5rem; }
+  .meta, nav { font: .85rem/1.5 system-ui, sans-serif; color: var(--muted); }
+  .win { border-left: 3px solid var(--accent); padding: .25rem 0 .25rem 1rem; font-size: 1.1rem; }
+  a { color: var(--accent); }
+  pre, code { font: .9em/1.5 ui-monospace, Menlo, monospace; }
+  pre { background: var(--card); padding: .75rem 1rem; overflow-x: auto; border-radius: 4px; }
+  table { display: block; overflow-x: auto; border-collapse: collapse; font-size: .95rem; }
+  th, td { border-bottom: 1px solid var(--line); padding: .3rem .6rem; text-align: left; }
+  img, svg { max-width: 100%; height: auto; }  /* give inline SVG diagrams a viewBox */
+  .q { background: var(--card); border-radius: 6px; padding: .75rem 1rem; margin: 1rem 0; }
+  .q > p:first-child { margin-top: 0; font-weight: 600; }
+  .q button { display: block; width: 100%; text-align: left; margin: .35rem 0; padding: .5rem .75rem;
+              font: inherit; color: inherit; background: var(--bg); border: 1px solid var(--line);
+              border-radius: 4px; cursor: pointer; }
+  .q button.right { border-color: var(--ok); color: var(--ok); }
+  .q button.wrong { border-color: var(--bad); color: var(--bad); }
+  .q .self { display: flex; gap: .5rem; }
+  .q .self button { width: auto; }
+  .why { font-size: .95rem; color: var(--muted); }
+  #score { font: 600 1rem/1.5 system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<main>
+<!-- DEMO FIXTURE: written for skill trials only. -->
+<p class="meta">Lesson 0002 &middot; about 8 minutes &middot; DNS for the bakery move</p>
+<h1>A and CNAME records</h1>
+
+<section data-part="win">
+  <p class="win">By the end you can tell an A record from a CNAME and say which one the move changes.</p>
+  <p>The new host gives you either an address or a name to point at.</p>
+</section>
+
+<section data-part="warmup">
+  <h2>Warm-up: from memory first</h2>
+  <div class="q" data-q data-recall>
+    <p>What does a lookup ask for?</p>
+    <details><summary>Show answer</summary><p>A name and a record type.</p></details>
+    <div class="self"><button data-self="1">I had it</button><button data-self="0">Not yet</button></div>
+  </div>
+</section>
+
+<section data-part="idea">
+  <h2>The idea</h2>
+  <p>An <strong>A</strong> record maps a name to an address. A <strong>CNAME</strong> maps a name to another name, which is then looked up in turn (<a href="https://www.rfc-editor.org/rfc/rfc1034">RFC 1034</a>, section 3.6.2).</p>
+  <pre>www.example-bakery.test  CNAME  example-bakery.test
+example-bakery.test      A      192.0.2.10</pre>
+</section>
+
+<section data-part="example">
+  <h2>Worked example</h2>
+  <p>If the new host says &ldquo;point www at host.example.net&rdquo;, that is a CNAME. If it gives an address, that is an A record.</p>
+</section>
+
+<section data-part="practice">
+  <h2>Practice</h2>
+  <div class="q" data-q data-recall>
+    <p>In one line: what does a CNAME hold?</p>
+    <details><summary>Show answer</summary><p>Another name, which is then looked up in turn.</p></details>
+    <div class="self"><button data-self="1">I had it</button><button data-self="0">Not yet</button></div>
+  </div>
+  <div class="q" data-q>
+    <p>The new host gives you 198.51.100.7. You change:</p>
+    <button data-opt data-correct>the A record</button>
+    <button data-opt>the CNAME</button>
+    <button data-opt>the MX record</button>
+    <p class="why" hidden>An address goes in an A record.</p>
+  </div>
+  <div class="q" data-q>
+    <p>The new host says point www at sites.example.net. You add:</p>
+    <button data-opt>an A record</button>
+    <button data-opt data-correct>a CNAME</button>
+    <button data-opt>an MX record</button>
+    <p class="why" hidden>A name goes in a CNAME.</p>
+  </div>
+  <p id="score" aria-live="polite"></p>
+</section>
+
+<section data-part="source">
+  <h2>Read next</h2>
+  <p><a data-primary href="https://www.rfc-editor.org/rfc/rfc1034">RFC 1034</a> (IETF): section 3.6.2, about five minutes.</p>
+</section>
+
+<section data-part="ask">
+  <h2>Stuck or curious?</h2>
+  <p>Ask your agent anything here that is unclear. Next session, start by saying your score
+     and anything that still feels shaky.</p>
+</section>
+
+<nav><a href="0001-what-a-lookup-answers.html">&larr; Lesson 0001</a> &middot; Lesson 0002</nav>
+</main>
+<script>
+(function () {
+  // Warm-up (earlier lessons) and today's questions are scored apart, so the record can tell
+  // what was kept from what was just learned.
+  var qs = document.querySelectorAll("[data-q]"), done = 0, label = "0002";
+  var got = { warm: 0, today: 0 }, total = { warm: 0, today: 0 };
+  function kind(q) { return q.closest('[data-part="warmup"]') ? "warm" : "today"; }
+  qs.forEach(function (q) { total[kind(q)]++; });
+  function tally() {
+    var out = document.getElementById("score");
+    if (!out || done !== qs.length) return;
+    var s = "today " + got.today + " of " + total.today;
+    if (total.warm) s = "warm-up " + got.warm + " of " + total.warm + ", " + s;
+    out.textContent = "Tell your agent: lesson " + label + ", " + s + ".";
+  }
+  qs.forEach(function (q) {
+    var answered = false;
+    function finish(ok) { if (answered) return; answered = true; done++; if (ok) got[kind(q)]++; tally(); }
+    q.querySelectorAll("[data-opt]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (answered) return;
+        var ok = b.hasAttribute("data-correct");
+        b.classList.add(ok ? "right" : "wrong");
+        q.querySelectorAll("[data-correct]").forEach(function (c) { c.classList.add("right"); });
+        var why = q.querySelector(".why"); if (why) why.hidden = false;
+        finish(ok);
+      });
+    });
+    q.querySelectorAll("[data-self]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (answered) return;
+        b.classList.add(b.getAttribute("data-self") === "1" ? "right" : "wrong");
+        finish(b.getAttribute("data-self") === "1");
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

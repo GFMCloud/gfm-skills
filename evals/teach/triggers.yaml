@@ -1,0 +1,11 @@
+should:
+  - Teach me how DNS actually works, over a few sessions.
+  - I want to learn SQL window functions properly. Set up lessons.
+  - Help me learn to read a P&L statement; I'll come back to it through the week.
+  - Next DNS lesson please, I did the last quiz.
+should_not:
+  - Summarise dns-guide.pdf for me.
+  - Which DNS host is best for a small site right now?
+  - Show me how the pipeline in pipeline/ works.
+  - Explain what a CNAME record is in two sentences.
+  - We're moving all 40 pages in wiki-migration/ to the new wiki over the next few weeks. Set it up so any session can carry on.
