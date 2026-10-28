@@ -68,7 +68,11 @@ The question is whether the rule must hold every time, or is guidance the agent 
 
 Prose can't enforce. If the request says "never" or "always" and a script could check it, use a rule
 or hook, and say that a line alone would be skipped some of the time. If no tool call shows the
-event (for example "never be rude"), a line is the only option; say so.
+event (for example "never be rude"), a line is the only option; say so. The same goes for a "never"
+line you restore or move: offer the rule that would enforce it, at the line's own scope (for "never
+search the web", in Claude Code a `WebSearch` and `WebFetch` deny; in Codex, a web-search setting in
+its config if the installed version has one), or say why there is none. The rule goes beyond what
+was asked, so add it only on the user's yes, and batch several offers into one question.
 
 Hand these on instead (name the skill if it is installed, otherwise say what the job needs):
 - A job that runs on a schedule, in a loop, or keeps the agent going until something is true

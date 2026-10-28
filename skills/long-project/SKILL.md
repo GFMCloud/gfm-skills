@@ -1,6 +1,6 @@
 ---
 name: long-project
-description: Sets up, resumes and finishes work spanning many sessions (phased projects, sweeps over many items, experiments, registers of findings to recheck later) in files any session can pick up. Proves access to every system first. Use for multi-session work or to carry it on. Not for one-sitting tasks.
+description: Sets up, resumes and finishes work spanning many sessions (phased projects, sweeps over many items, experiments, registers of findings to recheck) in files any session can pick up. Proves access first. Use for multi-session work, or to carry on a folder with a STATE.md. Not for one-sitting tasks.
 metadata:
   status: draft
   codex-check: "pending: not yet tried in Codex; must pass before stable"
@@ -49,9 +49,13 @@ project can keep a rulings folder.
 2. **Make a new folder named after the project** (unless the user names one), beside the thing
    being changed, not inside it, so the record survives the work. Every shape has:
    - `AGENTS.md`, whose first line is: "Start of every session: if a skill named `long-project` is
-     available, load it before reading on." Then what this is, the rules below that apply, what may
-     go ahead without asking, what never to do, and how to resume. Add a one-line `CLAUDE.md`
-     containing `@AGENTS.md` so Claude Code reads the same file.
+     available, load it before reading on." Its second line: "Before any work, run
+     `python3 tools/preflight.py preflight.json` from this folder. Only exit 0 lets work start. On
+     exit 1 report every BLOCKERS line with its fix; on any other exit report the output. On any
+     non-zero exit, paste the report under Evidence in `STATE.md` and change nothing else until the
+     user clears it." That line holds even when the skill doesn't load. Then what this is, the
+     rules below that apply, what may go ahead without asking, what never to do, and how to resume.
+     Add a one-line `CLAUDE.md` containing `@AGENTS.md` so Claude Code reads the same file.
    - `STATE.md`: the one place a session resumes from (template below).
    - `preflight.json` and `tools/preflight.py`, a copy of this skill's `scripts/preflight.py`, so the
      project runs the same check in any agent and on any machine. Never write the skill's own path

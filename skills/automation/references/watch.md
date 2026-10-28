@@ -50,7 +50,11 @@ esac
 
 ## Prove it
 
-Replay readings by hand against a scratch state file, and quote the output:
+Replay readings by hand against a scratch state file, and quote the output. When the source keeps
+history (a git repo, dated files), take the readings from real past versions: a pair where the
+thing changed and a pair where it didn't, named by commit or date (run the reduction on
+`git show <commit>:<path>`). Without history, and for the failure cases history doesn't have, make
+the readings by hand and say so.
 
 1. First reading: `BASELINE`. Same reading again: `NO-CHANGE`.
 2. A different reading: `REPORT`. Again without confirming: `REPORT` again. Confirm, then the same
