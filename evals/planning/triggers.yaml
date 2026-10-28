@@ -1,14 +1,20 @@
 # Workspaces: should 1 uses files/invoice, should 2 and 4 files/backup-prune, should 3 files/cake-class;
 # near-miss 1 files/dates, near-miss 2 a copy of evals/long-project/files/docs-sweep, near-miss 3
-# files/footer, near-misses 4 and 5 files/cake-class.
+# files/footer, near-misses 4 and 5 files/cake-class. Spec-slices fold (2026-10-28): should 5 and 8
+# files/invoice, should 6 files/cake-class, should 7 files/dates, near-miss 6 files/invoice.
 should:
   - Before writing any code, plan how we'd add a CSV export of invoices to invoice.py.
   - Don't change anything yet. How should I go about switching the backups to keep only 7? Think it through first.
   - We want people to book the cake-decorating class online (see BRIEF.md). What would we build, and in what order?
   - Delete every backup older than a week and set the prune to keep 7 from now on.
+  - "We've talked the invoice CSV export through: one export_csv function in invoice.py, columns number, date and total, no new dependencies. Write it up as a spec."
+  - Break BRIEF.md into small pieces I can hand to separate agents, and say what blocks what.
+  - Split the work in PLAN.md into vertical slices that each fit in one session.
+  - Before anyone writes code for the CSV export, work out where its tests should hook in and what has to pass for it to count as done.
 should_not:
   - Here's the plan in PLAN.md. Get me an independent second opinion on whether it's sound before I approve it.
   - Converting every page in docs-old/ to the new format will take several sessions. Set it up so any session can pick it up and carry on.
   - Fix the typo in the heading of index.html.
   - "Write a short note of what we decided about the cake class today: 12 places, £35, first Saturday of the month."
   - Set up a new git repository for the cake-class booking page, with a .gitignore, an MIT licence and an AGENTS.md.
+  - Write a handoff so I can pick this invoice work up tomorrow.

@@ -1,6 +1,6 @@
 ---
 name: planning
-description: Plans a change or new build before work starts (goal, done-check, assumptions, risks, steps) and stops for a yes. Use for "plan this first", "how should we build X?", or before a change that deletes data or touches access, DNS, mail, money or a schema. Not for multi-session work or plan reviews.
+description: Plans a change or build (goal, done-check, assumptions, risks, steps) and stops for a yes. Use for "plan this first", "how should we build X?", specs or slices, or before deleting data or touching access, DNS, mail, money, schemas. Not for multi-session work, plan reviews, interviews, console steps.
 metadata:
   status: draft
   codex-check: "pending: not yet tried in Codex; must pass before stable"
@@ -32,7 +32,8 @@ Say in one line which size this is and why, so the user can overrule it.
   test, it is risky.
 - **Too big for one sitting** (days of work, many items, an end that can't be undone weeks away):
   say so and hand it to the long-project skill, which sets up work that spans sessions. This skill
-  plans what one session can finish, or the first part of something bigger.
+  plans what one session can finish, or the first part of something bigger. Steps that each fit one
+  session and can run side by side in separate sessions are not too big; they stay here.
 
 ## 2. Investigate before you ask
 
@@ -53,7 +54,10 @@ Say in one line which size this is and why, so the user can overrule it.
    plan would need a secret in plain text, flag that as a design problem; if you find one already in
    a file, say which file (never the value), treat it as exposed and keep it out of the plan.
 6. **Premises from memory, a hand-over note or an earlier summary are assumptions too**, until
-   you have checked them against the files or the system.
+   you have checked them against the files or the system. **Decisions the user tells you they have
+   made** (an earlier answer here, a settled interview, a spec or list they wrote) are assumptions
+   too, marked `decided: <who>, <date>`: don't ask them again, and if the files contradict one,
+   raise it as a finding without working around it.
 7. **Contradictions are findings.** When the docs, the code and the live system disagree, say
    which says what. Don't quietly pick one.
 
@@ -70,6 +74,9 @@ is off, this is the cheapest place to find out.
 **Done when.** The check that settles it, written so two readers would agree whether it passed:
 - a command or an observable result, and the exact output or value that means done;
 - the baseline: that check's output now, from step 2 (or "can't run yet: <why>");
+- for code, the test seam: the highest public boundary the check goes through (a command, a route,
+  a module's public function), preferring one that already exists over a new one or an internal
+  helper;
 - for judgment work with no command (copy, a layout, a design choice): two to five criteria,
   each judged on its own, never one overall score;
 - what has to stay untouched throughout ("nothing outside `logs/`").
@@ -83,8 +90,9 @@ good answer; don't pad.
 
 **Assumptions.** Numbered, each one concrete enough that someone could test it and prove it false
 ("orders never exceed 10,000 rows", not "the code stays maintainable"). Mark each `checked: <command
-or file>` or `unchecked`. Cover what the change touches: data shape and volume, what happens on
-failure or partial completion, who calls this, concurrency and reruns, environment, and tests.
+or file>`, `unchecked` or `decided: <who>, <date>` (step 2.6). Cover what the change touches: data
+shape and volume, what happens on failure or partial completion, who calls this, concurrency and
+reruns, environment, and tests.
 
 **Risk** (risky changes). What is deleted, replaced or exposed, named and counted ("13 of the 20
 backup files", not "some old files"); how to undo it, or "no undo" in plain words; and drift
@@ -92,7 +100,13 @@ between the repo and the live system that you found.
 
 **Steps.** Numbered, in working order. Each names the file, resource or system it touches, what
 changes there, and how that step will be checked. Order them so each step can be checked, and
-backed out, on its own. For a fix, step 1 is a test that fails before the fix; for a refactor, the
+backed out, on its own. For standard and risky work with more than one piece, make each step a
+thin vertical slice: one behaviour through every layer it needs, small enough for one fresh
+session (a test and the code that makes it pass belong in the same slice, except a fix's first
+step below). End each step with `blocked by: <step numbers>` or `blocked by: none`, so independent
+steps can run in separate sessions. A wide mechanical change (a rename across many files) goes
+expand, migrate in batches, contract instead. New builds slice by `references/new-build.md` and
+take the same edges. For a fix, step 1 is a test that fails before the fix; for a refactor, the
 tests pass before and after and no behaviour changes. If the project has no runnable test, say so
 and name the check you will use instead. Mark the step that needs the user (a deploy, a delete, a
 send) as a gate; if the user carries out every step, mark only the ones that can't be undone.
@@ -105,7 +119,7 @@ nothing is listed here, other options probably weren't considered.
 Before you show it, check the plan against itself and fix what fails:
 - every step names a path, resource or system; a step without one is a wish;
 - every step says how it is checked; tests to be added and gaps left untested are both named;
-- no step depends on a later one;
+- no step depends on a later one, and every `blocked by` points to an earlier step;
 - no value is typed in that the project or environment already defines (paths, limits, names);
 - the unhappy path is covered: what each risky step does if it stops halfway, times out or errors.
 
@@ -139,15 +153,25 @@ the plan where plan mode asks for it.
 3. If the change turns out bigger than its size (a small change turns out to touch something other
    code or people depend on, or starts deleting data), stop, re-size it and re-plan from step 1.
 4. At every gate, show exactly what is about to happen and wait for a yes to that list.
-5. Finish by running the done-check and showing its real output beside the baseline. A step
+5. Before the done-check, read the whole diff against the plan and name, quoting the step, anything
+   a step asked for that is missing, done differently from how the step said, or changed when no
+   step asked for it.
+6. Finish by running the done-check and showing its real output beside the baseline. A step
    without a run check is not done. Commit or push only if the plan or the user says so, following
    the project's own rules.
 
 ## Borders with other skills
 
-- Work that spans many sessions, or a project to resume: the long-project skill.
+- Work that one agent carries forward across many sessions, or a project to resume: the
+  long-project skill. Steps of one plan that run side by side in separate sessions, each finished
+  in one sitting with its `blocked by` edges kept, stay here.
 - An independent review of a plan or decision you already have: the second-opinion skill. For a
   high-stakes plan, suggest it after this one.
+- Questioning the user in rounds until every decision is settled (an interview they asked for, with
+  no cap on questions): the grill skill. Its decision list can feed step 2 as decided assumptions.
+- Steps only the user can do once the plan is agreed (a cloud console, DNS at the registrar, a
+  dashboard, creating keys, a cutover): the wizard skill writes them as one script the user runs,
+  with secrets typed hidden into the keychain or 1Password.
 - Creating a new repository's skeleton (git, licence, ignore file, agent instructions): the
   project-start skill, once the plan is agreed.
 - Making something run on a schedule, a trigger or a loop: the automation skill. This skill can
