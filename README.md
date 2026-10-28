@@ -37,7 +37,7 @@ skill, because copying a newer version over it would replace it.
 | `retro` (draft) | Runs a short retrospective after a piece of work and says where each lesson should go | Reads the session record and `git log`. Proposes edits to your instructions; changes nothing without your OK |
 | `de-ai` (draft) | Edits text that reads machine-written into plain text, keeping every fact | Edits only the text you give it |
 | `decks` (draft) | Plans a slide deck, builds it as one HTML file in your brand (prints to PDF), or reviews slides you already have | Copies a template into a new HTML file and runs two small Python scripts (brand lookup, validator). No outside requests |
-| `design` (draft) | Designs a new page, screen or form in your brand, redesigns one that looks dated or breaks on phones, or critiques one | Writes or edits the page files in your project and runs two small Python scripts (brand lookup, page check). The page check can take screenshots with a local headless browser. No outside requests |
+| `design` (draft) | Designs a new page, screen or form in your brand, redesigns one that looks dated or breaks on phones, or critiques one | Writes or edits the page files in your project and runs three small Python scripts (brand lookup, page check, and a dealer that picks art directions from a bundled library when you have no brand). The page check can take screenshots with a local headless browser. Pages it makes may load fonts from Google Fonts or Fontshare; it searches open picture collections and downloads a picture only on your yes |
 | `proof-of-work` (draft) | Proves work is done by running it, reports what was checked and what was not, and lints a message before you send it | Runs the checks the work needs (tests, the script, a page load) and one small Python linter. Changes nothing unless you ask |
 | `long-project` (draft) | Sets up and resumes work that takes many sessions (a phased project, a sweep over many items, experiments, a register of decisions, or a map of open decisions settled one per session) in files any session can pick up, and first proves it can read and write every system the work needs | Writes a project folder of plain text files and copies in one small Python script that runs the read and write checks listed for the project (each write check, as the skill writes them, makes the smallest test write, such as a tiny file, and removes it). Asks before writing to anything shared or off your computer, and never deletes without your yes to the exact list |
 | `research` (draft) | Answers questions about the world as it is now, and rechecks whether claims in a brief, plan or doc still hold today, with dated primary sources and a verdict per claim | Searches the web and reads pages. May run a command on copies in a scratch folder to test how a tool behaves, then removes the folder. In deep mode writes a notes file. Installs and sends nothing |
@@ -88,10 +88,12 @@ See `AGENTS.md` and `docs/house-rules.md`. Before a change: `uv run tools/check_
 
 ## Credits
 
-The `design` skill is written fresh in this library's own words. Its approach was inspired by
-[taste-skill](https://github.com/Leonxlnx/taste-skill) by Leonxlnx,
+The `design` skill is written fresh in this library's own words, except its art-direction library
+(`skills/design/references/directions.json`), which is cut from
+[taste-skill](https://github.com/Leonxlnx/taste-skill) by Leonxlnx under the MIT licence (see
+`THIRD_PARTY_NOTICES.md`). Its approach was also inspired by taste-skill,
 [emil-design-eng](https://github.com/emilkowalski/skills) by Emil Kowalski, and Anthropic's
-[frontend-design](https://github.com/anthropics/skills) skill. No text from them is included.
+[frontend-design](https://github.com/anthropics/skills) skill, from which no text is included.
 
 ## Licence
 

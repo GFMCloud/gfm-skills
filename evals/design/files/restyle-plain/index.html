@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tide Table Swimming Club</title>
+<!-- Demo material for the design eval: a plain, working page for a fictional club. -->
+<style>
+  /* brand-source: default; kept the page's own colours */
+  body { margin: 0; font-family: Arial, sans-serif; color: #222; background: #fff; line-height: 1.5; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 24px 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  a.join { display: inline-block; padding: 12px 20px; background: #1d4ed8; color: #fff; text-decoration: none; }
+  a.join:focus-visible { outline: 3px solid #111; outline-offset: 2px; }
+  section { padding: 32px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><strong>Tide Table Swimming Club</strong></header>
+  <main>
+    <section id="intro">
+      <h1>Sea swimming at Praia do Molhe</h1>
+      <div class="grid">
+        <p>We swim from the breakwater at Praia do Molhe every Saturday at 08:00, all year, at whatever
+           the sea is doing. Beginners swim inside the breakwater with two volunteers.</p>
+        <p>Membership is 30 euros a year and covers insurance and a numbered cap. Your first two swims
+           are free.</p>
+      </div>
+      <p><a class="join" id="join-link" href="mailto:join@tidetable.example">Email to join</a></p>
+    </section>
+    <section id="times">
+      <h2>When we swim</h2>
+      <div class="grid">
+        <p>Saturday 08:00, all year. Meet at the lifeguard hut ten minutes before.</p>
+        <p>Wednesday 18:30, May to September, for faster swimmers who want a longer route.</p>
+      </div>
+    </section>
+    <section id="safety">
+      <h2>Safety</h2>
+      <div class="grid">
+        <p>We check the tide table and the flag before every swim, and we cancel on a red flag.
+           Everyone wears a bright cap and swims with a buddy.</p>
+        <p>Volunteers hold a lifesaving certificate, renewed every two years.</p>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>
