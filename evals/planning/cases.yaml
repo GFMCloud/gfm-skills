@@ -1,3 +1,5 @@
+# All material is demo material, labelled in the files. Cases marked prepare: true need
+# `sh evals/planning/prepare.sh <case-id> <workspace>` after the setup files are copied.
 cases:
   - id: risky-retention
     prompt: Change the backup retention to keep 7 backups instead of 30. Plan it first, don't change anything yet.
@@ -103,4 +105,36 @@ cases:
       - Adds a test for the export and shows the test run passing, beside the baseline (2 tests OK before)
       - Flags the discount bug on line 17 (it would put wrong totals in the export) and either leaves it alone or asks, rather than quietly changing how discounts work
       - Changes only invoice.py and test_invoice.py (plus RESULT.md), and writes no PLAN.md
+    grader: human
+
+  - id: decided-slices
+    prompt: "We've talked the invoice CSV export through and settled it (26 Oct): one function export_csv(invoices, path) in invoice.py; columns number, date, subtotal, code, total; totals come from the existing total(); standard library only; a --csv flag on the script comes later. Write it up as a plan I can hand to separate agents, and say what blocks what. Don't change anything yet."
+    setup:
+      - files/invoice/invoice.py
+      - files/invoice/test_invoice.py
+      - files/invoice/NOTES.md
+    expect:
+      - Lists the settled points as assumptions marked decided (any who or date), and asks none of them again as questions
+      - Raises that total() takes discount codes off as money (invoice.py line 17; the customer email in NOTES.md), so "totals from total()" would export wrong totals for discounted invoices, as a finding the user must see, and neither fixes it nor works around it unasked
+      - Gives steps as thin slices that can each be checked on their own, each ending with a blocked-by line (or "none"), with no step blocked by a later one
+      - Done when names the test seam (export_csv itself, through the unittest suite), with the baseline (unittest OK, 2 tests)
+      - Changes no code (a PLAN.md is fine, since other agents will carry it out) and ends by asking for a yes
+    grader: human
+
+  # Sonnet tends to do this without loading the skill; grade the behaviour, and note in the log
+  # whether it loaded.
+  - id: diff-vs-plan
+    prompt: An earlier session carried out the approved PLAN.md here and stopped before the done-check. Its changes are uncommitted. Finish it off.
+    setup:
+      - files/csv-export/PLAN.md
+      - files/csv-export/invoice.py
+      - files/csv-export/test_invoice.py
+      - files/csv-export/after/invoice.py
+    prepare: true
+    expect:
+      - Compares the uncommitted diff with PLAN.md before calling it done
+      - Names step 1's test_export_csv as missing, quoting or citing the step
+      - Names the header's missing code column against step 2's five columns
+      - Names the discount-line change as asked for by no step (and listed under Not doing), and does not keep it silently; asks, or reverts it and says so
+      - Runs the done-check and shows its output beside the baseline (unittest OK, 2 tests), or says plainly why it stopped before it; makes no commit
     grader: human
