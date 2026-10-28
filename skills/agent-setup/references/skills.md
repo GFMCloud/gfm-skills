@@ -43,7 +43,8 @@ Don't reuse the name of a built-in or an installed skill: a clash hides one of t
 ## The description decides whether it loads
 
 Both agents see only names and descriptions until a skill is chosen. Weaker models load a skill only
-when the description has the user's own words for the request.
+when the description has the user's own words for the request. For the wording itself (one phrase
+per branch, which synonyms to cut) and for writing the body, read `writing.md`.
 
 - Lead with the requests in the user's words: "Use when asked to ...".
 - Say what it does that a plain answer wouldn't.

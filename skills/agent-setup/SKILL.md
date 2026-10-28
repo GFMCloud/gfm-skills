@@ -1,6 +1,6 @@
 ---
 name: agent-setup
-description: Use when asked to make a skill, add a rule to AGENTS.md or CLAUDE.md, allow or block a command, cut permission prompts, add a guard hook, or check which installed skills overlap, in Claude Code or Codex. Tests changes before they go live. Not for others' packs, retros, new repos or schedules.
+description: Use when asked to make or tighten a skill or its description, add or trim rules in AGENTS.md or CLAUDE.md, allow or block a command, cut permission prompts, add a guard hook, or check which skills overlap, in Claude Code or Codex. Tests first. Not for others' packs, retros, new repos or schedules.
 metadata:
   status: draft
   codex-check: "pending: not yet tried in Codex; must pass before stable"
@@ -65,6 +65,7 @@ The question is whether the rule must hold every time, or is guidance the agent 
 | A repeatable job done the user's way (a format, a checklist, a workflow) | A skill | `references/skills.md` |
 | To know whether a skill or rule works, or a change broke it | Evals with a baseline | `references/evals.md` |
 | To know what is installed, what overlaps, what to clean up | The audit in step 6 | |
+| To tighten or trim a skill or instructions file, or make a description load more reliably | The writing checks, then the smallest change | `references/writing.md` |
 
 Prose can't enforce. If the request says "never" or "always" and a script could check it, use a rule
 or hook, and say that a line alone would be skipped some of the time. If no tool call shows the
@@ -111,7 +112,7 @@ checked.
 - Edit only the lines the change needs. Keep the file's style. Never reformat or reorder a config
   file; JSON and TOML edits keep every other key as it was.
 - An instructions line states the rule, then the reason in a few words. The reason stops a later
-  session deleting a rule it doesn't understand.
+  session deleting a rule it doesn't understand. Word new lines by `references/writing.md`.
 - One rule in one place. If the same rule already exists at another scope, say so and change that one
   or remove the duplicate, with the user's OK.
 - Before editing a file outside the project, copy it to a scratch folder first, so Undo is a copy back.
@@ -127,7 +128,7 @@ Test where it can't hurt (hard rule 1), with the check for the mechanism:
 | Guard hook | Pipe a sample event into the script, once for a call it must block and once for one it must let through; check the exit code (`references/guards.md`) |
 | Codex rule file | `CODEX_HOME=<new empty folder> codex execpolicy check --rules <file> -- <command>` for a blocked and an allowed command |
 | Instructions | Re-read the whole file as a new session would: does the new line contradict, repeat or bury another? Then the inventory, to confirm it loads from the project. Optional, where Codex is installed and the user is fine with it contacting OpenAI: `CODEX_HOME=<throwaway copy> codex debug prompt-input` run from the project prints what Codex would load |
-| Skill | `references/skills.md` checks, then the evals in `references/evals.md` |
+| Skill | `references/skills.md` checks, then the evals in `references/evals.md`. For a tighten that changes no behaviour, the `skills.md` checks and a re-read of the whole file |
 
 Run every `codex` command, even `--version`, with `CODEX_HOME` set to a new empty folder or a
 throwaway copy: Codex writes runtime files into its home folder and may refresh data over the
@@ -142,7 +143,8 @@ new skills and instruction files may need a new session; Codex reads rules and c
 
 ## 6. Audit
 
-For "what's installed?", "what should I clean up?", "why didn't my skill load?":
+For "what's installed?", "what should I clean up?", "why didn't my skill load?", "which lines
+don't change anything?":
 
 1. Run the inventory (step 1) for the folder the user works in.
 2. Read each flagged file. For overlapping descriptions, quote both and say which requests each
@@ -150,11 +152,17 @@ For "what's installed?", "what should I clean up?", "why didn't my skill load?":
 3. Look for what the inventory can't see: plugins and managed settings (ask the agent: `/status` or
    `/plugin` in Claude Code; `codex --help` lists what the installed version offers), and a skill
    installed for one agent that the user also runs in the other.
-4. Change nothing. Reply with one row per finding:
+4. For each instructions file or skill body the user named (with the files that load alongside it),
+   or that the inventory flagged, run the writing check (`references/writing.md`, "Writing
+   audit"): no-ops, negations and sprawl, per file.
+5. Change nothing. Reply with one row per finding, then one writing block per file checked:
 
 ```
 Audit: <home> / <project>   <n> skills (Claude Code), <n> (Codex)
 | Finding | Where | Why it matters | Proposed fix |
+Writing: <file>   <words> words, <lines> lines, <hits> negation words, <n> bans
+| Line | Kind: no-op, negation, sprawl, lookup, pointer or no check | Proposed fix |
+Keeps: <lines that look cuttable but earn their place, and why>
 Not checked: <what you could not see>
 ```
 

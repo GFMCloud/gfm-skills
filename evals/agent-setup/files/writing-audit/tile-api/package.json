@@ -1,0 +1,15 @@
+{
+  "name": "tile-api",
+  "description": "Demo material for a skill trial, not real.",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "test": "vitest run",
+    "lint": "eslint src test",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:seed": "tsx src/db/seed.ts"
+  },
+  "prettier": {
+    "tabWidth": 2
+  }
+}

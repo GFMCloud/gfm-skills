@@ -93,3 +93,46 @@ cases:
       - Keeps the note out of git (CLAUDE.local.md ignored, or outside the repo) and out of AGENTS.md
       - Ends with the Change block with an Undo line; AGENTS.md is unchanged
     grader: human
+
+  - id: tighten-skill
+    prompt: "Tighten home/.claude/skills/release-notes/SKILL.md: cut the lines that don't change what the agent does. My home folder for this task is home/ in the working folder; never read or write the real ~/.claude, ~/.codex or ~/.agents config."
+    setup:
+      - files/tighten-skill/home/.claude/skills/release-notes/SKILL.md
+      - files/tighten-skill/home/README.md
+    expect:
+      - Cuts the blatant no-ops ("Be clear and concise", "take care with them", the definition of git) and the subtle one, "Write the notes in Markdown" (the file is saved as .md and step 3 already uses Markdown); "accurate and complete" is cut or turned into a check the agent can run (for example every pull request from step 1 has exactly one line)
+      - Rewrites the "Misc or Other" ban as the target (every change goes under Added, Changed or Fixed, with what to do when none fits), or proposes that exact rewrite if it reads the request as cuts only; any prohibition it keeps (ticket numbers, names) sits beside what to do instead or comes with a proposed rewrite
+      - Keeps every line that changes behaviour - the dated version headings and their reason, the bold area prefix, the (#123) links, the save path, the two git commands - and leaves the description alone or changes it with a reason
+      - Replaces the copied release-script flags with a pointer to `scripts/release.sh --help`, or says why it keeps them
+      - Ends with the Change block, with a Tested line (a re-read, the inventory or a frontmatter parse) and an Undo line that restores the original; nothing outside the workspace changes
+    grader: human
+
+  - id: writing-audit
+    prompt: Our AGENTS.md in tile-api/ keeps growing. Which lines don't change what an agent does? Report per file and don't change anything yet. My home folder for this task is home/ in the working folder; never read or write the real ~/.claude, ~/.codex or ~/.agents config.
+    setup:
+      - files/writing-audit/tile-api/AGENTS.md
+      - files/writing-audit/tile-api/CLAUDE.md
+      - files/writing-audit/tile-api/package.json
+      - files/writing-audit/tile-api/src/pricing/index.ts
+      - files/writing-audit/tile-api/src/pricing-legacy/index.ts
+      - files/writing-audit/home/README.md
+    expect:
+      - Reports AGENTS.md and CLAUDE.md separately (CLAUDE.md loads AGENTS.md through its import), and changes nothing (the workspace is identical afterwards)
+      - Flags the subtle no-op "Read the code you are changing before you change it" as well as the blatant ones ("clean, readable code", "Handle errors properly", "You are an expert TypeScript developer")
+      - Flags rule 4 (the pricing-legacy ban) as a negation and proposes the target instead (price through src/pricing/), and notices the reason for the ban sits apart from it in "About the project"
+      - Flags what a lookup already shows (the Commands list matches package.json scripts, the Layout list, the two-space rule Prettier's config sets) and the background paragraph, and names the CLAUDE.md test line as a duplicate of rule 7
+      - Keeps, and says why, the lines that earn their place - migrate before seed, whole pence not floats, npm test before done, the route-test naming - and offers to make the fixes
+    grader: human
+
+  - id: description-rewrite
+    prompt: "Rewrite the description of my invoice-chaser skill so it loads more reliably. When I want it I type things like \"chase the unpaid invoices\", \"remind clients who haven't paid\" or \"who owes us money?\". My home folder for this task is home/ in the working folder; never read or write the real ~/.claude, ~/.codex or ~/.agents config."
+    setup:
+      - files/description-rewrite/home/.claude/skills/invoice-chaser/SKILL.md
+      - files/description-rewrite/home/.claude/skills/invoice-maker/SKILL.md
+      - files/description-rewrite/home/README.md
+    expect:
+      - The new description leads with the user's own phrases and covers both branches the body handles (reminder drafts, and who owes what)
+      - Drops the jargon that renames one branch several times (dunning, collections, AR ageing, receivables management) instead of keeping it beside the user's words, and keeps the user's phrases rather than cutting them to save characters
+      - Has a Not for line that sends new invoices to invoice-maker, is at most 300 characters, and still parses as YAML (no unquoted colon followed by a space)
+      - Changes only the description line, ends with the Change block with Tested and Undo lines, and says the change may need a new session to show
+    grader: human

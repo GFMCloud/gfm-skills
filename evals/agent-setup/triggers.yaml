@@ -6,8 +6,13 @@ should:
   - Let Codex and Claude Code run npm test in app/ without asking me each time
   - Make a skill for Claude Code and Codex that writes changelog entries the way CHANGELOG.md does
   - Which of my installed skills overlap or should go?
+  - "Tighten the SKILL.md in standup-notes/: cut the lines that don't change what the agent does"
+  - Our AGENTS.md in pond-sensor/ is too long. Trim it to what actually changes agent behaviour
+  - Rewrite the plant-care skill's description so it loads more reliably
 should_not:
   - Is the skill pack in shared-pack/ worth installing?
   - Start a new repo for my recipe scaler script, the notes are in recipe-idea.md
   - Explain to a new teammate what the AGENTS.md in garden-bot/ asks agents to do
   - What should we learn from this incident? Notes are in incident.md
+  - This paragraph in newsletter.md sounds like AI wrote it. Fix it.
+  - "Tighten welcome-email.md: cut the lines that don't add anything"
