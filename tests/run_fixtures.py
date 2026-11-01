@@ -69,6 +69,8 @@ def case(files, expect, deny="", require_deny=False, git=None, hidden=None, extr
 
 S = "skills/status-update/SKILL.md"
 G = good_files()
+ZWSP = chr(0x200B)
+ARROW, EMOJI_SEL, TEXT_SEL = chr(0x2B06), chr(0xFE0F), chr(0xFE0E)
 UPSTREAM = '  status: stable\n  upstream: "someone/skills@abc1234def"\n'
 NOTICE = "| Skill | Upstream |\n| :--- | :--- |\n| status-update | someone/skills at abc1234 |\n"
 CASES = {
@@ -112,6 +114,17 @@ CASES = {
     "R9 employer term in an svg": case({**G, "skills/status-update/assets/logo.svg": f"<svg><title>{TERM}</title></svg>\n"}, ["FAIL R9"], deny=TERM),
     "R9 employer term in a fixtures folder": case({**G, "skills/status-update/fixtures/leak.md": f"{TERM}\n"}, ["FAIL R9"], deny=TERM),
     "R9 employer term in commit or PR text": case(G, ["FAIL R9"], deny=TERM, extra_text=f"Fix for the {TERM} rollout\n"),
+    "R9 Dependabot mention guard in PR text is accepted": case(G, ["PASS"], extra_text=f"Thanks to @{ZWSP}someone in #12\n"),
+    "R9 stray zero-width space in PR text": case(G, ["FAIL R9"], extra_text=f"Thanks to some{ZWSP}one\n"),
+    "R9 zero-width space after a bare @ in PR text": case(G, ["FAIL R9"], extra_text=f"Mail me @{ZWSP} now\n"),
+    "R9 second hidden character after a mention guard": case(G, ["FAIL R9"], extra_text=f"Thanks to @{ZWSP}{ZWSP}someone\n"),
+    "R9 mention guard in a skill file still fails": case({**G, S: skill_md(body=f"Thanks to @{ZWSP}someone.\n")}, ["FAIL R9"]),
+    "R9 mention guard does not hide an employer term": case(G, ["FAIL R9"], deny=f"@{TERM}", extra_text=f"Thanks to @{ZWSP}{TERM}\n"),
+    "R9 emoji selector in PR text is accepted": case(G, ["PASS"], extra_text=f"## {ARROW}{EMOJI_SEL} Dependency updates\n"),
+    "R9 emoji selector after a letter in PR text": case(G, ["FAIL R9"], extra_text=f"Fi{EMOJI_SEL}x\n"),
+    "R9 doubled emoji selector in PR text": case(G, ["FAIL R9"], extra_text=f"{ARROW}{EMOJI_SEL}{EMOJI_SEL} note\n"),
+    "R9 text selector in PR text": case(G, ["FAIL R9"], extra_text=f"{ARROW}{TEXT_SEL} note\n"),
+    "R9 emoji selector in a skill file still fails": case({**G, S: skill_md(body=f"{ARROW}{EMOJI_SEL} note\n")}, ["FAIL R9"]),
     "R9 employer patterns required": case(G, ["FAIL R9"], require_deny=True),
     "R9 untracked file is scanned": case({**G, "notes.md": f"{TERM}\n"}, ["FAIL R9"], deny=TERM, git="init"),
     "R9 ignored local/ is not scanned": case({**G, ".gitignore": "skills/*/local/\n",
@@ -163,7 +176,7 @@ def run_case(title, c):
             cmd.append("--require-deny")
         if c["extra_text"]:
             extra = os.path.join(tmp, "extra.txt")
-            with open(extra, "w") as f:
+            with open(extra, "w", encoding="utf-8") as f:
                 f.write(c["extra_text"])
             cmd += ["--extra-text", extra]
         r = subprocess.run(cmd, capture_output=True, text=True, env=env)
