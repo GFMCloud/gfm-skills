@@ -28,6 +28,10 @@ ALLOWED_KEYS = {"name", "description", "license", "compatibility", "metadata"}
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 BOM = chr(0xFEFF)
 VARIATION_SELECTORS = ((0xFE00, 0xFE0F), (0xE0100, 0xE01EF))
+# Dependabot PR bodies carry U+200B after each @mention, and pasted release notes carry U+FE0F after
+# emoji. allow_pr_text_marks accepts those two patterns, in --extra-text only.
+MENTION_GUARD_RE = re.compile("@" + chr(0x200B) + "(?=[A-Za-z0-9])")
+EMOJI_SELECTOR = chr(0xFE0F)
 COLOUR_RE = re.compile(r"^(#[0-9a-fA-F]{3,8}|(rgba?|hsla?|oklch|oklab|lab|lch|color)\(.+\))$")
 COLOUR_KEY_RE = re.compile(r"(?i)^(primary|secondary|accent|background|foreground|text)$|colou?r$")
 
@@ -40,6 +44,13 @@ def has_hidden_char(line):
         if any(a <= ord(c) <= b for a, b in VARIATION_SELECTORS):
             return True
     return False
+
+
+def allow_pr_text_marks(line):
+    """Remove @mention guards and emoji selectors that directly follow a symbol."""
+    line = MENTION_GUARD_RE.sub("@", line)
+    return "".join(c for i, c in enumerate(line)
+                   if not (c == EMOJI_SELECTOR and i and unicodedata.category(line[i - 1]) == "So"))
 
 
 class Report:
@@ -306,6 +317,8 @@ def scan_repo(root, rep, require_deny, extra_text):
             continue
         shown = p if p == extra_text else os.path.relpath(p, root)
         for i, line in enumerate(lines, 1):
+            if p == extra_text:
+                line = allow_pr_text_marks(line)
             check_line = line[1:] if i == 1 and line.startswith(BOM) else line
             if has_hidden_char(check_line):
                 rep.fail(9, f"{shown}:{i}", "invisible or direction-changing character")
