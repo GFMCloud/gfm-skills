@@ -21,15 +21,19 @@ content huddles on one side of a wide screen, a stretch over half a screen tall 
 h1 on the first screen, a section of running text with no heading, and a page or section title (the
 h1, or a section's h2) over two lines.
 --screen is for forms, components and app screens: the frame checks become warnings there.
---brief is for a page handed to a person to read (the Brief job). It skips the brand check, makes the
-frame checks warnings, and adds: a FAIL over 400 open words (text outside closed <details>, <svg>,
-script and style; toggle summaries count), a FAIL for a section with data-shape tree, flow, layers,
-timeline or matrix that has no <svg> inside, a warning when no section carries data-shape, and a
-warning for an open list over 5 items or an open table over 7 rows. With --shots it also fails on
-3 or more sibling boxes each holding over 30 words (text in cards), on a [data-answer] element that
-is not wholly on the first phone screen (390 x 844), warns when no element has data-answer or the
-first phone screen holds over 120 words, fails on text cut off past the right edge at phone width
-(hidden by overflow-x: hidden rather than scrolling), and warns about SVG text drawn under 12px.
+--brief is for a page handed to a person to read (the Brief job). It skips the brand check, makes
+the frame checks warnings, and adds: a FAIL over 400 open words (text outside closed <details>,
+<svg>, script, style, <template>, [hidden] and inline display: none; toggle summaries count; a run
+of Chinese or Japanese characters counts one word per two characters), a FAIL for a data-shape of
+tree, flow, layers, timeline or matrix with no <svg> figure inside or carrying it (an <svg> is an
+icon only when both width and height are px values under 120; any other unit is a figure),
+a warning when nothing carries data-shape, and a warning for an open list over 5 items or an open
+table over 7 body rows (rows with a <td>; header rows don't count). With --shots it also fails on
+3 or more sibling boxes each holding over 30 words (text in cards), on a [data-answer] element
+that is not wholly on the first phone screen (390 x 844), and on text cut off past the right edge
+at phone width (hidden by overflow-x: hidden rather than scrolling); it warns when no element has
+data-answer, when the first phone screen holds over 120 words (closed toggles not counted), and
+about SVG text drawn under 12px.
 
 Standard library only (playwright only for --shots). Exit code 1 on any FAIL.
 """
@@ -147,7 +151,43 @@ def source_checks(path, brief=False):
 
 
 DRAWN = {"tree", "flow", "layers", "timeline", "matrix"}
-WORD = re.compile(r"[A-Za-z0-9][\w'’.,/-]*")
+# A word starts with any letter or digit. Chinese and Japanese have no spaces, so each run of
+# those characters counts as one word per two characters (rounded up), a rough average.
+CJK = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+")
+WORD = re.compile(r"[^\W_][\w'’.,/-]*")
+FIGURE_MIN = 120  # an <svg> drawn smaller than this many px is an icon, not a figure
+
+
+def count_words(text):
+    n = sum((len(m) + 1) // 2 for m in CJK.findall(text))
+    return n + len(WORD.findall(CJK.sub(" ", text)))
+
+
+def icon_px(a):
+    """The drawn size of an <svg> when it is known to be small: the larger of width and height in
+    px, only when BOTH are explicit px values (inline style overrides the attributes). Any other
+    unit (%, em, auto), a missing value or one that can't be read gives None: not an icon."""
+    style = dict((k.strip().lower(), v.strip()) for k, v in
+                 (d.split(":", 1) for d in (a.get("style") or "").split(";") if ":" in d))
+    sizes = []
+    for k in ("width", "height"):
+        v = style.get(k, a.get(k))
+        m = re.fullmatch(r"\s*(\d+(?:\.\d+)?|\.\d+)\s*(px)?\s*", v or "", re.I)
+        if not m:
+            return None
+        try:
+            sizes.append(float(m.group(1)))
+        except ValueError:
+            return None
+    return max(sizes)
+
+
+# Start tags that end an open <p> (HTML's implied end tags), and the scopes a <p> can't be closed across.
+P_CLOSERS = {"address", "article", "aside", "blockquote", "center", "dd", "details", "dialog", "div", "dl",
+             "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6",
+             "header", "hgroup", "hr", "li", "main", "menu", "nav", "ol", "p", "pre", "section", "summary",
+             "table", "ul"}
+SCOPES = {"table", "td", "th", "button", "template", "svg", "object", "html"}
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 
 
@@ -166,16 +206,44 @@ class BriefParser(html.parser.HTMLParser):
     def _in(self, flag):
         return any(i.get(flag) for _, i in self.stack)
 
+    def _pop_to(self, k):
+        for _, i in self.stack[k:]:
+            if "shape" in i:
+                i["shape"][3] = False
+        del self.stack[k:]
+
+    def _close_implied(self, tag):
+        """Close what the browser closes without an end tag: an open <p> before a block, an <li>
+        before the next <li>, a cell or row before the next one."""
+        names = [t for t, _ in self.stack]
+        if tag in P_CLOSERS and "p" in names:
+            k = len(names) - 1 - names[::-1].index("p")
+            if not any(t in SCOPES for t in names[k + 1:]):
+                self._pop_to(k)
+        targets = {"li": ({"li"}, {"ul", "ol", "td", "th", "table"}),
+                   "dd": ({"dd", "dt"}, {"dl", "td", "th", "table"}), "dt": ({"dd", "dt"}, {"dl", "td", "th", "table"}),
+                   "option": ({"option"}, {"select", "datalist"}), "optgroup": ({"option", "optgroup"}, {"select"}),
+                   "td": ({"td", "th"}, {"tr", "table"}), "th": ({"td", "th"}, {"tr", "table"}),
+                   "tr": ({"tr"}, {"table"})}.get(tag)
+        if targets:
+            close, stop = targets
+            for k in range(len(self.stack) - 1, -1, -1):
+                t = self.stack[k][0]
+                if t in stop:
+                    break
+                if t in close:
+                    self._pop_to(k)
+                    break
+
     def handle_starttag(self, tag, attrs):
+        self._close_implied(tag)
         a = dict(attrs)
         info = {}
-        if tag in ("script", "style"):
+        # Never shown: scripts, styles, templates, and anything hidden by the hidden attribute or an
+        # inline display: none. (aria-hidden text is still on screen, so it counts.)
+        if (tag in ("script", "style", "template") or "hidden" in a
+                or re.search(r"display\s*:\s*none", a.get("style") or "", re.I)):
             info["skip"] = True
-        if tag == "svg":
-            info["svg"] = True
-            for sh in self.shapes:
-                if sh[3]:
-                    sh[1] = True
         if tag == "details" and "open" not in a:
             info["closed"] = True
         if tag == "summary":
@@ -185,7 +253,14 @@ class BriefParser(html.parser.HTMLParser):
             sh = [(a.get("data-shape") or "").strip().lower(), False, label, True]
             self.shapes.append(sh)
             info["shape"] = sh
-        hidden = self._in("closed") and not self._in("summary")
+        if tag == "svg":
+            info["svg"] = True
+            size = icon_px(a)
+            if not self._in("skip") and (size is None or size >= FIGURE_MIN):
+                for sh in self.shapes:
+                    if sh[3]:
+                        sh[1] = True
+        hidden = self._in("skip") or (self._in("closed") and not self._in("summary"))
         if tag in ("ul", "ol") and not hidden:
             info["list"] = [0]
             self.lists.append(info["list"])
@@ -198,10 +273,17 @@ class BriefParser(html.parser.HTMLParser):
         if tag == "table" and not hidden:
             info["table"] = [0]
             self.tables.append(info["table"])
-        if tag == "tr":
-            for _, i in reversed(self.stack):
-                if "table" in i:
-                    i["table"][0] += 1
+        if tag == "td":
+            # A body row is one with at least one <td>; header rows of <th> only don't count.
+            for k in range(len(self.stack) - 1, -1, -1):
+                t, i = self.stack[k]
+                if t == "tr":
+                    if not i.get("counted"):
+                        i["counted"] = True
+                        for _, j in reversed(self.stack[:k]):
+                            if "table" in j:
+                                j["table"][0] += 1
+                                break
                     break
         if tag not in VOID:
             self.stack.append((tag, info))
@@ -209,16 +291,13 @@ class BriefParser(html.parser.HTMLParser):
     def handle_endtag(self, tag):
         for k in range(len(self.stack) - 1, -1, -1):
             if self.stack[k][0] == tag:
-                for _, i in self.stack[k:]:
-                    if "shape" in i:
-                        i["shape"][3] = False
-                del self.stack[k:]
+                self._pop_to(k)
                 return
 
     def handle_data(self, data):
         if self._in("skip"):
             return
-        n = len(WORD.findall(data))
+        n = count_words(data)
         if self._in("svg"):
             self.svg_words += n
         elif self._in("closed") and not self._in("summary"):
@@ -240,7 +319,8 @@ def brief_source(raw):
                         "(keep the bottom line, decision and tradeoffs open) rather than cutting facts")
     for shape, has_svg, label, _ in bp.shapes:
         if shape in DRAWN and not has_svg:
-            problems.append(f'brief: section {label!r} has data-shape="{shape}" but no <svg> inside; draw it')
+            problems.append(f'brief: section {label!r} has data-shape="{shape}" but no <svg> figure in it (one under '
+                            f'{FIGURE_MIN}px is an icon); draw it, or put data-shape on the <svg>')
     if not bp.shapes:
         warnings.append("brief: no section carries data-shape; give each section a shape (tree, flow, layers, "
                         "timeline, matrix, table or text) before writing it")
@@ -250,15 +330,20 @@ def brief_source(raw):
         if n[0] > 5:
             warnings.append(f"brief: an open list of {n[0]} items; group it into 3 to 5, or move the tail into a toggle")
     for n in bp.tables:
-        if n[0] > 8:
-            warnings.append(f"brief: an open table of {n[0] - 1} rows; split it into groups or move rows into a toggle")
+        if n[0] > 7:
+            warnings.append(f"brief: an open table of {n[0]} rows; split it into groups or move rows into a toggle")
     return problems, warnings
 
 
 BRIEF_MEASURE = """() => {
   const vis = e => { const s = getComputedStyle(e), r = e.getBoundingClientRect();
     return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 0 && r.height > 0; };
-  const words = t => (t.match(/[A-Za-z0-9][\\w'’.,/-]*/g) || []).length;
+  // Same rule as count_words in Python: a CJK run counts one word per two characters.
+  const words = t => { let n = 0;
+    t = t.replace(/[\\u3040-\\u30ff\\u3400-\\u4dbf\\u4e00-\\u9fff\\uf900-\\ufaff]+/g, m => { n += Math.ceil(m.length / 2); return ' '; });
+    return n + (t.match(/[\\p{L}\\p{N}][\\p{L}\\p{N}_'’.,\\/-]*/gu) || []).length; };
+  const inClosed = el => { for (let d = el.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) {
+    if (!d.open) { const sm = d.querySelector(':scope > summary'); if (!(sm && sm.contains(el))) return true; } } return false; };
   const boxed = e => { const s = getComputedStyle(e), p = e.parentElement && getComputedStyle(e.parentElement);
     const border = ['Top', 'Right', 'Bottom', 'Left'].filter(k => parseFloat(s['border' + k + 'Width']) > 0 && s['border' + k + 'Style'] !== 'none').length >= 3;
     const fill = s.backgroundColor !== 'rgba(0, 0, 0, 0)' && s.backgroundColor !== 'transparent' && p && s.backgroundColor !== p.backgroundColor;
@@ -266,7 +351,7 @@ BRIEF_MEASURE = """() => {
   const cards = [];
   for (const parent of document.querySelectorAll('body *')) {
     if (!vis(parent)) continue;
-    const kids = [...parent.children].filter(k => vis(k) && boxed(k) && !k.querySelector('svg, canvas, img, table') && !/^(DETAILS|PRE|CODE|BUTTON|A|LI)$/.test(k.tagName));
+    const kids = [...parent.children].filter(k => vis(k) && boxed(k) && !k.querySelector('svg, canvas, img, table') && !/^(DETAILS|PRE|CODE|BUTTON)$/.test(k.tagName));
     const wordy = kids.filter(k => words(k.innerText) > 30);
     if (wordy.length >= 3) cards.push({ where: (parent.id || parent.className || parent.tagName).toString().slice(0, 40), n: wordy.length });
   }
@@ -276,7 +361,7 @@ BRIEF_MEASURE = """() => {
   let first = 0;
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
-    const el = n.parentElement; if (!el || el.closest('script, style, svg') || !vis(el)) continue;
+    const el = n.parentElement; if (!el || el.closest('script, style, svg, template') || !vis(el) || inClosed(el)) continue;
     const rg = document.createRange(); rg.selectNodeContents(n); const r = rg.getBoundingClientRect();
     if (r.height > 0 && r.top + scrollY < H) first += words(n.textContent);
   }
@@ -302,7 +387,7 @@ BRIEF_MEASURE = """() => {
     let boxed = false;
     for (let a = e.parentElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement)
       if (/(auto|scroll)/.test(getComputedStyle(a).overflowX)) { boxed = true; break; }
-    if (!boxed) clipped.push({ text: e.innerText.trim().replace(/\s+/g, ' ').slice(0, 40), right: Math.round(r.right) });
+    if (!boxed) clipped.push({ text: e.innerText.trim().replace(/\\s+/g, ' ').slice(0, 40), right: Math.round(r.right) });
   }
   return { cards, answer, H, first, small, clipped };
 }"""
@@ -566,7 +651,7 @@ def shots(target, out, stem, screen=False, brief=False):
                     bm = page.evaluate(BRIEF_MEASURE)
                     if label == "desktop":
                         for c in bm["cards"][:4]:
-                            problems.append(f"brief: text in cards: {c['n']} boxes over 30 words side by side in "
+                            problems.append(f"brief: text in cards: {c['n']} sibling boxes over 30 words each in "
                                             f"{c['where']!r}; draw the relation as a figure, or make it a table or a toggle")
                     else:
                         a = bm["answer"]
