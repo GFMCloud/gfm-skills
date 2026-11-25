@@ -127,5 +127,6 @@ options only when the notes hold a choice), and a page clipped a card at phone w
 
 | Agent | Eval cases | Triggers | State |
 | :--- | :--- | :--- | :--- |
-| Claude Code | `brief-report`, `brief-comparison`, `brief-small` not yet run on Haiku, Sonnet, Opus | 3 new should, 1 new near-miss, not yet run | **pending** |
+| Claude Code (Opus) | 3 of 3 pass, run on the final text. `brief-report`: answer and both steps on the first phone screen, old and new flow drawn, 9 checks in three groups, all 12 rulings in a toggle, 235 open words (the last section, toggles only, has no `data-shape`). `brief-comparison`: SVG tree and matrix, default card with copy buttons and none on the skipped tool, 15-row table in a toggle, every grid fact kept, 183 open words. `brief-small`: answered in chat, wrote no file | 3 new should, 1 new near-miss, not yet run | **draft** |
+| Claude Code (Haiku, Sonnet) | not run | not run | **pending** |
 | Codex | not run | not run | **pending** |
