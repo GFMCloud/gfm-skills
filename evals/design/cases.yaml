@@ -111,3 +111,36 @@ cases:
       - Writes no brand tokens file
       - index.html passes scripts/check_page.py --shots
     grader: human
+
+  - id: brief-report
+    prompt: Turn notes.md into a page I can read on my phone. It's the status report for the help-centre migration; I need to know if it's ready and what I have to do.
+    setup:
+      - files/brief-report/notes.md
+    expect:
+      - The reply's first line is the decision or question for the reader, not the Brand line; the Brand line is in the hand-over
+      - The first screen at 390px shows the bottom line (ready after two steps) and both to-dos, outside any toggle
+      - Every section carries data-shape, and at least one shape other than table is drawn as inline SVG made for this content (for example the old and new flow side by side)
+      - check_page.py --brief --shots passes; at most 400 open words outside figures; the 12 rulings are in a details toggle, grouped, none deleted
+      - Every check and every ruling from notes.md is still on the page (open or in a toggle), and sources sit in one closing toggle, not beside each fact
+    grader: human
+
+  - id: brief-comparison
+    prompt: Make me a page comparing the four backup tools in notes.md so I can pick one.
+    setup:
+      - files/brief-comparison/notes.md
+    expect:
+      - The first phone screen holds the recommendation and the option cards with the default marked and a copy button
+      - The pick-by-need logic is drawn as an SVG decision tree (data-shape tree), not as a list of text cards
+      - The 15-row feature grid is a table (data-shape table) or is split into groups of 3 to 5, with the long tail in a details toggle
+      - check_page.py --brief --shots passes, with no FAIL for text cards or open words
+      - No tool, price or fact from notes.md is cut; nothing is invented
+    grader: human
+
+  - id: brief-small
+    prompt: From notes.md, which port does the staging server use and who owns it?
+    setup:
+      - files/brief-small/notes.md
+    expect:
+      - Answers in chat in a sentence or two (port 8443, owned by the platform team); writes no HTML page and draws no SVG
+      - Does not load the Brief job's build steps for a three-fact answer
+    grader: script

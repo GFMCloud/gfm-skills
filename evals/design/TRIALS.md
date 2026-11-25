@@ -95,3 +95,38 @@ show the fallback fonts.
 
 Codex runs owed for this fold (only with the maintainer's OK on the count): 2, namely
 `no-brand-three-directions` and `restyle-fresh-type-palette`.
+
+## Brief fold (2026-11-24, branch `fold/design-brief`)
+
+A fourth job for pages an agent hands a person to read (report, review, comparison, plan): answer
+and next step on the first phone screen, a shape per section (`data-shape`) drawn as inline SVG,
+at most 400 open words with the rest in `<details>`, sources in one closing toggle. New
+`references/brief.md` (shapes, sketches, SVG at phone width, toggles, tells) and
+`check_page.py --brief`: open words, shapes without SVG, open lists and tables, text in cards,
+the `data-answer` block on the first phone screen, text cut off by a hidden overflow, and SVG text
+drawn under 12px. `tests/check_page_brief.py` proves each check can pass and fail (16 cases).
+
+Blind A/B on two real private pages (a status report and a tool comparison, notes and pages kept
+outside this repo). Opus builders with the same prompt apart from the lever, two builds per arm:
+today's always-loaded page rule, a rewritten rule plus `check_page.py --brief` ("rule v3"), and
+rule v3 plus this job. Three blind Sonnet judges per page per build pair, ranking the three pages.
+Win rule fixed before the first build: the job first in at least 8 of 12 judgments, open words at
+or under today's arm in every build, a drawn figure in every build, all 20 listed facts kept.
+
+| Arm | First place | Mean place | Open words (4 builds) | SVG per page | Facts kept |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Today's rule | 0 of 12 | 3.0 | 912 to 1,460 | 0 | 40 of 40 |
+| Rule v3 | 2 of 12 | 1.83 | 275 to 363 | 4 to 7 | 40 of 40 |
+| Brief job | 10 of 12 | 1.17 | 278 to 366 | 4 to 8 | 40 of 40 |
+
+The job passed all four. Rule v3 ranked above today's rule in 12 of 12 judgments but first in only
+2. Judges' complaints, fixed after the test and covered by the checker tests, not by a rerun: a
+status report got invented decision options and a copy button on a "skip" option (step 1 now says
+options only when the notes hold a choice), and a page clipped a card at phone width under
+`overflow-x: hidden` while the ordinary check passed it (the clipped-text check).
+
+| Agent | Eval cases | Triggers | State |
+| :--- | :--- | :--- | :--- |
+| Claude Code (Opus) | 3 of 3 pass, run on the final text. `brief-report`: answer and both steps on the first phone screen, old and new flow drawn, 9 checks in three groups, all 12 rulings in a toggle, 235 open words (the last section, toggles only, has no `data-shape`). `brief-comparison`: SVG tree and matrix, default card with copy buttons and none on the skipped tool, 15-row table in a toggle, every grid fact kept, 183 open words. `brief-small`: answered in chat, wrote no file | 3 new should, 1 new near-miss, not yet run | **draft** |
+| Claude Code (Haiku, Sonnet) | not run | not run | **pending** |
+| Codex | not run | not run | **pending** |

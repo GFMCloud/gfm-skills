@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check a designed page before handing it over.
 
-Usage: python3 scripts/check_page.py <page.html | http://localhost:...> [--shots] [--out <folder>] [--screen]
+Usage: python3 scripts/check_page.py <page.html | http://localhost:...> [--shots] [--out <folder>] [--screen] [--brief]
 
 For a file, it checks the source:
   - complete (ends with </html>), has lang, a <title> and a viewport meta tag
@@ -21,9 +21,19 @@ content huddles on one side of a wide screen, a stretch over half a screen tall 
 h1 on the first screen, a section of running text with no heading, and a page or section title (the
 h1, or a section's h2) over two lines.
 --screen is for forms, components and app screens: the frame checks become warnings there.
+--brief is for a page handed to a person to read (the Brief job). It skips the brand check, makes the
+frame checks warnings, and adds: a FAIL over 400 open words (text outside closed <details>, <svg>,
+script and style; toggle summaries count), a FAIL for a section with data-shape tree, flow, layers,
+timeline or matrix that has no <svg> inside, a warning when no section carries data-shape, and a
+warning for an open list over 5 items or an open table over 7 rows. With --shots it also fails on
+3 or more sibling boxes each holding over 30 words (text in cards), on a [data-answer] element that
+is not wholly on the first phone screen (390 x 844), warns when no element has data-answer or the
+first phone screen holds over 120 words, fails on text cut off past the right edge at phone width
+(hidden by overflow-x: hidden rather than scrolling), and warns about SVG text drawn under 12px.
 
 Standard library only (playwright only for --shots). Exit code 1 on any FAIL.
 """
+import html.parser
 import pathlib
 import re
 import sys
@@ -62,7 +72,7 @@ def local_css(path, html):
     return out
 
 
-def source_checks(path):
+def source_checks(path, brief=False):
     raw = path.read_text(encoding="utf-8", errors="replace")
     problems, warnings = [], []
     if not raw.rstrip().lower().endswith("</html>"):
@@ -78,7 +88,9 @@ def source_checks(path):
     if not any((attr(m, "name") or "").lower() == "viewport" for m in tags(html, "meta")):
         problems.append("no viewport meta tag; the page will render zoomed out on phones")
     src = re.search(r"brand-source:\s*([\w-]+)", styles)
-    if not src:
+    if brief:
+        pass  # a page handed to one reader is not checked for the brand block
+    elif not src:
         problems.append("brand block not found in the page's CSS; run brand.py and paste its :root block "
                         "(or, for a redesign that keeps the page's own colours, its brand-source comment)")
     elif "var(--brand-" not in styles + html:
@@ -132,6 +144,168 @@ def source_checks(path):
     if n:
         warnings.append(f"{n} element(s) marked data-sample: sample content to confirm or replace before launch")
     return problems, warnings
+
+
+DRAWN = {"tree", "flow", "layers", "timeline", "matrix"}
+WORD = re.compile(r"[A-Za-z0-9][\w'’.,/-]*")
+VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+
+
+class BriefParser(html.parser.HTMLParser):
+    """Counts open words and finds data-shape sections, open lists and open tables."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.stack = []          # (tag, info) for open elements
+        self.open_words = 0
+        self.svg_words = 0
+        self.shapes = []         # [shape, has_svg, label]
+        self.lists = []          # item counts of open ul/ol
+        self.tables = []         # row counts of open tables
+
+    def _in(self, flag):
+        return any(i.get(flag) for _, i in self.stack)
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        info = {}
+        if tag in ("script", "style"):
+            info["skip"] = True
+        if tag == "svg":
+            info["svg"] = True
+            for sh in self.shapes:
+                if sh[3]:
+                    sh[1] = True
+        if tag == "details" and "open" not in a:
+            info["closed"] = True
+        if tag == "summary":
+            info["summary"] = True
+        if "data-shape" in a:
+            label = a.get("id") or a.get("aria-label") or tag
+            sh = [(a.get("data-shape") or "").strip().lower(), False, label, True]
+            self.shapes.append(sh)
+            info["shape"] = sh
+        hidden = self._in("closed") and not self._in("summary")
+        if tag in ("ul", "ol") and not hidden:
+            info["list"] = [0]
+            self.lists.append(info["list"])
+        if tag == "li":
+            for _, i in reversed(self.stack):
+                if "list" in i:
+                    if not hidden:
+                        i["list"][0] += 1
+                    break
+        if tag == "table" and not hidden:
+            info["table"] = [0]
+            self.tables.append(info["table"])
+        if tag == "tr":
+            for _, i in reversed(self.stack):
+                if "table" in i:
+                    i["table"][0] += 1
+                    break
+        if tag not in VOID:
+            self.stack.append((tag, info))
+
+    def handle_endtag(self, tag):
+        for k in range(len(self.stack) - 1, -1, -1):
+            if self.stack[k][0] == tag:
+                for _, i in self.stack[k:]:
+                    if "shape" in i:
+                        i["shape"][3] = False
+                del self.stack[k:]
+                return
+
+    def handle_data(self, data):
+        if self._in("skip"):
+            return
+        n = len(WORD.findall(data))
+        if self._in("svg"):
+            self.svg_words += n
+        elif self._in("closed") and not self._in("summary"):
+            return
+        else:
+            self.open_words += n
+
+
+def brief_source(raw):
+    """The --brief source checks: open words, shapes, groups."""
+    problems, warnings = [], []
+    bp = BriefParser()
+    bp.feed(strip_comments(raw))
+    drawn = sum(1 for sh in bp.shapes if sh[0] in DRAWN)
+    print(f"  info  brief: {bp.open_words} open words (limit 400), {bp.svg_words} words in figures, "
+          f"{len(bp.shapes)} section(s) with data-shape, {drawn} drawn")
+    if bp.open_words > 400:
+        problems.append(f"brief: {bp.open_words} open words, over 400; move detail into <details> toggles "
+                        "(keep the bottom line, decision and tradeoffs open) rather than cutting facts")
+    for shape, has_svg, label, _ in bp.shapes:
+        if shape in DRAWN and not has_svg:
+            problems.append(f'brief: section {label!r} has data-shape="{shape}" but no <svg> inside; draw it')
+    if not bp.shapes:
+        warnings.append("brief: no section carries data-shape; give each section a shape (tree, flow, layers, "
+                        "timeline, matrix, table or text) before writing it")
+    elif not drawn:
+        warnings.append("brief: no drawn shape on the page (all table or text); say why in the hand-over")
+    for n in bp.lists:
+        if n[0] > 5:
+            warnings.append(f"brief: an open list of {n[0]} items; group it into 3 to 5, or move the tail into a toggle")
+    for n in bp.tables:
+        if n[0] > 8:
+            warnings.append(f"brief: an open table of {n[0] - 1} rows; split it into groups or move rows into a toggle")
+    return problems, warnings
+
+
+BRIEF_MEASURE = """() => {
+  const vis = e => { const s = getComputedStyle(e), r = e.getBoundingClientRect();
+    return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 0 && r.height > 0; };
+  const words = t => (t.match(/[A-Za-z0-9][\\w'’.,/-]*/g) || []).length;
+  const boxed = e => { const s = getComputedStyle(e), p = e.parentElement && getComputedStyle(e.parentElement);
+    const border = ['Top', 'Right', 'Bottom', 'Left'].filter(k => parseFloat(s['border' + k + 'Width']) > 0 && s['border' + k + 'Style'] !== 'none').length >= 3;
+    const fill = s.backgroundColor !== 'rgba(0, 0, 0, 0)' && s.backgroundColor !== 'transparent' && p && s.backgroundColor !== p.backgroundColor;
+    return border || fill; };
+  const cards = [];
+  for (const parent of document.querySelectorAll('body *')) {
+    if (!vis(parent)) continue;
+    const kids = [...parent.children].filter(k => vis(k) && boxed(k) && !k.querySelector('svg, canvas, img, table') && !/^(DETAILS|PRE|CODE|BUTTON|A|LI)$/.test(k.tagName));
+    const wordy = kids.filter(k => words(k.innerText) > 30);
+    if (wordy.length >= 3) cards.push({ where: (parent.id || parent.className || parent.tagName).toString().slice(0, 40), n: wordy.length });
+  }
+  const H = innerHeight, ans = document.querySelector('[data-answer]');
+  let answer = null;
+  if (ans) { const r = ans.getBoundingClientRect(); answer = { top: Math.round(r.top + scrollY), bottom: Math.round(r.bottom + scrollY), vis: vis(ans) }; }
+  let first = 0;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const el = n.parentElement; if (!el || el.closest('script, style, svg') || !vis(el)) continue;
+    const rg = document.createRange(); rg.selectNodeContents(n); const r = rg.getBoundingClientRect();
+    if (r.height > 0 && r.top + scrollY < H) first += words(n.textContent);
+  }
+  const small = [];
+  for (const svg of document.querySelectorAll('svg')) {
+    if (!vis(svg)) continue;
+    const vb = svg.viewBox && svg.viewBox.baseVal, r = svg.getBoundingClientRect();
+    const scale = vb && vb.width ? r.width / vb.width : 1;
+    for (const t of svg.querySelectorAll('text')) {
+      const px = parseFloat(getComputedStyle(t).fontSize) * scale;
+      if (px < 12 && t.textContent.trim()) small.push({ text: t.textContent.trim().slice(0, 30), px: Math.round(px * 10) / 10 });
+    }
+  }
+  // Content past the right edge that a hidden overflow cuts off (no sideways scroll, so the
+  // ordinary check passes it). Wide content inside its own scroll box is fine.
+  const clipped = [];
+  for (const e of document.querySelectorAll('body *')) {
+    const own = [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+    if (!own || !vis(e) || e.closest('svg')) continue;
+    const rg = document.createRange(); rg.selectNodeContents(e);
+    const r = [e.getBoundingClientRect(), rg.getBoundingClientRect()].reduce((m, x) => x.right > m.right ? x : m);
+    if (r.right <= innerWidth + 1) continue;
+    let boxed = false;
+    for (let a = e.parentElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement)
+      if (/(auto|scroll)/.test(getComputedStyle(a).overflowX)) { boxed = true; break; }
+    if (!boxed) clipped.push({ text: e.innerText.trim().replace(/\s+/g, ' ').slice(0, 40), right: Math.round(r.right) });
+  }
+  return { cards, answer, H, first, small, clipped };
+}"""
 
 
 # Some agent sandboxes (on macOS among others) stop Chromium's helper processes from starting.
@@ -353,7 +527,7 @@ def launch(pw):
         return pw.chromium.launch(args=SAFE_ARGS)
 
 
-def shots(target, out, stem, screen=False):
+def shots(target, out, stem, screen=False, brief=False):
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -387,7 +561,31 @@ def shots(target, out, stem, screen=False):
                     problems.append(f"{label} ({w}px): page scrolls sideways by {m['over']}px")
                 for e in errors:
                     problems.append(f"{label}: script error: {e}")
-                fp, fw = frame_findings(page.evaluate(FRAME), label, screen)
+                fp, fw = frame_findings(page.evaluate(FRAME), label, screen or brief)
+                if brief:
+                    bm = page.evaluate(BRIEF_MEASURE)
+                    if label == "desktop":
+                        for c in bm["cards"][:4]:
+                            problems.append(f"brief: text in cards: {c['n']} boxes over 30 words side by side in "
+                                            f"{c['where']!r}; draw the relation as a figure, or make it a table or a toggle")
+                    else:
+                        a = bm["answer"]
+                        if a is None:
+                            warnings.append("brief: no element has data-answer; mark the bottom line so the first "
+                                            "phone screen can be checked")
+                        elif not a["vis"] or a["bottom"] > bm["H"]:
+                            problems.append(f"brief: the data-answer block ends {a['bottom']}px down, below the first "
+                                            f"phone screen ({bm['H']}px); move the bottom line up")
+                        for c in bm["clipped"][:4]:
+                            problems.append(f"brief: {c['text']!r} runs to {c['right']}px on a {w}px phone and is cut off; "
+                                            "wrap it, or put it in its own overflow-x: auto box")
+                        if bm["first"] > 120:
+                            warnings.append(f"brief: {bm['first']} words on the first phone screen; aim for the "
+                                            "bottom line, the next step and the start of the key figure")
+                        if bm["small"]:
+                            warnings.append("brief: SVG text drawn under 12px at phone width: " + "; ".join(
+                                f"{x['text']!r} {x['px']}px" for x in bm["small"][:5]) +
+                                "; use a viewBox at most 400 wide or larger text")
                 problems += fp
                 warnings += fw
                 if label == "phone":
@@ -445,12 +643,16 @@ def main():
         if not path.is_file():
             print(f"  FAIL  no such file: {target}")
             sys.exit(1)
-        problems, warnings = source_checks(path)
+        problems, warnings = source_checks(path, brief="--brief" in args)
+        if "--brief" in args:
+            bp, bw = brief_source(path.read_text(encoding="utf-8", errors="replace"))
+            problems += bp
+            warnings += bw
         url, stem = path.resolve().as_uri(), path.stem
         out = out or path.parent / ".design-check"
     if "--shots" in args:
         out.mkdir(parents=True, exist_ok=True)
-        p, w = shots(url, out, stem, screen="--screen" in args)
+        p, w = shots(url, out, stem, screen="--screen" in args, brief="--brief" in args)
         problems += p
         warnings += w
     for w in warnings:
@@ -458,7 +660,7 @@ def main():
     for p in problems:
         print(f"  FAIL  {p}")
     if not problems:
-        frame = "" if "--screen" in args else " and the frame,"
+        frame = "" if ("--screen" in args or "--brief" in args) else " and the frame,"
         print("  pass  " + ("source checks" if not re.match(r"https?://", target) else "") +
               (f"{frame} with no sideways scroll at 1280px or 390px" if "--shots" in args else ""))
     sys.exit(1 if problems else 0)
