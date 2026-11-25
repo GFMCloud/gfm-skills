@@ -7,6 +7,7 @@ Builds small pages in a temp folder, runs skills/design/scripts/check_page.py --
 checks the output. Cases marked shots need playwright and its Chromium; without them they print SKIP
 and the run exits 1, because a skipped check is not a pass. Standard library only.
 """
+# Test text includes CJK on purpose: 600 four-character phrases should count as about 1,200 words.
 import os
 import subprocess
 import sys
@@ -85,6 +86,42 @@ CASES = [
     ("wide-table-in-scroll-box-ok",
      page('<section data-shape="table"><h2>Grid</h2><div style="overflow-x:auto"><table style="min-width:900px">'
           '<tr><td>a</td><td>b</td></tr></table></div></section>'), ["--shots"], [], ["cut off"], 0),
+    # Review fixes (each failed before its fix).
+    ("no-warnings-under-W-error", GOOD, ["PYW", "--shots"], ["pass"], ["SyntaxError", "Warning"], 0),
+    ("shape-on-svg-itself-ok",
+     page('<section><h2>Flow</h2><svg data-shape="flow" viewBox="0 0 360 100"><rect x="0" y="0" width="100" height="40" fill="#ddd"/>'
+          '<rect x="200" y="0" width="100" height="40" fill="#ddd"/></svg></section>'), [], ["pass"], ["no <svg>"], 0),
+    ("icon-svg-is-not-a-figure",
+     page('<section data-shape="tree"><h2>Pick</h2><p><svg viewBox="0 0 12 12" width="12" height="12"><circle cx="6" cy="6" r="5" fill="#ddd"/></svg> Start</p></section>'),
+     [], ["FAIL  brief: ", "no <svg>"], [], 1),
+    ("hidden-text-not-counted",
+     page(f'<section data-shape="tree"><h2>Pick</h2>{TREE}</section><template><p>{words(500)}</p></template>'
+          f'<div hidden>{words(500)}</div><div aria-hidden="true">{words(500)}</div><div style="display: none">{words(500)}</div>'),
+     [], ["pass"], ["open words over", "open words,"], 0),
+    ("first-screen-skips-closed-toggle",
+     HEAD + '<h1>Test page</h1><p data-answer>Bottom line: ship it.</p>'
+     f'<section data-shape="tree"><h2>Pick</h2>{TREE}</section><details><summary>More</summary><p>{words(300)}</p></details>' + TAIL,
+     ["--shots"], ["pass"], ["words on the first phone screen"], 0),
+    ("li-cards-fail",
+     page('<section data-shape="text"><h2>Cards</h2><ul class="grid" style="list-style:none;padding:0">' +
+          "".join(f'<li class="card"><b>Card {i}</b> {words(40)}</li>' for i in range(3)) + '</ul></section>'),
+     ["--shots"], ["FAIL", "text in cards"], [], 1),
+    ("a-cards-fail",
+     page('<section data-shape="text"><h2>Cards</h2><div class="grid">' +
+          "".join(f'<a class="card" href="#c{i}"><b>Card {i}</b> {words(40)}</a>' for i in range(3)) + '</div></section>'),
+     ["--shots"], ["FAIL", "text in cards"], [], 1),
+    ("cjk-words-counted",
+     page('<section data-shape="text"><h2>Long</h2><p>' + " ".join(["检查页面"] * 600) + '</p></section>'),
+     [], ["FAIL  brief: ", "open words"], [], 1),
+    ("table-8-body-rows-warns",
+     page('<section data-shape="table"><h2>T</h2><table><tr><th>a</th></tr>' + "<tr><td>b</td></tr>" * 8 + '</table></section>'),
+     [], ["warn  brief: ", "8 rows"], [], 0),
+    ("table-8-rows-no-header-warns",
+     page('<section data-shape="table"><h2>T</h2><table>' + "<tr><td>b</td></tr>" * 8 + '</table></section>'),
+     [], ["warn  brief: ", "8 rows"], [], 0),
+    ("table-7-body-rows-ok",
+     page('<section data-shape="table"><h2>T</h2><table><tr><th>a</th></tr>' + "<tr><td>b</td></tr>" * 7 + '</table></section>'),
+     [], [], ["rows; split"], 0),
     ("good-passes-shots", GOOD, ["--shots"], ["pass"], ["FAIL"], 0),
 ]
 
@@ -107,9 +144,11 @@ def main():
                 skipped += 1
                 continue
             f = os.path.join(tmp, cid + ".html")
-            with open(f, "w") as fh:
+            with open(f, "w", encoding="utf-8") as fh:
                 fh.write(html)
-            r = subprocess.run([sys.executable, CHECK, f, "--brief", "--out", os.path.join(tmp, "shots")] + extra,
+            py = [sys.executable, "-W", "error"] if "PYW" in extra else [sys.executable]
+            args = [x for x in extra if x != "PYW"]
+            r = subprocess.run(py + [CHECK, f, "--brief", "--out", os.path.join(tmp, "shots")] + args,
                                capture_output=True, text=True, timeout=180)
             out = r.stdout + r.stderr
             missing = [m for m in must if m not in out]

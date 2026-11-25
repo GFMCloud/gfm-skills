@@ -23,12 +23,14 @@ h1, or a section's h2) over two lines.
 --screen is for forms, components and app screens: the frame checks become warnings there.
 --brief is for a page handed to a person to read (the Brief job). It skips the brand check, makes the
 frame checks warnings, and adds: a FAIL over 400 open words (text outside closed <details>, <svg>,
-script and style; toggle summaries count), a FAIL for a section with data-shape tree, flow, layers,
-timeline or matrix that has no <svg> inside, a warning when no section carries data-shape, and a
-warning for an open list over 5 items or an open table over 7 rows. With --shots it also fails on
+script, style, <template> and hidden elements; toggle summaries count; a run of Chinese or Japanese
+characters counts one word per two characters), a FAIL for a data-shape of tree, flow, layers,
+timeline or matrix with no <svg> of at least 120px (viewBox or width) inside or carrying it, a
+warning when nothing carries data-shape, and a warning for an open list over 5 items or an open
+table over 7 body rows (rows with a <td>; header rows don't count). With --shots it also fails on
 3 or more sibling boxes each holding over 30 words (text in cards), on a [data-answer] element that
 is not wholly on the first phone screen (390 x 844), warns when no element has data-answer or the
-first phone screen holds over 120 words, fails on text cut off past the right edge at phone width
+first phone screen holds over 120 words (closed toggles not counted), fails on text cut off past the right edge at phone width
 (hidden by overflow-x: hidden rather than scrolling), and warns about SVG text drawn under 12px.
 
 Standard library only (playwright only for --shots). Exit code 1 on any FAIL.
@@ -147,7 +149,29 @@ def source_checks(path, brief=False):
 
 
 DRAWN = {"tree", "flow", "layers", "timeline", "matrix"}
-WORD = re.compile(r"[A-Za-z0-9][\w'’.,/-]*")
+# A word starts with any letter or digit. Chinese and Japanese have no spaces, so each run of
+# those characters counts as one word per two characters (rounded up), a rough average.
+CJK = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]+")
+WORD = re.compile(r"[^\W_][\w'’.,/-]*")
+FIGURE_MIN = 120  # an <svg> smaller than this (viewBox or width) is an icon, not a figure
+
+
+def count_words(text):
+    n = sum((len(m) + 1) // 2 for m in CJK.findall(text))
+    return n + len(WORD.findall(CJK.sub(" ", text)))
+
+
+def svg_size(a):
+    """Largest of the svg's viewBox width/height and width/height attributes; None if none given."""
+    sizes = []
+    vb = (a.get("viewbox") or "").replace(",", " ").split()
+    if len(vb) == 4:
+        sizes += [float(x) for x in vb[2:] if re.match(r"^[\d.]+$", x)]
+    for k in ("width", "height"):
+        m = re.match(r"^\s*([\d.]+)\s*(px)?\s*$", a.get(k) or "")
+        if m:
+            sizes.append(float(m.group(1)))
+    return max(sizes) if sizes else None
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 
 
@@ -169,13 +193,10 @@ class BriefParser(html.parser.HTMLParser):
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         info = {}
-        if tag in ("script", "style"):
+        # Never shown: scripts, styles, templates, and anything hidden by attribute or inline style.
+        if (tag in ("script", "style", "template") or "hidden" in a or (a.get("aria-hidden") or "").lower() == "true"
+                or re.search(r"display\s*:\s*none", a.get("style") or "", re.I)):
             info["skip"] = True
-        if tag == "svg":
-            info["svg"] = True
-            for sh in self.shapes:
-                if sh[3]:
-                    sh[1] = True
         if tag == "details" and "open" not in a:
             info["closed"] = True
         if tag == "summary":
@@ -185,7 +206,14 @@ class BriefParser(html.parser.HTMLParser):
             sh = [(a.get("data-shape") or "").strip().lower(), False, label, True]
             self.shapes.append(sh)
             info["shape"] = sh
-        hidden = self._in("closed") and not self._in("summary")
+        if tag == "svg":
+            info["svg"] = True
+            size = svg_size(a)
+            if size is None or size >= FIGURE_MIN:
+                for sh in self.shapes:
+                    if sh[3]:
+                        sh[1] = True
+        hidden = self._in("skip") or (self._in("closed") and not self._in("summary"))
         if tag in ("ul", "ol") and not hidden:
             info["list"] = [0]
             self.lists.append(info["list"])
@@ -199,9 +227,18 @@ class BriefParser(html.parser.HTMLParser):
             info["table"] = [0]
             self.tables.append(info["table"])
         if tag == "tr":
-            for _, i in reversed(self.stack):
-                if "table" in i:
-                    i["table"][0] += 1
+            info["row"] = True
+        if tag == "td":
+            # A body row is one with at least one <td>; header rows of <th> only don't count.
+            for k in range(len(self.stack) - 1, -1, -1):
+                t, i = self.stack[k]
+                if t == "tr":
+                    if not i.get("counted"):
+                        i["counted"] = True
+                        for _, j in reversed(self.stack[:k]):
+                            if "table" in j:
+                                j["table"][0] += 1
+                                break
                     break
         if tag not in VOID:
             self.stack.append((tag, info))
@@ -218,7 +255,7 @@ class BriefParser(html.parser.HTMLParser):
     def handle_data(self, data):
         if self._in("skip"):
             return
-        n = len(WORD.findall(data))
+        n = count_words(data)
         if self._in("svg"):
             self.svg_words += n
         elif self._in("closed") and not self._in("summary"):
@@ -240,7 +277,8 @@ def brief_source(raw):
                         "(keep the bottom line, decision and tradeoffs open) rather than cutting facts")
     for shape, has_svg, label, _ in bp.shapes:
         if shape in DRAWN and not has_svg:
-            problems.append(f'brief: section {label!r} has data-shape="{shape}" but no <svg> inside; draw it')
+            problems.append(f'brief: section {label!r} has data-shape="{shape}" but no <svg> inside at least '
+                            f'{FIGURE_MIN}px (viewBox or width); draw it, or put data-shape on the <svg>')
     if not bp.shapes:
         warnings.append("brief: no section carries data-shape; give each section a shape (tree, flow, layers, "
                         "timeline, matrix, table or text) before writing it")
@@ -250,15 +288,20 @@ def brief_source(raw):
         if n[0] > 5:
             warnings.append(f"brief: an open list of {n[0]} items; group it into 3 to 5, or move the tail into a toggle")
     for n in bp.tables:
-        if n[0] > 8:
-            warnings.append(f"brief: an open table of {n[0] - 1} rows; split it into groups or move rows into a toggle")
+        if n[0] > 7:
+            warnings.append(f"brief: an open table of {n[0]} rows; split it into groups or move rows into a toggle")
     return problems, warnings
 
 
 BRIEF_MEASURE = """() => {
   const vis = e => { const s = getComputedStyle(e), r = e.getBoundingClientRect();
     return s.display !== 'none' && s.visibility !== 'hidden' && r.width > 0 && r.height > 0; };
-  const words = t => (t.match(/[A-Za-z0-9][\\w'’.,/-]*/g) || []).length;
+  // Same rule as count_words in Python: a CJK run counts one word per two characters.
+  const words = t => { let n = 0;
+    t = t.replace(/[\\u3040-\\u30ff\\u3400-\\u4dbf\\u4e00-\\u9fff\\uf900-\\ufaff]+/g, m => { n += Math.ceil(m.length / 2); return ' '; });
+    return n + (t.match(/[\\p{L}\\p{N}][\\w'’.,/-]*/gu) || []).length; };
+  const inClosed = el => { for (let d = el.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) {
+    if (!d.open) { const sm = d.querySelector(':scope > summary'); if (!(sm && sm.contains(el))) return true; } } return false; };
   const boxed = e => { const s = getComputedStyle(e), p = e.parentElement && getComputedStyle(e.parentElement);
     const border = ['Top', 'Right', 'Bottom', 'Left'].filter(k => parseFloat(s['border' + k + 'Width']) > 0 && s['border' + k + 'Style'] !== 'none').length >= 3;
     const fill = s.backgroundColor !== 'rgba(0, 0, 0, 0)' && s.backgroundColor !== 'transparent' && p && s.backgroundColor !== p.backgroundColor;
@@ -266,7 +309,7 @@ BRIEF_MEASURE = """() => {
   const cards = [];
   for (const parent of document.querySelectorAll('body *')) {
     if (!vis(parent)) continue;
-    const kids = [...parent.children].filter(k => vis(k) && boxed(k) && !k.querySelector('svg, canvas, img, table') && !/^(DETAILS|PRE|CODE|BUTTON|A|LI)$/.test(k.tagName));
+    const kids = [...parent.children].filter(k => vis(k) && boxed(k) && !k.querySelector('svg, canvas, img, table') && !/^(DETAILS|PRE|CODE|BUTTON)$/.test(k.tagName));
     const wordy = kids.filter(k => words(k.innerText) > 30);
     if (wordy.length >= 3) cards.push({ where: (parent.id || parent.className || parent.tagName).toString().slice(0, 40), n: wordy.length });
   }
@@ -276,7 +319,7 @@ BRIEF_MEASURE = """() => {
   let first = 0;
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
-    const el = n.parentElement; if (!el || el.closest('script, style, svg') || !vis(el)) continue;
+    const el = n.parentElement; if (!el || el.closest('script, style, svg, template') || !vis(el) || inClosed(el)) continue;
     const rg = document.createRange(); rg.selectNodeContents(n); const r = rg.getBoundingClientRect();
     if (r.height > 0 && r.top + scrollY < H) first += words(n.textContent);
   }
@@ -302,7 +345,7 @@ BRIEF_MEASURE = """() => {
     let boxed = false;
     for (let a = e.parentElement; a && a !== document.body && a !== document.documentElement; a = a.parentElement)
       if (/(auto|scroll)/.test(getComputedStyle(a).overflowX)) { boxed = true; break; }
-    if (!boxed) clipped.push({ text: e.innerText.trim().replace(/\s+/g, ' ').slice(0, 40), right: Math.round(r.right) });
+    if (!boxed) clipped.push({ text: e.innerText.trim().replace(/\\s+/g, ' ').slice(0, 40), right: Math.round(r.right) });
   }
   return { cards, answer, H, first, small, clipped };
 }"""
