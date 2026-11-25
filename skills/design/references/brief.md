@@ -28,10 +28,11 @@ shows the relation between the things in the section; the words only label it.
 | `table` | Independent items with the same fields (checks, a feature grid) | The items lead to each other: that is a flow or tree |
 | `text` | A short section that only states something (one or two sentences) | It runs past a short paragraph: find its shape |
 
-Text in boxes is not a shape. `data-shape` can sit on the section or on the `<svg>` itself; an
-`<svg>` under 120px (viewBox or width) is an icon and does not count as the figure. Three or more boxes side by side, each holding a paragraph, is a
-list dressed as a layout; `check_page.py --brief --shots` fails it. A system map with paths the
-reader should click through belongs to the diagrams skill; link to it or embed its file.
+Text in boxes is not a shape. Three or more boxes, each holding a paragraph, is a list dressed as
+a layout; `check_page.py --brief --shots` fails it. `data-shape` can sit on the section or on the
+`<svg>` itself. An `<svg>` sized under 120px by its width/height attributes or inline style is an
+icon and does not count as the figure; a viewBox alone says nothing about size. A system map with
+paths the reader should click through belongs to the diagrams skill; link to it or embed its file.
 
 ## Sketches
 

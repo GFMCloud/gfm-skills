@@ -96,7 +96,7 @@ CASES = [
      [], ["FAIL  brief: ", "no <svg>"], [], 1),
     ("hidden-text-not-counted",
      page(f'<section data-shape="tree"><h2>Pick</h2>{TREE}</section><template><p>{words(500)}</p></template>'
-          f'<div hidden>{words(500)}</div><div aria-hidden="true">{words(500)}</div><div style="display: none">{words(500)}</div>'),
+          f'<div hidden>{words(500)}</div><div style="display: none">{words(500)}</div>'),
      [], ["pass"], ["open words over", "open words,"], 0),
     ("first-screen-skips-closed-toggle",
      HEAD + '<h1>Test page</h1><p data-answer>Bottom line: ship it.</p>'
@@ -122,6 +122,35 @@ CASES = [
     ("table-7-body-rows-ok",
      page('<section data-shape="table"><h2>T</h2><table><tr><th>a</th></tr>' + "<tr><td>b</td></tr>" * 7 + '</table></section>'),
      [], [], ["rows; split"], 0),
+    # Second review round (each failed before its fix).
+    ("svg-bad-viewbox-no-crash",
+     page('<section data-shape="flow"><h2>F</h2><svg viewBox="0 0 1.2.3 50"><rect width="90" height="30" fill="#ddd"/></svg></section>'),
+     [], ["pass"], ["Traceback"], 0),
+    ("svg-bad-width-no-crash",
+     page('<section data-shape="flow"><h2>F</h2><svg width="." viewBox="0 0 360 100"><rect width="90" height="30" fill="#ddd"/></svg></section>'),
+     [], ["pass"], ["Traceback"], 0),
+    ("viewbox-100-units-is-figure",
+     page('<section data-shape="flow"><h2>F</h2><svg viewBox="0 0 100 60" style="width:100%"><rect width="40" height="20" fill="#ddd"/>'
+          '<rect x="60" width="40" height="20" fill="#ddd"/></svg></section>'), [], ["pass"], ["no <svg>"], 0),
+    ("icon-by-inline-px-fails",
+     page('<section data-shape="tree"><h2>T</h2><p><svg viewBox="0 0 360 360" style="width:16px;height:16px"><circle cx="180" cy="180" r="150" fill="#ddd"/></svg> x</p></section>'),
+     [], ["FAIL  brief: ", "no <svg>"], [], 1),
+    ("svg-in-template-not-figure",
+     page(f'<section data-shape="tree"><h2>T</h2><template>{TREE}</template></section>'), [], ["FAIL  brief: ", "no <svg>"], [], 1),
+    ("aria-hidden-text-counts",
+     page(f'<section data-shape="tree"><h2>T</h2>{TREE}</section><div aria-hidden="true"><p>{words(500)}</p></div>'),
+     [], ["FAIL  brief: ", "open words"], [], 1),
+    ("unclosed-p-hidden-ends-at-next-p",
+     page(f'<section data-shape="tree"><h2>T</h2>{TREE}<p hidden>note<p>{words(500)}</section>'),
+     [], ["FAIL  brief: ", "open words"], [], 1),
+    ("cyrillic-cards-not-overcounted",
+     page('<section data-shape="text"><h2>Cards</h2><div class="grid">' +
+          "".join('<div class="card"><p>Это короткая строка текста на русском языке для проверки подсчёта слов здесь</p></div>' for _ in range(3)) + '</div></section>'),
+     ["--shots"], ["pass"], ["text in cards", "words on the first phone screen"], 0),
+    ("stacked-li-cards-message",
+     page('<section data-shape="text"><h2>Steps</h2><ol style="padding:0">' +
+          "".join(f'<li class="card" style="margin:8px 0">{words(40)}</li>' for _ in range(3)) + '</ol></section>'),
+     ["--shots"], ["FAIL", "boxes over 30 words"], ["side by side"], 1),
     ("good-passes-shots", GOOD, ["--shots"], ["pass"], ["FAIL"], 0),
 ]
 
