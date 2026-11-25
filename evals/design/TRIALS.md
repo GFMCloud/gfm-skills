@@ -136,3 +136,9 @@ options only when the notes hold a choice), and a page clipped a card at phone w
   open-table warning; only the word count skips closed toggles.
 - Devanagari and other scripts whose combining marks the word pattern splits on can count a word
   twice. Chinese and Japanese use the two-characters-per-word rule; other scripts are not tuned.
+- A hidden `<dd>` or `<li>` ends too early when a nested `<dd>` or `<li>` sits inside a `<section>`,
+  `<ul>` or other special element: browsers nest it, so the hidden text stays hidden. Example:
+  `<dl><dd hidden>H1 <section>H2 <dd>V1 V2</dl>` counts 2 open words where a browser shows 0.
+- A new `<optgroup>` closes only the topmost `<option>` or `<optgroup>`. Example:
+  `<select><optgroup hidden label=x><option>H1<optgroup label=y><option>V1 V2</select>` counts 0
+  open words where a browser shows 2.
