@@ -1,6 +1,6 @@
 ---
 name: design
-description: Designs, redesigns or critiques web pages, app screens and forms in the user's brand, with one visual direction, every state and a phone-width check. Use for UI design, "what's wrong with this page?" or "is it usable on my phone?". Not for decks, diagrams or charts.
+description: Designs, redesigns or critiques web pages, app screens and forms in the user's brand, and builds diagram-first report, review and decision pages. Use for UI design, "what's wrong with this page?" or a page to read. Not for decks, system maps or charts.
 metadata:
   status: draft
   brand: "true"
@@ -12,15 +12,18 @@ metadata:
 
 A good interface here has five things: one clear direction, a small strict system (type, space,
 colour), real content, every state a user can hit, and a layout that holds at phone width. This
-skill does three jobs. Pick one from the request.
+skill does four jobs. Pick one from the request.
 
 | The user wants | Job |
 | :--- | :--- |
 | A page, screen, form or component that doesn't exist yet | **New** |
 | An existing page or app to look or work better ("looks dated", "fix it on mobile") | **Redesign** |
 | Only an opinion ("what's wrong with this page?", "is it usable on my phone?") | **Critique** (the Redesign look and audit, then stop) |
+| A page an agent hands a person to read: a report, review, comparison, plan, decision or explainer ("turn these notes into a page") | **Brief** |
 
 **Your reply starts with the `Brand:` line that `scripts/brand.py` prints. Nothing comes before it.**
+The Brief job is the exception: there the reader's own first line (their question or decision)
+comes first and the `Brand:` line goes in the hand-over.
 
 This skill's own files (`scripts/`, `references/`) are part of the skill. Call them by their path in
 this skill's folder (written `<skill>/` below), but always with the user's project folder as the
@@ -31,7 +34,7 @@ project. Read [references/craft.md](references/craft.md) before starting any job
 (a landing page, a site, a portfolio, a shop, event or restaurant page), also get the steps marked
 *Page* below. Forms, components, app screens, dashboards, reports, documents and articles (a blog
 post) skip them: they are judged by use, and a page-sized method on a sign-up form costs more than
-it gives.
+it gives. A page handed to one reader to act on (a report, review or plan) is the **Brief** job.
 
 ## New
 
@@ -155,6 +158,33 @@ it gives.
 5. **Check and compare.** Run the checker with `--shots` on the new version (and look and fix, as
    in New step 7, for a page), compare it with the before shots, and hand over as in New, plus the
    audit items you fixed and any you left.
+
+## Brief
+
+Read [references/brief.md](references/brief.md) first. A brief page is judged by what the reader
+knows after the first phone screen. An answer that fits in a few chat lines gets no page.
+
+1. **Answer first.** Write the bottom line (two sentences at most) and the decision or next step.
+   Both go on the first phone screen, above any figure and outside any toggle; mark the bottom-line
+   block `data-answer`. When the notes hold a choice, show each option as a card with the default
+   marked and a button that copies the answer; a status report with no choice gets its steps, not
+   options. Invent no option, and put no copy button on an option the page says to skip.
+2. **Shape each section.** For each section, write the one thing it shows and pick its shape from
+   brief.md (tree, flow, layers, timeline, matrix, table or text); set it as `data-shape` on the
+   section. Draw every tree, flow, layers, timeline and matrix as inline SVG made for this content,
+   starting from the sketch. Text in cards is not a shape. Shapes come before any prose.
+3. **Budget.** At most 400 open words outside figures, and 3 to 5 items per group (group longer
+   lists). Everything else goes in `<details>` whose summary says what is inside. Never delete a
+   fact to fit; move it. Sources go in one closing toggle; only a number the decision turns on
+   carries its source inline.
+4. **Build.** One self-contained HTML file, phone first. Run `python3 <skill>/scripts/brand.py`
+   from the project folder and take the colours from its block. SVG follows brief.md, "SVG at
+   phone width".
+5. **Check and look.** Run `python3 <skill>/scripts/check_page.py <file> --brief --shots` and fix
+   every FAIL. Open the phone screenshot: name the first thing you see, and say the bottom line and
+   next step from the first screen alone. Open one toggle and find a fact in it. At most two rounds.
+6. **Hand over.** The reader's question or decision first, then the file, the shape of each
+   section, the checker result, what you saw first on the phone shot, and the `Brand:` line.
 
 ## Brand material
 

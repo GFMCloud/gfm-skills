@@ -1,4 +1,7 @@
 should:
+  - Turn notes.md into a page I can read on my phone
+  - Write this review up as a page for me, with the decision at the top
+  - Make me a page comparing these four tools so I can pick one
   - Design a landing page for my bakery's new website
   - This settings page looks dated, can you redesign it so it works on phones too?
   - Make our sign-up form look better and easier to use
@@ -7,6 +10,7 @@ should:
   - Design my portfolio homepage from brief.md. I have no brand; pick a distinctive look, not the usual template.
   - Restyle index.html with a fresh type system and palette, keeping the layout and content.
 should_not:
+  - From notes.md, which port does the staging server use?
   - Make a slide deck for the product launch
   - Draw a diagram of how our deploy pipeline works
   - Review the design doc for the database migration
