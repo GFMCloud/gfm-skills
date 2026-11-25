@@ -130,3 +130,9 @@ options only when the notes hold a choice), and a page clipped a card at phone w
 | Claude Code (Opus) | 3 of 3 pass, run on the final text. `brief-report`: answer and both steps on the first phone screen, old and new flow drawn, 9 checks in three groups, all 12 rulings in a toggle, 235 open words (the last section, toggles only, has no `data-shape`). `brief-comparison`: SVG tree and matrix, default card with copy buttons and none on the skipped tool, 15-row table in a toggle, every grid fact kept, 183 open words. `brief-small`: answered in chat, wrote no file | 3 new should, 1 new near-miss, not yet run | **draft** |
 | Claude Code (Haiku, Sonnet) | not run | not run | **pending** |
 | Codex | not run | not run | **pending** |
+
+**Known gaps in `check_page.py --brief`** (found in review, left for a later change):
+- An `<svg>` or `<table>` inside a closed `<details>` still satisfies a shape or counts toward the
+  open-table warning; only the word count skips closed toggles.
+- Devanagari and other scripts whose combining marks the word pattern splits on can count a word
+  twice. Chinese and Japanese use the two-characters-per-word rule; other scripts are not tuned.

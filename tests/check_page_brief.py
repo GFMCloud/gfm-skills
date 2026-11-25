@@ -151,6 +151,22 @@ CASES = [
      page('<section data-shape="text"><h2>Steps</h2><ol style="padding:0">' +
           "".join(f'<li class="card" style="margin:8px 0">{words(40)}</li>' for _ in range(3)) + '</ol></section>'),
      ["--shots"], ["FAIL", "boxes over 30 words"], ["side by side"], 1),
+    # Third review round (each failed before its fix).
+    ("strip-percent-width-is-figure",
+     page('<section data-shape="flow"><h2>F</h2><svg width="100%" height="80"><rect width="300" height="40" fill="#ddd"/><rect x="320" width="300" height="40" fill="#ddd"/></svg></section>'), [], ["pass"], ["no <svg>"], 0),
+    ("strip-style-percent-width-is-figure",
+     page('<section data-shape="flow"><h2>F</h2><svg style="width:100%;height:90px"><rect width="300" height="40" fill="#ddd"/><rect x="320" width="300" height="40" fill="#ddd"/></svg></section>'), [], ["pass"], ["no <svg>"], 0),
+    ("style-overrides-px-attrs",
+     page('<section data-shape="flow"><h2>F</h2><svg width="24" height="24" style="width:100%"><rect width="300" height="40" fill="#ddd"/><rect x="320" width="300" height="40" fill="#ddd"/></svg></section>'), [], ["pass"], ["no <svg>"], 0),
+    ("p-hidden-ends-at-summary",
+     page(f'<section data-shape="tree"><h2>T</h2>{TREE}<details open><p hidden>x<summary>{words(500)}</summary></details></section>'),
+     [], ["FAIL  brief: ", "open words"], [], 1),
+    ("dd-hidden-ends-at-dt",
+     page(f'<section data-shape="tree"><h2>T</h2>{TREE}<dl><dd hidden>x<dt>{words(500)}</dl></section>'),
+     [], ["FAIL  brief: ", "open words"], [], 1),
+    ("li-in-cell-keeps-outer-hidden-li",
+     page(f'<section data-shape="tree"><h2>T</h2>{TREE}<ul><li hidden>x<table><tr><td><li>{words(500)}</td></tr></table></ul></section>'),
+     [], ["pass"], ["open words over", "open words,"], 0),
     ("good-passes-shots", GOOD, ["--shots"], ["pass"], ["FAIL"], 0),
 ]
 

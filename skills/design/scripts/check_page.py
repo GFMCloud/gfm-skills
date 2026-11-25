@@ -25,8 +25,8 @@ h1, or a section's h2) over two lines.
 the frame checks warnings, and adds: a FAIL over 400 open words (text outside closed <details>,
 <svg>, script, style, <template>, [hidden] and inline display: none; toggle summaries count; a run
 of Chinese or Japanese characters counts one word per two characters), a FAIL for a data-shape of
-tree, flow, layers, timeline or matrix with no <svg> figure inside or carrying it (an <svg> sized
-under 120px by width/height attributes or inline style is an icon; a viewBox alone is a figure),
+tree, flow, layers, timeline or matrix with no <svg> figure inside or carrying it (an <svg> is an
+icon only when both width and height are px values under 120; any other unit is a figure),
 a warning when nothing carries data-shape, and a warning for an open list over 5 items or an open
 table over 7 body rows (rows with a <td>; header rows don't count). With --shots it also fails on
 3 or more sibling boxes each holding over 30 words (text in cards), on a [data-answer] element
@@ -164,26 +164,29 @@ def count_words(text):
 
 
 def icon_px(a):
-    """Largest explicit pixel size of an <svg>: width/height attributes (a bare number or px) or
-    inline style width/height in px. None when no such size is given or it can't be read, which
-    counts as a figure: viewBox units, percent and em sizes say nothing about the drawn size."""
-    vals = [a.get("width") or "", a.get("height") or ""]
-    vals += re.findall(r"(?:^|;)\s*(?:width|height)\s*:\s*([^;]+)", a.get("style") or "", re.I)
+    """The drawn size of an <svg> when it is known to be small: the larger of width and height in
+    px, only when BOTH are explicit px values (inline style overrides the attributes). Any other
+    unit (%, em, auto), a missing value or one that can't be read gives None: not an icon."""
+    style = dict((k.strip().lower(), v.strip()) for k, v in
+                 (d.split(":", 1) for d in (a.get("style") or "").split(";") if ":" in d))
     sizes = []
-    for v in vals:
-        m = re.fullmatch(r"\s*(\d+(?:\.\d+)?|\.\d+)\s*(px)?\s*", v, re.I)
-        if m:
-            try:
-                sizes.append(float(m.group(1)))
-            except ValueError:
-                pass
-    return max(sizes) if sizes else None
+    for k in ("width", "height"):
+        v = style.get(k, a.get(k))
+        m = re.fullmatch(r"\s*(\d+(?:\.\d+)?|\.\d+)\s*(px)?\s*", v or "", re.I)
+        if not m:
+            return None
+        try:
+            sizes.append(float(m.group(1)))
+        except ValueError:
+            return None
+    return max(sizes)
 
 
 # Start tags that end an open <p> (HTML's implied end tags), and the scopes a <p> can't be closed across.
-P_CLOSERS = {"address", "article", "aside", "blockquote", "details", "dialog", "div", "dl", "fieldset",
-             "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup",
-             "hr", "main", "menu", "nav", "ol", "p", "pre", "section", "table", "ul"}
+P_CLOSERS = {"address", "article", "aside", "blockquote", "center", "dd", "details", "dialog", "div", "dl",
+             "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6",
+             "header", "hgroup", "hr", "li", "main", "menu", "nav", "ol", "p", "pre", "section", "summary",
+             "table", "ul"}
 SCOPES = {"table", "td", "th", "button", "template", "svg", "object", "html"}
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 
@@ -217,8 +220,11 @@ class BriefParser(html.parser.HTMLParser):
             k = len(names) - 1 - names[::-1].index("p")
             if not any(t in SCOPES for t in names[k + 1:]):
                 self._pop_to(k)
-        targets = {"li": ({"li"}, {"ul", "ol"}), "td": ({"td", "th"}, {"tr", "table"}),
-                   "th": ({"td", "th"}, {"tr", "table"}), "tr": ({"tr"}, {"table"})}.get(tag)
+        targets = {"li": ({"li"}, {"ul", "ol", "td", "th", "table"}),
+                   "dd": ({"dd", "dt"}, {"dl", "td", "th", "table"}), "dt": ({"dd", "dt"}, {"dl", "td", "th", "table"}),
+                   "option": ({"option"}, {"select", "datalist"}), "optgroup": ({"option", "optgroup"}, {"select"}),
+                   "td": ({"td", "th"}, {"tr", "table"}), "th": ({"td", "th"}, {"tr", "table"}),
+                   "tr": ({"tr"}, {"table"})}.get(tag)
         if targets:
             close, stop = targets
             for k in range(len(self.stack) - 1, -1, -1):
@@ -267,8 +273,6 @@ class BriefParser(html.parser.HTMLParser):
         if tag == "table" and not hidden:
             info["table"] = [0]
             self.tables.append(info["table"])
-        if tag == "tr":
-            info["row"] = True
         if tag == "td":
             # A body row is one with at least one <td>; header rows of <th> only don't count.
             for k in range(len(self.stack) - 1, -1, -1):
@@ -315,8 +319,8 @@ def brief_source(raw):
                         "(keep the bottom line, decision and tradeoffs open) rather than cutting facts")
     for shape, has_svg, label, _ in bp.shapes:
         if shape in DRAWN and not has_svg:
-            problems.append(f'brief: section {label!r} has data-shape="{shape}" but no <svg> inside at least '
-                            f'{FIGURE_MIN}px inside; draw it, or put data-shape on the <svg>')
+            problems.append(f'brief: section {label!r} has data-shape="{shape}" but no <svg> figure in it (one under '
+                            f'{FIGURE_MIN}px is an icon); draw it, or put data-shape on the <svg>')
     if not bp.shapes:
         warnings.append("brief: no section carries data-shape; give each section a shape (tree, flow, layers, "
                         "timeline, matrix, table or text) before writing it")
